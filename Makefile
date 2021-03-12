@@ -24,7 +24,7 @@ install:
 	./install/server [-m] [-t] ./install/alltests
 
 
-player: player.c
+player:
 	${CC} -fPIC -c ${DIR}/player.c;
 	${CC} -shared -nostartfiles -o install/libplayer.so player.o;
 	${CC} -rdynamic -o main ${DIR}/main.c -ldl;	

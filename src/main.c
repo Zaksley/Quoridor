@@ -4,45 +4,60 @@
 
 
 /*
-* Get functions from a special player with a dynamic lib.so 
+*   Contains every special function of a player
+*/
+struct player
+{
+    char* (*get_name)();
+    struct move_t (*player_play) (struct move_t);
+}; 
+
+/*
+* Get functions from a special player with a dynamic lib.so and stock it in a new struct
 * 
-* @ Param : Need 2 names of the players (libs)
-* @ Precond - 2 players (librairies)
-* @ Return - Nothing
+* @ Param : Need 1 name of the player (lib)
+* @ Precond - 1 player (librairies)
+* @ Return - A player with initialized functions
 */
 
-// TODO => Take 2 arguments (lib1 & lib2) to get all functions
-void get_functions()
+// TODO => Take 1 arguments (lib1) to get all functions
+struct player get_functions()
 {
+        // Initialization 
+    struct player player; 
+    char* (*get_name)(); 
+    struct move_t (*player_play) (struct move_t); 
+
+        // Open the lib 
     void * handle;
     handle = dlopen("./libplayer.so", RTLD_LAZY);
-    
-    //void (*print_name) (const char *);  
-    char* (*get_name)(); 
 
     if (!handle) {
         fprintf(stderr, "%s\n", dlerror());
         exit(EXIT_FAILURE);
     }
 
-     
-
     dlerror(); // Clear any existing error 
 
-    
-    //*(void **) (&print_name) = dlsym(handle, "get_print_name");
+
     *(void **) (&get_name) = dlsym(handle, "get_player_name");
+    *(void **) (&player_play) = dlsym(handle, "play"); 
+    player.get_name = get_name; 
+    player.player_play = player_play;
 
-    //print_name("Jean"); 
-    printf("%s\n", get_name());
+    // dlclose(handle); - To close at the end ?
 
-    dlclose(handle);
+    return player; 
     
 }
 
 int main()
 {
-    get_functions();
-    printf("It was a test\n");
+    struct player player1 = get_functions();
+    struct player player2 = get_functions(); 
+
+    printf("Nom du joueur 1 : %s\n", player1.get_name());
+    printf("Nom du joueur 2 : %s\n", player2.get_name());
+
     return 1; 
 }

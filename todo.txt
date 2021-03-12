@@ -1,0 +1,19 @@
+à faire :
+- Fonctions de manipulations de graphes
+- Création du plateau
+  	- Différentes formes
+	- Positions de départ et d'arrivée + premiers coups
+- Interface graphique pour le debug
+- interface client
+- Algo de joueur (au moins deux stratégies différentes)
+       	- Se renseigner sur les biblio partagées
+- Boucle de jeu
+- Valabilité des coups (dijkstra/a-star pour les murs ?)
+- Communication client-serveur
+  	- Envoi des informations de coups
+	- Récupération des informations de coups 
+  	- Notification fin de partie
+- Makefile correct
+- Gestion des options
+- Affichage potable
+- Executable alltests

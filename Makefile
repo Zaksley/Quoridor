@@ -20,7 +20,13 @@ alltests: build test
 	done
 
 install:
-	./install/server [-m] [-t] ./install/alltests 
+	./install/server [-m] [-t] ./install/alltests
+
+
+player: player.c
+	${CC} -fPIC -c $@;
+	${CC} -shared -nostartfiles -o libplayer.so player.o;
+	${CC} -rdynamic -o main main.c -ldl;	
 
 clean:
 	rm -f *.o ${BIN} *~

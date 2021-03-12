@@ -36,7 +36,11 @@ void initialize_color(enum color_t id);
  * RETURNS:
  * - the next move for the player.
  */
-struct move_t play(struct move_t previous_move);
+struct move_t play(struct move_t previous_move)
+{
+    struct move_t move; 
+    return move; 
+}
 
 /* Announces the end of the game to the player, and cleans up the
    memory he may have been using.

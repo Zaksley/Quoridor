@@ -1,3 +1,6 @@
+#ifndef _QUOR_MOVE_H_
+#define _QUOR_MOVE_H_
+
 #include <limits.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -30,3 +33,4 @@ static inline int is_no_edge(const struct edge_t e) {
   return (e.fr == SIZE_MAX) && (e.to == SIZE_MAX);
 }
 
+#endif // _QUOR_MOVE_H_

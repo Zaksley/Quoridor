@@ -26,7 +26,7 @@ install:
 
 player:
 	${CC} -fPIC -c ${DIR}/player.c;
-	${CC} -shared -nostartfiles -o install/libplayer.so ${DIR}/player.o;
+	${CC} -shared -nostartfiles -o install/libplayer.so player.o;
 	${CC} -rdynamic -o main ${DIR}/main.c -ldl;	
 
 clean:

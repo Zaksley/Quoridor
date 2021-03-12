@@ -30,7 +30,7 @@ struct player get_functions()
 
         // Open the lib 
     void * handle;
-    handle = dlopen("./libplayer.so", RTLD_LAZY);
+    handle = dlopen("./install/libplayer.so", RTLD_LAZY);
 
     if (!handle) {
         fprintf(stderr, "%s\n", dlerror());

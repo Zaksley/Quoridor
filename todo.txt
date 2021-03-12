@@ -17,3 +17,11 @@
 - Gestion des options
 - Affichage potable
 - Executable alltests
+
+
+Séance 1 (12/03):
+TODO NEXT
+- Killian : Faire des tests concluants sur l'utilisation de GSL et des matrices
+- Léna : Commencer à écrire des fonctions de manipulations de graphes
+- Matthieu : Se renseigner sur GSL, et aider Enzo avec les librairies partagées
+- Enzo : Finaliser l'importation des .so, et se renseigner sur GSL par la suite

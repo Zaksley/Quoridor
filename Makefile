@@ -1,4 +1,5 @@
 GSL_PATH ?= /net/ens/renault/save/gsl-2.6/install
+DIR = src
 BIN = 
 TEST_BIN = 
 
@@ -24,9 +25,9 @@ install:
 
 
 player: player.c
-	${CC} -fPIC -c $@;
-	${CC} -shared -nostartfiles -o libplayer.so player.o;
-	${CC} -rdynamic -o main main.c -ldl;	
+	${CC} -fPIC -c ${DIR}/player.c;
+	${CC} -shared -nostartfiles -o install/libplayer.so ${DIR}/player.o;
+	${CC} -rdynamic -o main ${DIR}/main.c -ldl;	
 
 clean:
-	rm -f *.o ${BIN} *~
+	rm -f *.o ${BIN} *~ 

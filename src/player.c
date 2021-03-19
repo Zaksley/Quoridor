@@ -1,5 +1,15 @@
 #include <stdlib.h>
-#include "player.h"
+#include "utils.h"
+#include "graph_modif.h"
+
+struct data
+{
+   enum color_t id;
+   struct graph_t *graph;
+   size_t num_walls;
+};
+
+struct data self; 
 
 /* Access to player informations
  * RETURNS:
@@ -23,7 +33,12 @@ char const* get_player_name()
      rounded up
  * - initialize has never been called before
  */
-void initialize(enum color_t id, struct graph_t* graph, size_t num_walls); 
+void initialize(enum color_t id, struct graph_t* graph, size_t num_walls)
+{
+   self.id = id;
+   self.num_walls = num_walls;
+   // TODO : initialize graph
+}
 
 /* Computes next move
 * PARAM:
@@ -33,7 +48,7 @@ void initialize(enum color_t id, struct graph_t* graph, size_t num_walls);
 */
 struct move_t play(struct move_t previous_move)
 {
-   struct move_t move; 
+   struct move_t move;
    return move; 
 }
 
@@ -43,4 +58,9 @@ struct move_t play(struct move_t previous_move)
  * - every allocation done during the calls to initialize and play
  *   functions must have been freed
  */
-void finalize();
+void finalize()
+{
+   printf("Libération de Random...\n");
+   graph__free(self.graph);
+   printf("OK !\n");
+}

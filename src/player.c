@@ -1,5 +1,4 @@
 #include <stdlib.h>
-
 #include "player.h"
 
 /* Access to player informations

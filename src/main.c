@@ -1,7 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <dlfcn.h>
+#include "player.h"
 
+#define NUMB_PLAYER 2
 
 /*
 *   Contains every special function of a player
@@ -9,7 +11,9 @@
 struct player
 {
     char* (*get_name)();
+    void (*initialize) (enum color_t, struct graph_t*, size_t);
     struct move_t (*player_play) (struct move_t);
+    void (*finalize) (); 
 }; 
 
 /*
@@ -19,12 +23,16 @@ struct player
 * @ Precond - 1 player (librairies)
 * @ Return - A player with initialized functions
 */
-struct player get_functions(char* lib)
+struct player* get_functions(char* lib)
 {
         // Initialization 
-    struct player player; 
+    struct player* player = malloc(sizeof(struct player)); 
+
+        // Get functions
     char* (*get_name)(); 
+    void (*initialize) (enum color_t, struct graph_t*, size_t);
     struct move_t (*player_play) (struct move_t); 
+    void (*finalize) (); 
 
         // Open the lib 
     void * handle;
@@ -40,21 +48,46 @@ struct player get_functions(char* lib)
         // Putting functions in the struct 
     *(void **) (&get_name) = dlsym(handle, "get_player_name");
     *(void **) (&player_play) = dlsym(handle, "play"); 
-    player.get_name = get_name; 
-    player.player_play = player_play;
+    *(void **) (&initialize) = dlsym(handle, "initialize"); 
+    *(void **) (&finalize) = dlsym(handle, "finalize"); 
+
+    player->get_name = get_name; 
+    player->player_play = player_play;
+    player->initialize = initialize;
+    player->finalize = finalize;
 
     // dlclose(handle); - To close at the end ?
 
     return player; 
 }
 
+
+
+
 int main()
 {
-    struct player player1 = get_functions("./install/libplayer.so");
-    struct player player2 = get_functions("./install/libplayer.so"); 
+    // ================= Initializing game 
 
-    printf("Nom du joueur 1 : %s\n", player1.get_name());
-    printf("Nom du joueur 2 : %s\n", player2.get_name());
+        // Get players 
+    struct player* player1 = get_functions("./install/libplayer.so");
+    struct player* player2 = get_functions("./install/libplayer.so"); 
+    struct player* players[2] = {player1, player2}; 
 
+    int random = rand() % 2; 
+    struct player* start = players[random]; 
+
+    // ==================
+    for(int p = 0; p < NUMB_PLAYER; p++)
+    {
+        //players[p]->initialize(p == start ? BLACK : WHITE, graph, num_walls); 
+    }
+
+    int isPlaying = 1; 
+
+    while (isPlaying) 
+    {
+        
+    }
+    
     return 1; 
 }

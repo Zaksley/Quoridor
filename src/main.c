@@ -1,20 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <dlfcn.h>
-#include "player.h"
+#include "utils.h"
 
 #define NUMB_PLAYER 2
 
-/*
-*   Contains every special function of a player
-*/
-struct player
-{
-    char* (*get_name)();
-    void (*initialize) (enum color_t, struct graph_t*, size_t);
-    struct move_t (*player_play) (struct move_t);
-    void (*finalize) (); 
-}; 
 
 /*
 * Get functions from a special player with a dynamic lib.so and stock it in a new struct
@@ -79,14 +69,15 @@ int main()
     // ==================
     for(int p = 0; p < NUMB_PLAYER; p++)
     {
-        //players[p]->initialize(p == start ? BLACK : WHITE, graph, num_walls); 
+      printf("%s\n", players[p]->get_name());
+      //players[p]->initialize(p == start ? BLACK : WHITE, graph, num_walls); 
     }
 
     int isPlaying = 1; 
 
     while (isPlaying) 
     {
-        
+      break;
     }
     
     return 1; 

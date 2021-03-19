@@ -46,7 +46,6 @@ struct player get_functions(char* lib)
     // dlclose(handle); - To close at the end ?
 
     return player; 
-    
 }
 
 int main()

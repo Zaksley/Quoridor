@@ -8,7 +8,7 @@
  * @param
  * @return en empty graph with no owners
  */
-struct graph_t graph__initialize();
+struct graph_t * graph__initialize();
 
 /* Frees a graph
  *

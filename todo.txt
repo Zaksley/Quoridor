@@ -25,3 +25,10 @@ TODO NEXT
 - Léna : Commencer à écrire des fonctions de manipulations de graphes
 - Matthieu : Se renseigner sur GSL, et aider Enzo avec les librairies partagées
 - Enzo : Finaliser l'importation des .so, et se renseigner sur GSL par la suite
+
+Séance 2 (19/03):
+TODO NEXT
+- Killian : Finir player.c (play) et faire le utils.h
+- Léna : Finir les fonctions de modifications de graphe (avec Matthieu)
+- Matthieu : Finir les fonctions de modifications de graphe (avec Léna)
+- Enzo : Continuer les utils (positions valides, déplacement, etc)

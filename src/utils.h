@@ -8,6 +8,7 @@
  */
 struct player
 {
+   int i, j; 
    enum color_t id;
    struct graph_t * graph;
    size_t num_walls;
@@ -21,3 +22,21 @@ struct player* get_functions(char* lib);
 
 
 #endif
+
+// ******************* Functions with MOVE = 1 (Moving pawn)
+
+/* Return a list of every valid position to move
+*
+*  @param p struct player who has to move 
+*  @return list of move_t
+*/
+
+struct move_t* valid_positions(struct player*); 
+
+
+
+
+
+
+
+// *******************

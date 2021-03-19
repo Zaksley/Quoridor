@@ -1,10 +1,11 @@
 GSL_PATH ?= /net/ens/renault/save/gsl-2.6/install
 DIR = src
-BIN = 
+BIN = install
 TEST_BIN = 
 
 CC ?= cc
-CFLAGS = -Wall -Wextra -std=c99 -g -lgcov
+CFLAGS = -Wall -Wextra -std=c99 -g -lgcov -I${GSL_PATH}
+LIBS = -lgsl -lgslcblas -lm
 
 all: build test
 

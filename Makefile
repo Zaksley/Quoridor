@@ -31,4 +31,4 @@ player:
 	${CC} -rdynamic -o main ${DIR}/main.c -ldl;	
 
 clean:
-	rm -f *.o ${BIN} *~ 
+	rm -f *.o ${BIN}/*.so *~ 

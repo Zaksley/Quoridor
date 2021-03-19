@@ -7,7 +7,7 @@
  */
 char const* get_player_name()
 {
-    return "Random"; 
+   return "Random"; 
 }
 
 /* Player initialization
@@ -23,18 +23,18 @@ char const* get_player_name()
      rounded up
  * - initialize has never been called before
  */
-void initialize(enum color_t id, struct graph_t* graph, size_t num_walls);
+void initialize(enum color_t id, struct graph_t* graph, size_t num_walls); 
 
 /* Computes next move
- * PARAM:
- * - previous_move: the move from the previous player
- * RETURNS:
- * - the next move for the player.
- */
+* PARAM:
+* - previous_move: the move from the previous player
+* RETURNS:
+* - the next move for the player.
+*/
 struct move_t play(struct move_t previous_move)
 {
-    struct move_t move; 
-    return move; 
+   struct move_t move; 
+   return move; 
 }
 
 /* Announces the end of the game to the player, and cleans up the

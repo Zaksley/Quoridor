@@ -17,7 +17,6 @@ struct graph_t {
                         // t[i][j] == 4 means that j is EAST  of i
   gsl_spmatrix* o;      // Sparse matrix of size 2*n, one line per player
                         // o[p][i] == 1 means that the vertex i is owned by p
-  size_t p[2];          // Positions of the players, SIZE_MAX if none
 };
 
 #endif // _QUOR_GRAPH_H_

@@ -8,7 +8,7 @@
  */
 char const* get_player_name()
 {
-    return "Vide"; 
+    return "Random"; 
 }
 
 /* Player graph initialization

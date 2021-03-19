@@ -8,7 +8,7 @@
  */
 struct player
 {
-   int i, j; 
+   size_t pos; 
    enum color_t id;
    struct graph_t * graph;
    size_t num_walls;
@@ -21,7 +21,7 @@ struct player
 struct player* get_functions(char* lib);
 
 
-#endif
+
 
 // ******************* Functions with MOVE = 1 (Moving pawn)
 
@@ -40,3 +40,5 @@ struct move_t* valid_positions(struct player*);
 
 
 // *******************
+
+#endif

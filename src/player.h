@@ -2,7 +2,7 @@
 #define _QUOR_PLAYER_H_
 
 #include "move.h"
-#include "graph.h"
+#include "graph_modif.h"
 
 /* Access to player informations
  * RETURNS:

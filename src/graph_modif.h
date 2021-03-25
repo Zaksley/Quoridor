@@ -3,6 +3,8 @@
 
 #include "graph.h"
 
+enum direction {NORTH=1, SOUTH, WEST, EAST, ERROR_DIRECTION=-1};
+
 /* Initializes a graph
  *
  * @param
@@ -21,7 +23,28 @@ void graph__free(struct graph_t * graph);
  * @param n size of the graph
  * @return a full square graph with no owners
  */
-struct graph_t graph__create_square(int n);
+struct graph_t * graph__create_square(size_t n);
+
+/* Creates a toric graph
+ *
+ * @param n size of the graph
+ * @return a toric graph with no owners
+ */
+struct graph_t * graph__create_torus(size_t n);
+
+/* Creates a chopped graph
+ *
+ * @param n size of the graph
+ * @return a H-shaped graph with no owners
+ */
+struct graph_t * graph__create_chopped(size_t n);
+
+/* Creates a snake-shaped graph
+ *
+ * @param n size of the graph
+ * @return a snake-shaped graph with no owners
+ */
+struct graph_t * graph__create_snake(size_t n);
 
 /* Copies a graph
  *
@@ -46,7 +69,7 @@ int graph__edge_exists(struct graph_t * graph, size_t first, size_t second);
  * @param d a direction (1:N, 2:S, 3:W, 4:E)
  * @return the neighboor number, -1 if there is no neighboor
  */
-int graph__get_neighboor(struct graph_t * graph, size_t v, size_t d);
+int graph__get_neighboor(struct graph_t * graph, size_t v, enum direction d);
 
 /* Adds an edge between two vertices in a graph
  *
@@ -55,7 +78,7 @@ int graph__get_neighboor(struct graph_t * graph, size_t v, size_t d);
  * @param second second vertex
  * @return 0 if the addition is successful, -1 if the edge was already there
  */
-int graph__add_edge(struct graph_t * graph, size_t first, size_t second);
+int graph__add_edge(struct graph_t * graph, size_t first, size_t second, enum direction d);
 
 /* Removes an edge between two vertices in a graph
  *

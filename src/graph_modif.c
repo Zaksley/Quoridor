@@ -60,7 +60,7 @@ struct graph_t * graph__create_square(size_t n)
 struct graph_t * graph__create_torus(size_t n)
 {
   struct graph_t * g = malloc(sizeof(struct graph_t));
-  g->num_vertices = n*n;
+  g->num_vertices = n*n*8/9;
   g->t = gsl_spmatrix_alloc(n*n, n*n);
   g->o = gsl_spmatrix_alloc(2, n*n);
   for(size_t i = 0; i < n; i++) {
@@ -82,7 +82,7 @@ struct graph_t * graph__create_torus(size_t n)
 struct graph_t * graph__create_chopped(size_t n)
 {
   struct graph_t * g = malloc(sizeof(struct graph_t));
-  g->num_vertices = n*n;
+  g->num_vertices = n*n*7/9;
   g->t = gsl_spmatrix_alloc(n*n, n*n);
   g->o = gsl_spmatrix_alloc(2, n*n);
   for(size_t i = 0; i < n; i++) {
@@ -104,7 +104,7 @@ struct graph_t * graph__create_chopped(size_t n)
 struct graph_t * graph__create_snake(size_t n)
 {
   struct graph_t * g = malloc(sizeof(struct graph_t));
-  g->num_vertices = n*n;
+  g->num_vertices = n*n*13/25;
   g->t = gsl_spmatrix_alloc(n*n, n*n);
   g->o = gsl_spmatrix_alloc(2, n*n);
   for(size_t i = 0; i < n; i++) {

@@ -90,14 +90,20 @@ struct move_t* valid_walls(struct player* p)
                wall.e[0] = e1;
                wall.e[1] = e2; 
 
-                  // Realloc size to Walls 
-               if (size == capacity)
+                  // Check if we can put the wall
+               int pathOk = checkPath(p, wall);
+               if (pathOk)
                {
-                  capacity *= 2; 
-                  walls = realloc(walls, sizeof(struct move_t) * capacity);
+                     // Realloc size to Walls 
+                  if (size == capacity)
+                  {
+                     capacity *= 2; 
+                     walls = realloc(walls, sizeof(struct move_t) * capacity);
+                  }
+
+                  walls[size] = wall; 
+                  size++; 
                }
-               walls[size] = wall; 
-               size++; 
             }
          }
       }

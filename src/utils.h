@@ -33,7 +33,10 @@ struct player* get_functions(char* lib);
 
 struct move_t* valid_positions(struct player*); 
 
-
+/*
+*  Add a position new to the array valid 
+*/
+void add_position(struct move_t* valid, struct move_t new, int* count_moves); 
 
 
 

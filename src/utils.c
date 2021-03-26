@@ -1,5 +1,7 @@
-#include "stdlib.h"
+#include <stdlib.h>
 #include "utils.h"
+
+// -------- MOVE
 
 void add_position(struct move_t* valid, struct move_t new, int* count_moves)
 {
@@ -33,3 +35,15 @@ struct move_t* valid_positions(struct player* p)
    return valid; 
 
 }
+
+// -------- MOVE
+
+
+
+// -------- WALL
+
+
+
+
+
+// -------- WALL

@@ -135,6 +135,23 @@ struct graph_t * graph__create_snake(size_t n)
   return g;
 }
 
+/* Copies a graph
+ *
+ * @param graph the graph to be copied
+ * @param n number of vertices
+ * @return a copy of the graph
+ */
+struct graph_t * graph__copy(struct graph_t * graph, size_t n)
+{
+	struct graph_t * newgraph = malloc(sizeof(struct graph_t));
+  	newgraph->num_vertices = graph->num_vertices;
+  	newgraph->t = gsl_spmatrix_alloc(n*n, n*n);
+  	newgraph->o = gsl_spmatrix_alloc(2, n*n);
+  	gsl_spmatrix_memcpy(newgraph->t, graph->t);
+  	gsl_spmatrix_memcpy(newgraph->o, graph->o);
+  	return newgraph;
+}
+
 /* Adds an edge between two vertices in a graph
  *
  * @param graph a graph
@@ -166,6 +183,23 @@ int graph__remove_edge(struct graph_t * graph, size_t first, size_t second)
   	int edge1 = gsl_spmatrix_set(graph->t, second, first, 0);
   	int edge2 = gsl_spmatrix_set(graph->t, first, second, 0);
   	return (edge1 || edge2);
+}
+
+/* Checks if there is an edge between two vertices
+ *
+ * @param graph a graph
+ * @param first first vertex
+ * @param second second vertex
+ * @return 1 if there is an edge, 0 else
+ */
+int graph__edge_exists(struct graph_t * graph, size_t first, size_t second)
+{
+	if (gsl_spmatrix_ptr(graph->t, first, second) == NULL)
+		return 0;
+	int d = gsl_spmatrix_get(graph->t, first, second);
+	if (d == 0) return 0;
+	int opp = d%2?d+1:d-1; // Opposite direction
+	return (gsl_spmatrix_get(graph->t, second, first) == opp);
 }
 
 /* Adds an owner to a vertex

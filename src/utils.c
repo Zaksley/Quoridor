@@ -27,7 +27,7 @@ struct move_t* valid_positions(struct player* p)
 
    for(int dir = 1; dir < 5; dir++)
    {
-      value = graph__get_neighboor(p->graph, p->pos, dir);
+      value = graph__get_neighboor(p->graph, p->n, p->pos, dir);
       new.m = value; 
       if (value) add_position(valid, new, count_moves); 
    }
@@ -69,14 +69,14 @@ struct move_t* valid_walls(struct player* p)
             // Neighboors EAST-WEST
          if (i == 0)
          {
-            n1 = graph__get_neighboor(p->graph, node, EAST); 
-            n2 = graph__get_neighboor(p->graph, node, WEST); 
+            n1 = graph__get_neighboor(p->graph, p->n, node, EAST); 
+            n2 = graph__get_neighboor(p->graph, p->n, node, WEST); 
          }
             // Neighboors NORTH-SOUTH
          else
          {
-            n1 = graph__get_neighboor(p->graph, node, NORTH); 
-            n2 = graph__get_neighboor(p->graph, node, SOUTH); 
+            n1 = graph__get_neighboor(p->graph,p->n, node, NORTH); 
+            n2 = graph__get_neighboor(p->graph,p->n, node, SOUTH); 
          }
 
          if (n1 != -1 && n2 != -1)
@@ -171,10 +171,10 @@ int existPath_Player(struct player* p, size_t number_player, size_t pos_player)
       for(int dir = 0; dir < 5; dir++)
       {
             // If neighboor exist + non treated 
-         neighboor = graph__get_neighboor(p->graph, current, dir);
+         neighboor = graph__get_neighboor(p->graph, p->n, current, dir);
          if ( neighboor != -1 && marked[neighboor] != 0)
          {
-            waitingList[size] = graph__get_neighboor(p->graph, current, dir); 
+            waitingList[size] = graph__get_neighboor(p->graph, p->n, current, dir); 
             size++;
          }
       }

@@ -11,8 +11,12 @@ struct player
    size_t pos; 
    size_t ennemy_pos; 
    enum color_t id;
+
    struct graph_t * graph;
+   size_t n; 
    size_t num_walls;
+
+
    char* (*get_name)();
    void (*initialize) (enum color_t, struct graph_t*, size_t);
    struct move_t (*player_play) (struct move_t);

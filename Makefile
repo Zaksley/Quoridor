@@ -23,20 +23,32 @@ alltests: build test
 	echo $${e}; ./$${e}; \
 	done
 
-install:
-	./install/server [-m] [-t] ./install/alltests
+install: player player_random
+	${CC} -rdynamic -o install/server ${DIR}/main.c graph_modif.o -ldl ${LIBS};
+	
+
+	#./install/server [-m] [-t] ./install/alltests
 
 
-player:
+player: graph_modif.o utils.o
 	${CC} -fPIC -c ${DIR}/player.c;
-	${CC} -shared -nostartfiles -o install/libplayer.so player.o;
-	${CC} -rdynamic -o main ${DIR}/main.c -ldl;	
+	${CC} -shared -nostartfiles -o install/libplayer.so player.o graph_modif.o utils.o;
+		
+
+
+player_random: graph_modif.o utils.o
+	${CC} -fPIC -c ${DIR}/player_random.c;
+	${CC} -shared -nostartfiles -o install/libplayer_random.so player_random.o graph_modif.o utils.o;
+		
 
 clean:
 	rm -f *.o ${BIN}/*.so *~ ${TEST_BIN}
 
-graph_modif.o:
-	${CC} ${CFLAGS} ${DIR}/graph_modif.c -c
+utils.o : ${DIR}/utils.h ${DIR}/utils.c
+	${CC} -fPIC ${CFLAGS} ${DIR}/utils.c -c
+
+graph_modif.o: ${DIR}/graph_modif.h ${DIR}/graph_modif.c
+	${CC} -fPIC ${CFLAGS} ${DIR}/graph_modif.c -c
 
 test_graph_shape: graph_modif.o
 	${CC} graph_modif.o ${TEST_DIR}/test_graph_shape.c -o $@ ${CFLAGS} ${LDFLAGS} ${LIBS}

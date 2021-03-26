@@ -32,6 +32,12 @@ player: graph_modif.o utils.o
 	${CC} -shared -nostartfiles -o install/libplayer.so player.o graph_modif.o utils.o;
 	${CC} -rdynamic -o main ${DIR}/main.c graph_modif.o -ldl ${LIBS};	
 
+
+player_random: graph_modif.o utils.o
+	${CC} -fPIC -c ${DIR}/player_random.c;
+	${CC} -shared -nostartfiles -o install/libplayer_random.so player_random.o graph_modif.o utils.o;
+	${CC} -rdynamic -o main ${DIR}/main.c graph_modif.o -ldl ${LIBS};	
+
 clean:
 	rm -f *.o ${BIN}/*.so *~ ${TEST_BIN}
 

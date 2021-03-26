@@ -2,7 +2,7 @@ GSL_PATH ?= /net/ens/renault/save/gsl-2.6/install
 DIR = src
 TEST_DIR = tests
 BIN = 
-TEST_BIN = test_graph_shape
+TEST_BIN = test_graph_shape test_graph_fonc
 
 CC ?= cc
 CFLAGS = -Wall -Wextra -std=c99 -g -lgcov -I${GSL_PATH}/include
@@ -40,3 +40,6 @@ graph_modif.o:
 
 test_graph_shape: graph_modif.o
 	${CC} graph_modif.o ${TEST_DIR}/test_graph_shape.c -o $@ ${CFLAGS} ${LDFLAGS} ${LIBS}
+
+test_graph_fonc: graph_modif.o
+	${CC} graph_modif.o ${TEST_DIR}/test_graph_fonc.c -o $@ ${CFLAGS} ${LDFLAGS} ${LIBS}

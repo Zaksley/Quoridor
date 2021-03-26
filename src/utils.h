@@ -9,6 +9,7 @@
 struct player
 {
    size_t pos; 
+   size_t ennemy_pos; 
    enum color_t id;
    struct graph_t * graph;
    size_t num_walls;

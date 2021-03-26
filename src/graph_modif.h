@@ -49,9 +49,10 @@ struct graph_t * graph__create_snake(size_t n);
 /* Copies a graph
  *
  * @param graph the graph to be copied
+ * @param n number of vertices
  * @return a copy of the graph
  */
-struct graph_t * graph__copy(struct graph_t * graph);
+struct graph_t * graph__copy(struct graph_t * graph, size_t n);
 
 /* Checks if there is an edge between two vertices
  *

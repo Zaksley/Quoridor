@@ -35,10 +35,10 @@ player: graph_modif.o utils.o
 clean:
 	rm -f *.o ${BIN}/*.so *~ ${TEST_BIN}
 
-utils.o : graph_modif.o
-	${CC} -fPIC ${CFLAGS} ${DIR}/utils.c graph_modif.o -c
+utils.o : ${DIR}/utils.h ${DIR}/utils.c
+	${CC} -fPIC ${CFLAGS} ${DIR}/utils.c -c
 
-graph_modif.o:
+graph_modif.o: ${DIR}/graph_modif.h ${DIR}/graph_modif.c
 	${CC} -fPIC ${CFLAGS} ${DIR}/graph_modif.c -c
 
 test_graph_shape: graph_modif.o

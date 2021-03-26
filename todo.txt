@@ -32,3 +32,10 @@ TODO NEXT
 - Léna : Finir les fonctions de modifications de graphe (avec Matthieu)
 - Matthieu : Finir les fonctions de modifications de graphe (avec Léna)
 - Enzo : Continuer les utils (positions valides, déplacement, etc)
+
+Séance 3 (26/03):
+TODO NEXT
+- Killian : Tester et débug les déplacements + gérer le Makefile
+- Léna : Finir les tests structurels pour les graphs
+- Matthieu : Finir les tests fonctionnels pour les graphs
+- Enzo : Tester et débug les déplacements + gérer le Makefile

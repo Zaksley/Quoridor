@@ -5,7 +5,7 @@
 
 enum direction {NORTH=1, SOUTH, WEST, EAST, ERROR_DIRECTION=-1};
 
-/* Initializes a graph
+/* Initializes an empty square graph
  *
  * @param n size of the graph
  * @return en empty graph with no owners

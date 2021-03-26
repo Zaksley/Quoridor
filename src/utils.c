@@ -3,12 +3,6 @@
 
 // -------- MOVE
 
-void add_position(struct move_t* valid, struct move_t new, int* count_moves)
-{
-   valid[*count_moves] = new;
-   *count_moves++; 
-}
-
 // TODO => vérifier que sur les positions, il n'y a pas de joueur adverse
 struct move_t* valid_positions(struct player* p)
 {
@@ -66,6 +60,7 @@ struct move_t* valid_walls(struct player* p)
 
 
    size_t n1, n2; 
+   size_t checkTest = -1; 
    for(size_t node = 0; node < p->graph->num_vertices; node++)
    {
       for(int i=0; i<2; i++)
@@ -83,7 +78,7 @@ struct move_t* valid_walls(struct player* p)
             n2 = graph__get_neighboor(p->graph,p->n, node, SOUTH); 
          }
 
-         if (n1 != -1 && n2 != -1)
+         if (n1 != checkTest && n2 != checkTest)
          {
             if (graph__edge_exists(p->graph, node, n1) && graph__edge_exists(p->graph, node, n2))
             {
@@ -182,7 +177,7 @@ int existPath_Player(struct player* p, size_t number_player, size_t pos_player)
       {
             // If neighboor exist + non treated 
          neighboor = graph__get_neighboor(p->graph, p->n, current, dir);
-         if ( neighboor != -1 && marked[neighboor] != 0)
+         if ( neighboor != (size_t) -1 && marked[neighboor] != 0)
          {
             waitingList[size] = graph__get_neighboor(p->graph, p->n, current, dir); 
             size++;
@@ -207,7 +202,7 @@ int existPath_Player(struct player* p, size_t number_player, size_t pos_player)
 *
 *  @param pointer on the player
 *  @param specific wall we test
-*  @return 1 if posing this wall is allowed, 0 otherwise
+*  @return 1 if posing this wall is allowed, 0 if not and -1 if errors
 */
 int checkPath(struct player* p, struct move_t wall)
 {
@@ -223,7 +218,9 @@ int checkPath(struct player* p, struct move_t wall)
       // Remove testing Wall
    int test = -1; 
    test = graph__remove_edge(p->graph, wall.e[0].fr, wall.e[0].to);
+   if (test == -1) return -1; 
    test = graph__remove_edge(p->graph, wall.e[1].fr, wall.e[1].to);
+   if (test == -1) return -1; 
 
    if (check_1 && check_2) return 1;
    return 0; 

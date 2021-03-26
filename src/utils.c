@@ -41,6 +41,12 @@ struct move_t* valid_positions(struct player* p)
 
 
 // -------- WALL
+
+/* Return every possible wall usable on the board 
+*
+*  @param p pointer on the player
+*  @return array move_t 
+*/
 struct move_t* valid_walls(struct player* p)
 {
       // Dynamic array Walls
@@ -101,16 +107,30 @@ struct move_t* valid_walls(struct player* p)
 }
 
 
-void put_wall(struct player* p, struct move_t wall)
+/* Put a wall on the board meaning destroying 2 edges on the graph
+*
+*  @param p pointer on the player
+*  @param wall the wall we are posing 
+*  @return 0 if the wall's installation is successful, -1 if it failed
+*/
+int put_wall(struct player* p, struct move_t wall)
 {
       // Remove edges
    int removed;
    removed = graph__remove_edge(p->graph, wall.e[0].fr, wall.e[0].to); 
+   if (removed == -1) return -1;
    removed = graph__remove_edge(p->graph, wall.e[1].fr, wall.e[1].to);
+   if (removed == -1) return -1;
 
-   return; 
+   return 0; 
 }
 
+/* Shifting by the left an array
+*  
+*  @param s the array
+*  @param begin where we start
+*  @param end where we stop
+*/
 void shift_left(size_t s[], int begin, int end)
 {
    int i=0;
@@ -122,8 +142,14 @@ void shift_left(size_t s[], int begin, int end)
    }  
 }
 
-
-int existPath_Player(struct player* p, size_t number_player, size_t pos_player, struct move_t wall)
+/* Checking if a player is still able to move to the victory if we put a specific wall
+*
+*  @param pointer on the player
+*  @param Specific color of studied player
+*  @param Where the studied player is
+*  @return 1 if player can still win, 0 instead
+*/
+int existPath_Player(struct player* p, size_t number_player, size_t pos_player)
 {
    int* marked = calloc(p->graph->num_vertices, sizeof(int)); 
    size_t* waitingList = malloc(p->graph->num_vertices * sizeof(size_t)); 
@@ -167,15 +193,21 @@ int existPath_Player(struct player* p, size_t number_player, size_t pos_player, 
 
 }
 
+/* Check if posing a wall is allowed 
+*
+*  @param pointer on the player
+*  @param specific wall we test
+*  @return 1 if posing this wall is allowed, 0 otherwise
+*/
 int checkPath(struct player* p, struct move_t wall)
 {
       // Put Fake Wall (for test)
    put_wall(p, wall); 
 
-   int check_1 = existPath_Player(p, p->pos, p->id, wall);
+   int check_1 = existPath_Player(p, p->pos, p->id);
    int check_2; 
-   if (p->id == BLACK) check_2 = existPath_Player(p, p->ennemy_pos, WHITE, wall);
-   else existPath_Player(p, p->ennemy_pos, BLACK, wall);
+   if (p->id == BLACK) check_2 = existPath_Player(p, p->ennemy_pos, WHITE);
+   else existPath_Player(p, p->ennemy_pos, BLACK);
    
 
       // Remove testing Wall

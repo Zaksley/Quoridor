@@ -42,7 +42,45 @@ void add_position(struct move_t* valid, struct move_t new, int* count_moves);
 
 
 
+// ******************* Functions with MOVE = 0 (Posing wall)
 
-// *******************
+/*
+*  @param pointer on the player
+*  @return array of every move_t wall usable
+*/
+struct move_t* valid_walls(struct player* p); 
+
+/* Put a wall on the board meaning destroying 2 edges on the graph
+*
+*  @param pointer on the player
+*  @param wall the wall we are posing 
+*  @return 0 if the wall's installation is successful, -1 if it failed
+*/
+int put_wall(struct player* p, struct move_t wall); 
+
+/* Shifting by the left an array
+*  
+*  @param s the array
+*  @param begin where we start
+*  @param end where we stop
+*/
+void shift_left(size_t s[], int begin, int end); 
+
+/* Checking if a player is still able to move to the victory if we put a specific wall
+*
+*  @param pointer on the player
+*  @param Specific color of studied player
+*  @param Where the studied player is
+*  @return 1 if player can still win, 0 otherwise
+*/
+int existPath_Player(struct player* p, size_t number_player, size_t pos_player);
+
+/* Check if posing a wall is allowed 
+*
+*  @param pointer on the player
+*  @param specific wall we test
+*  @return 1 if posing this wall is allowed, 0 otherwise
+*/
+int checkPath(struct player* p, struct move_t wall); 
 
 #endif

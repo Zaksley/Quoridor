@@ -12,10 +12,11 @@ void add_position(struct move_t* valid, struct move_t new, int* count_moves)
 // TODO => vérifier que sur les positions, il n'y a pas de joueur adverse
 struct move_t* valid_positions(struct player* p)
 {
-   struct move_t valid[4] = {};
+   struct move_t *valid = malloc(sizeof(struct move_t) * 5);
    struct move_t new; 
-   int count_moves = 0; 
-   
+
+   int count_moves = 0;
+
    int value = -1;
 
       // Definitions move
@@ -29,11 +30,14 @@ struct move_t* valid_positions(struct player* p)
    {
       value = graph__get_neighboor(p->graph, p->n, p->pos, dir);
       new.m = value; 
-      if (value) add_position(valid, new, count_moves); 
+      if (value)
+      {
+         valid[count_moves] = new;
+         count_moves++; 
+      }
    }
 
-   return valid; 
-
+   return valid;
 }
 
 // -------- MOVE

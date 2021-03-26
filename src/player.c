@@ -2,14 +2,14 @@
 #include "utils.h"
 #include "graph_modif.h"
 
-struct data
-{
-   enum color_t id;
-   struct graph_t *graph;
-   size_t num_walls;
-};
+/* struct data */
+/* { */
+/*    enum color_t id; */
+/*    struct graph_t *graph; */
+/*    size_t num_walls; */
+/* }; */
 
-struct data self; 
+struct player self; 
 
 /* Access to player informations
  * RETURNS:
@@ -37,7 +37,9 @@ void initialize(enum color_t id, struct graph_t* graph, size_t num_walls)
 {
    self.id = id;
    self.num_walls = num_walls;
-   // TODO : initialize graph
+   self.graph = graph__copy(graph, 3);
+   self.pos = 4;
+   self.n = 3;
 }
 
 /* Computes next move
@@ -48,8 +50,10 @@ void initialize(enum color_t id, struct graph_t* graph, size_t num_walls)
 */
 struct move_t play(struct move_t previous_move)
 {
-   struct move_t move;
-   return move; 
+   struct move_t* moves = valid_positions(&self);
+   for(int i = 0; i < 5; ++i)
+      printf("move %d : -> %zu\n", i, moves[i].m);
+   return (struct move_t){}; 
 }
 
 /* Announces the end of the game to the player, and cleans up the

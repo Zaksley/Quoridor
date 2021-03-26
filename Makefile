@@ -27,16 +27,19 @@ install:
 	./install/server [-m] [-t] ./install/alltests
 
 
-player:
+player: graph_modif.o utils.o
 	${CC} -fPIC -c ${DIR}/player.c;
-	${CC} -shared -nostartfiles -o install/libplayer.so player.o;
-	${CC} -rdynamic -o main ${DIR}/main.c -ldl;	
+	${CC} -shared -nostartfiles -o install/libplayer.so player.o graph_modif.o utils.o;
+	${CC} -rdynamic -o main ${DIR}/main.c graph_modif.o -ldl ${LIBS};	
 
 clean:
 	rm -f *.o ${BIN}/*.so *~ ${TEST_BIN}
 
+utils.o : graph_modif.o
+	${CC} -fPIC ${CFLAGS} ${DIR}/utils.c graph_modif.o -c
+
 graph_modif.o:
-	${CC} ${CFLAGS} ${DIR}/graph_modif.c -c
+	${CC} -fPIC ${CFLAGS} ${DIR}/graph_modif.c -c
 
 test_graph_shape: graph_modif.o
 	${CC} graph_modif.o ${TEST_DIR}/test_graph_shape.c -o $@ ${CFLAGS} ${LDFLAGS} ${LIBS}

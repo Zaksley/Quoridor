@@ -3,12 +3,6 @@
 
 // -------- MOVE
 
-void add_position(struct move_t* valid, struct move_t new, int* count_moves)
-{
-   valid[*count_moves] = new;
-   *count_moves++; 
-}
-
 // TODO => vérifier que sur les positions, il n'y a pas de joueur adverse
 struct move_t* valid_positions(struct player* p)
 {
@@ -183,7 +177,7 @@ int existPath_Player(struct player* p, size_t number_player, size_t pos_player)
       {
             // If neighboor exist + non treated 
          neighboor = graph__get_neighboor(p->graph, p->n, current, dir);
-         if ( neighboor != -1 && marked[neighboor] != 0)
+         if ( neighboor != (size_t) -1 && marked[neighboor] != 0)
          {
             waitingList[size] = graph__get_neighboor(p->graph, p->n, current, dir); 
             size++;

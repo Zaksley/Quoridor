@@ -6,16 +6,16 @@
 
 /* Initializes a graph
  *
- * @return en empty square graph with no owners
+ * @return an empty square graph with no owners
  */
-struct graph_t * graph__initialize()
+struct graph_t * graph__initialize(size_t n)
 {
    struct graph_t * graph = malloc(sizeof(struct graph_t));
 
-   gsl_spmatrix * t = gsl_spmatrix_alloc(1,1);
-   gsl_spmatrix * o = gsl_spmatrix_alloc(1,1);
+   gsl_spmatrix * t = gsl_spmatrix_alloc(n*n, n*n);
+   gsl_spmatrix * o = gsl_spmatrix_alloc(2,n*n);
 
-   graph->num_vertices = 1;
+   graph->num_vertices = 0;
    graph->t = t;
    graph->o = o;
    return graph;

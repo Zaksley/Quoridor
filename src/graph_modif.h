@@ -7,10 +7,10 @@ enum direction {NORTH=1, SOUTH, WEST, EAST, ERROR_DIRECTION=-1};
 
 /* Initializes a graph
  *
- * @param
+ * @param n size of the graph
  * @return en empty graph with no owners
  */
-struct graph_t * graph__initialize();
+struct graph_t * graph__initialize(size_t n);
 
 /* Frees a graph
  *

@@ -178,8 +178,8 @@ struct graph_t * graph__copy(struct graph_t * graph, size_t n)
  */
 int graph__add_edge(struct graph_t * graph, size_t first, size_t second, enum direction d)
 {
-	if(d == ERROR_DIRECTION) return -1;
-   if (gsl_spmatrix_ptr(graph->t, first, second) != NULL)
+   if(d == ERROR_DIRECTION) return -1;
+   if (gsl_spmatrix_get(graph->t, first, second) != 0)
       return -1;
    int edge2 = gsl_spmatrix_set(graph->t, first, second, d);
    int edge1 = gsl_spmatrix_set(graph->t, second, first, d%2?d+1:d-1);
@@ -195,8 +195,6 @@ int graph__add_edge(struct graph_t * graph, size_t first, size_t second, enum di
  */
 int graph__remove_edge(struct graph_t * graph, size_t first, size_t second)
 {
-   if (gsl_spmatrix_ptr(graph->t, first, second) == NULL)
-      return -1;
    if(gsl_spmatrix_get(graph->t, first, second) == 0 
    	&& gsl_spmatrix_get(graph->t, second, first) == 0)
    	return -1;

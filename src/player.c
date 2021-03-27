@@ -10,6 +10,7 @@
 /* }; */
 
 struct player self; 
+struct edge_t no_wall = {-1, -1}; 
 
 /* Access to player informations
  * RETURNS:
@@ -40,6 +41,7 @@ void initialize(enum color_t id, struct graph_t* graph, size_t num_walls)
    self.graph = graph__copy(graph, 3);
    self.pos = 4;
    self.n = 3;
+   //self.ennemy_pos??! 
 }
 
 /* Computes next move
@@ -50,10 +52,27 @@ void initialize(enum color_t id, struct graph_t* graph, size_t num_walls)
 */
 struct move_t play(struct move_t previous_move)
 {
+   /*
+   * Player: Only move - Random move
+   */
+ 
+   // TODO Update Move ennemy 
+   // self.ennemy_pos   
+
    struct move_t* moves = valid_positions(&self);
    for(int i = 0; i < 5; ++i)
       printf("move %d : -> %zu\n", i, moves[i].m);
-   return (struct move_t){}; 
+
+   // Creation of the new move 
+   struct move_t move; 
+   move.c = self.id; 
+   move.t = MOVE; 
+   move.e[0] = no_wall;
+   move.e[1] = no_wall; 
+   move.m = moves[rand() % 4].m; 
+   self.pos = move.m;
+
+   return move;  
 }
 
 /* Announces the end of the game to the player, and cleans up the

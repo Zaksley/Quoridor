@@ -66,6 +66,7 @@ int graph__edge_exists(struct graph_t * graph, size_t first, size_t second);
 /* Gets the neighboor of a vertex
  *
  * @param graph a graph
+ * @param n the size of the graph
  * @param v a vertex
  * @param d a direction (1:N, 2:S, 3:W, 4:E)
  * @return the neighboor number, -1 if there is no neighboor
@@ -98,5 +99,13 @@ int graph__remove_edge(struct graph_t * graph, size_t first, size_t second);
  * @return 0 if the addition is successful, -1 if the player already owned it
  */
 int graph__add_ownership(struct graph_t * graph, size_t v, size_t owner);
+
+/* Displays a graph for debug usage
+ *
+ * @param graph a graph
+ * @param n the size of the graph
+ * @return nothing
+ */
+void graph__display(struct graph_t * graph, size_t n);
 
 #endif // _QUOR_GRAPH_MODIF_H_

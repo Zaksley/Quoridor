@@ -17,6 +17,7 @@ void test__graph_initialize()
 		}
 	}
 	TESTCASE("- initialize | graph has no edges", 1);
+	graph__free(graph);
 }
 
 void test__graph_create_square()
@@ -40,8 +41,21 @@ void test__graph_create_square()
 
 void test__graph_create_torus()
 {
-	TESTCASE("- todo", 0);
-	assert(1 == 1);
+	struct graph_t * graph = graph__create_torus(6);
+	TESTCASE("- create_torus | right-sized graph has right nb of vertices", graph->num_vertices == 32);
+	for(size_t i = 0; i < 36; i+=6)
+	{
+		// if(i%6 < 5 && ((i/6==2)&&(i<14||i>16)) && ((i/6==3)&&(i<20||i>22))) 
+		// 	assert(gsl_spmatrix_get(graph->t, i, i+1) == EAST);
+		// if(i%6 > 0 && ((i/6==2)&&(i<15||i>17)) && ((i/6==3)&&(i<21||i>23))) 
+		// 	assert(gsl_spmatrix_get(graph->t, i, i-1) == WEST);
+		// if(i < 30  && ((i%6==2)&&(||)) 
+			//assert(gsl_spmatrix_get(graph->t, i, i+6) == SOUTH);
+		//if(i > 5  || (1==1)) assert(gsl_spmatrix_get(graph->t, i, i-6) == NORTH);
+	}
+	TESTCASE("- create_torus | right-sized graph has all of its edges", 0);
+	TESTCASE("- create_torus | right-sized graph has its hole", 0);
+	graph__free(graph);
 }
 
 void test__graph_create_chopped()
@@ -81,6 +95,7 @@ void test__graph_get_neighboor()
 	gsl_spmatrix_set(graph->t, 2, 3, 0);
 	TESTCASE("- get_neighboor | non-existing neighboor is not found", graph__get_neighboor(graph, 4, 2, EAST) == -1);
 	TESTCASE("- get_neighboor | out-of-bounds neighboor is not found", graph__get_neighboor(graph, 4, 3, EAST) == -1);
+	graph__free(graph);
 }
 
 void test__graph_add_edge()
@@ -119,7 +134,6 @@ void test__graph_remove_edge()
 	TESTCASE("- remove_edge | one-sided edge is still removed", graph__remove_edge(graph,0,1) == 0);
 	TESTCASE("- remove_edge | first vertex has lost directionnal link", gsl_spmatrix_get(graph->t, 0, 1) == 0);
 	TESTCASE("- remove_edge | second vertex has lost the opposite link", gsl_spmatrix_get(graph->t, 1, 0) == 0);
-
 	graph__free(graph);
 }
 
@@ -131,12 +145,27 @@ void test__graph_edge_exists()
 	gsl_spmatrix_set(graph->t, 1, 0, 0);
 	TESTCASE("- edge_exists | one-sided edge (first side) is not found", graph__edge_exists(graph, 0, 1) == 0);
 	TESTCASE("- edge_exists | one-sided edge (other side) is not found", graph__edge_exists(graph, 1, 0) == 0);
+	graph__free(graph);
 }
 
 void test__graph_add_ownership()
 {
-	TESTCASE("- todo", 0);
-	assert(1 == 1);
+	struct graph_t * graph = graph__create_square(4);
+	TESTCASE("- add_ownership | non-owned position is added", graph__add_ownership(graph, 5, 0) == 0);
+	TESTCASE("- add_ownership | already-owned position is not added", graph__add_ownership(graph, 5, 0) == -1);
+	TESTCASE("- add_ownership | added position is correct", gsl_spmatrix_get(graph->o, 0, 5) == 1);
+	graph__free(graph);
+}
+
+void test__graph_display()
+{
+	struct graph_t * graph = graph__create_chopped(6);
+	graph__add_ownership(graph, 5, 0);
+	graph__add_ownership(graph, 7, 1);
+	graph__add_ownership(graph, 12, 0);
+	graph__add_ownership(graph, 12, 1);
+	graph__display(graph, 6);
+	graph__free(graph);
 }
 
 int main()
@@ -164,5 +193,7 @@ int main()
 	test__graph_edge_exists();
 	printf("\033[1mgraph__add_ownership :\033[0m\n");
 	test__graph_add_ownership();
+	printf("\033[1mgraph__display :\033[0m\n");
+	test__graph_display();
 	printf("\n");
 }

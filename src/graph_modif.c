@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <gsl/gsl_spmatrix.h>
 
+#define MAX_GRAPH_SIZE 200
+
 #include "graph_modif.h"
 
 /* Initializes an empty square graph
@@ -147,7 +149,7 @@ int graph__get_neighboor(struct graph_t * graph, size_t n, size_t v, enum direct
 {
    for (size_t i = 0; i < n*n; i++)
       if (gsl_spmatrix_get(graph->t, v, i) == d)
-	 return i;
+			return i;
    return -1;
 }
 
@@ -231,9 +233,104 @@ int graph__edge_exists(struct graph_t * graph, size_t first, size_t second)
  */
 int graph__add_ownership(struct graph_t * graph, size_t v, size_t owner)
 {
-   if (gsl_spmatrix_ptr(graph->t, owner, v) == NULL)
-      return -1;
-   int ownership = gsl_spmatrix_set(graph->t, owner, v, 1);
+   if(gsl_spmatrix_get(graph->o, owner, v) == 1) return -1;
+   int ownership = gsl_spmatrix_set(graph->o, owner, v, 1);
    return ownership;
 }
 
+/* Displays a graph for debug usage
+ *
+ * @param graph a graph
+ * @param n the size of the graph
+ * @return nothing
+ */
+void graph__display(struct graph_t * graph, size_t n)
+{
+	printf("\033[1mDisplaying graph : size \033[1;96m%ld\033[1;97m | \033[1;96m%ld\033[1;97m vertices\033[0m\n",
+		n, graph->num_vertices);
+	size_t east, west, south, north;
+	int southlinks[MAX_GRAPH_SIZE] = {0};
+
+	// Finding winning positions
+	size_t wp_1[MAX_GRAPH_SIZE] = {0};
+	int nb_wp_1 = 0;
+	size_t wp_2[MAX_GRAPH_SIZE] = {0};
+	int nb_wp_2 = 0;
+	int winning_pos;
+	printf("\033[1mWining positions (\033[1;96mp1\033[1;97m, \033[1;91mp2\033[0;97m) : ");
+	for(size_t i = 0; i < n*n; i++)
+	{
+		if(gsl_spmatrix_get(graph->o, 0, i) == 1){
+			wp_1[nb_wp_1] = i;
+			nb_wp_1++;
+			printf("\033[1;96m%ld\033[0;97m,", i);
+		}
+		if(gsl_spmatrix_get(graph->o, 1, i) == 1){
+			wp_2[nb_wp_2] = i;
+			nb_wp_2++;
+			printf("\033[1;91m%ld\033[0;97m,", i);
+		}
+	}
+	printf("\n");
+
+
+	for(size_t v = 0; v < n*n; v++)
+	{
+		east = graph__get_neighboor(graph, n, v, EAST);
+		west = graph__get_neighboor(graph, n, v, WEST);
+		south = graph__get_neighboor(graph, n, v, SOUTH);
+		north = graph__get_neighboor(graph, n, v, NORTH);
+
+		// Non-linked vertices
+		if((int)east+(int)west+(int)south+(int)north == -4)
+			printf(" -- ");
+		// Accessible vertices
+		else
+		{
+			winning_pos = 0;
+			for(int i = 0; i < nb_wp_1; i++)
+			{
+				if(v == wp_1[i]) winning_pos += 1;
+			}
+			for(int i = 0; i < nb_wp_2; i++)
+			{
+				if(v == wp_2[i]) winning_pos += 2;
+			}
+			// Color modifiers
+			if(winning_pos == 0)	printf("[\033[0;92m%2ld\033[0;97m]", v); //Random vertex
+			if(winning_pos == 1)	printf("[\033[1;96m%2ld\033[0;97m]", v); //Winning pos for p1
+			if(winning_pos == 2)	printf("[\033[1;91m%2ld\033[0;97m]", v); //Winning pos for p2
+			if(winning_pos == 3)	printf("[\033[1;93m%2ld\033[0;97m]", v); //Winning pos for both
+		}
+
+		// East links
+		if(v%n < n-1)
+		{
+			if((int)east != -1) printf("<>"); 
+			else printf("  "); 
+		}
+		
+		// South links addition
+		if(v/n < n-1)
+		{
+			if((int)south != -1) southlinks[v%n] = 1;
+		}
+		
+		// South links printing
+		if(v%n == n-1 && v/n != n-1)
+		{
+			printf("\n");
+			for(size_t i = 0; i < n; i++)
+			{
+				if(southlinks[i] == 0)
+					printf("    ");
+				else
+					printf(" || ");
+				southlinks[i] = 0;
+				printf("  ");
+			}
+			printf("\n");
+		}
+	}
+	printf("\n");
+}

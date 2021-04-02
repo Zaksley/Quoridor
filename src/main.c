@@ -79,12 +79,18 @@ int main()
    int isPlaying = 1; 
    int loop=0; 
 
+   fprintf(stderr, "iteration");
    while (isPlaying) 
    {
       if (loop >= 2) break; 
       for (int p=0; p<NUMB_PLAYER; p++)
       {
-         players[p]->player_play((struct move_t){});
+         if (p == 0)
+         {
+            printf("%ld", players[p]->pos);
+            players[p]->player_play((struct move_t){});
+            //graph__display(players[p]->graph, 2);
+         }
       }
       loop++; 
    }

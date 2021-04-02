@@ -255,7 +255,7 @@ void graph__display(struct graph_t * graph, size_t n)
 	size_t wp_2[MAX_GRAPH_SIZE] = {0};
 	int nb_wp_2 = 0;
 	int winning_pos;
-	printf("\033[1mWining positions (\033[1;96mp1\033[1;97m, \033[1;91mp2\033[0;97m) : ");
+	printf("\033[1mWinning positions (\033[1;96mp1\033[1;97m, \033[1;91mp2\033[0;97m) : ");
 	for(size_t i = 0; i < n*n; i++)
 	{
 		if(gsl_spmatrix_get(graph->o, 0, i) == 1){

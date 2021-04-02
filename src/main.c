@@ -74,14 +74,19 @@ int main()
    {
       players[p]->initialize(p, myGraph, 5);
       printf("%s\n", players[p]->get_name());
-      players[p]->player_play((struct move_t){});
    }
 
    int isPlaying = 1; 
+   int loop=0; 
 
    while (isPlaying) 
    {
-      break;
+      if (loop >= 2) break; 
+      for (int p=0; p<NUMB_PLAYER; p++)
+      {
+         players[p]->player_play((struct move_t){});
+      }
+      loop++; 
    }
     
    return 1; 

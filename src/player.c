@@ -70,6 +70,7 @@ struct move_t play(struct move_t previous_move)
    move.e[0] = no_wall;
    move.e[1] = no_wall; 
    move.m = moves[rand() % 4].m; 
+   printf("MOVE CHOISI %ld pour joueur %d\n", move.m, self.id);
    self.pos = move.m;
 
    return move;  

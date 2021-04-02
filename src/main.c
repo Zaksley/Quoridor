@@ -64,7 +64,6 @@ int main()
    struct player* players[2] = {player1, player2}; 
 
    int random = rand() % 2; 
-   struct player* start = players[random]; 
 
    struct graph_t* myGraph = graph__create_square(3);
    graph__add_ownership(myGraph, 4, WHITE);
@@ -73,24 +72,27 @@ int main()
    for(int p = 0; p < NUMB_PLAYER; p++)
    {
       players[p]->initialize(p, myGraph, 5);
-      printf("%s\n", players[p]->get_name());
+      if (p == random)   players[p]->id = WHITE;
+      else players[p]->id = BLACK; 
    }
 
    int isPlaying = 1; 
    int loop=0; 
 
-   fprintf(stderr, "iteration");
    while (isPlaying) 
    {
       if (loop >= 2) break; 
       for (int p=0; p<NUMB_PLAYER; p++)
       {
-         if (p == 0)
-         {
-            printf("%ld", players[p]->pos);
-            players[p]->player_play((struct move_t){});
+            struct move_t update_move = players[p]->player_play((struct move_t){});
+
+               // Update Player_move 
+            if (update_move.t == MOVE)
+            {
+               players[p]->pos = update_move.m;
+            }
+            printf("POSITION JOUEUR %d : %ld\n", players[p]->id, players[p]->pos);
             //graph__display(players[p]->graph, 2);
-         }
       }
       loop++; 
    }

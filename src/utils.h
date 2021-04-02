@@ -3,9 +3,7 @@
 
 #include "player.h"
 
-/*
- *   Contains every special function of a player
- */
+
 struct player
 {
    size_t pos; 
@@ -23,6 +21,9 @@ struct player
    void (*finalize) (); 
 }; 
 
+/*
+ *   Contains every special function of a player
+ */
 struct player* get_functions(char* lib);
 
 

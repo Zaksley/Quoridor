@@ -10,7 +10,6 @@ struct move_t* valid_positions(struct player* p)
    struct move_t new; 
 
    int count_moves = 0;
-
    int value = -1;
 
       // Definitions move

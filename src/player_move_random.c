@@ -18,7 +18,7 @@ struct edge_t no_wall = {-1, -1};
  */
 char const* get_player_name()
 {
-   return "Move & Walls - Random"; 
+   return "Move ONLY - Random"; 
 }
 
 /* Player initialization
@@ -41,6 +41,7 @@ void initialize(enum color_t id, struct graph_t* graph, size_t num_walls)
    self.graph = graph__copy(graph, 3);
    self.pos = 4;
    self.n = 3;
+   //self.ennemy_pos??! 
 }
 
 /* Computes next move
@@ -51,6 +52,13 @@ void initialize(enum color_t id, struct graph_t* graph, size_t num_walls)
 */
 struct move_t play(struct move_t previous_move)
 {
+   /*
+   * Player: Only move - Random move
+   */
+ 
+   // TODO Update Move ennemy 
+   // self.ennemy_pos   
+
    struct move_t* moves = valid_positions(&self);
    for(int i = 0; i < 5; ++i)
    {

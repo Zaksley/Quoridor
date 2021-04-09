@@ -187,7 +187,7 @@ int existPath_Player(struct player* p, size_t number_player, size_t pos_player)
    for(size_t node = 0; node < p->graph->num_vertices; node++)
    {
          // Find a winning path 
-      if (marked[node] && (int) gsl_spmatrix_get(p->graph->o, number_player, node) == 1)
+      if (marked[node] && (int) gsl_spmatrix_uint_get(p->graph->o, number_player, node) == 1)
       {
          return 1; 
       }

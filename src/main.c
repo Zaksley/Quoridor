@@ -57,6 +57,11 @@ enum color_t other_player(enum color_t player)
    else return WHITE; 
 }
 
+struct player* player_color(struct player** p, enum color_t c)
+{
+   if (p[0]->id == c) return p[0];
+   else return p[1]; 
+}
 
 int main()
 {
@@ -117,7 +122,7 @@ int main()
 
    while (isPlaying) 
    {
-      if (loop >= 2) break; 
+      if (loop >= 6) break; 
       for (int p=0; p<NUMB_PLAYER; p++)
       {
          struct move_t update_move = players[p]->player_play((struct move_t){});
@@ -130,10 +135,18 @@ int main()
          }
          printf("Joueur %d : Sa position = %ld / Position ennemie = %ld\n", players[p]->id, players[p]->pos, players[p]->ennemy_pos);
          
-         graph__display(server_Graph, size_graph);
+         //graph__display(server_Graph, size_graph, player_color(players, WHITE)->pos, player_color(players, BLACK)->pos );
       }
       loop++; 
    }
-    
+
+   // ===== Free Graphs
+   for(int p=0; p<NUMB_PLAYER; p++)
+   {
+      players[p]->finalize();
+   }
+   graph__display(server_Graph, size_graph, 0, 0);
+   graph__free(server_Graph); 
+   // =====
    return 1; 
 }

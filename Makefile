@@ -12,10 +12,7 @@ LIBS = -lgsl -lgslcblas -lm
 
 ################ Compilation rules #################
 
-all: clean build test perso_test
-
-perso_test:
-	ls ${GSL_PATH}/include
+all: clean build test
 
 build: ${BIN}
 
@@ -45,11 +42,11 @@ graph_modif.o: ${DIR}/graph_modif.h ${DIR}/graph_modif.c
 ##################### Players ######################
 
 player_random: graph_modif.o utils.o
-	${CC} -fPIC -c ${DIR}/player_random.c;
+	${CC} -fPIC -c ${CFLAGS} ${DIR}/player_random.c;
 	${CC} -shared -nostartfiles -o install/libplayer_random.so player_random.o graph_modif.o utils.o;
 
 player_move_random: graph_modif.o utils.o
-	${CC} -fPIC -c ${DIR}/player_move_random.c;
+	${CC} -fPIC -c ${CFLAGS} ${DIR}/player_move_random.c;
 	${CC} -shared -nostartfiles -o install/libplayer_move_random.so player_move_random.o graph_modif.o utils.o;
 ###################### Tests #######################
 

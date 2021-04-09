@@ -164,7 +164,7 @@ void test__graph_display()
 	graph__add_ownership(graph, 7, 1);
 	graph__add_ownership(graph, 12, 0);
 	graph__add_ownership(graph, 12, 1);
-	graph__display(graph, 6);
+	graph__display(graph, 6,10,20);
 	graph__free(graph);
 }
 

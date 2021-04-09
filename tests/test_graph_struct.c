@@ -2,8 +2,10 @@
 #include <stddef.h>
 #include <assert.h>
 #include "../src/graph_modif.h"
+#include "test_graph_struct.h"
 
 #define TESTCASE(msg, test) printf("%-60s : %s\n", msg, test ? "\033[1;92mPassed\033[0m" : "\033[1;91mFailed\033[0m")
+
 
 void test__graph_initialize()
 {
@@ -166,34 +168,4 @@ void test__graph_display()
 	graph__add_ownership(graph, 12, 1);
 	graph__display(graph, 6,10,20);
 	graph__free(graph);
-}
-
-int main()
-{
-	printf("\033[1m----- Graph_modif | Structural tests -----\033[0m\n");
-	printf("\033[1mgraph__initialize :\033[0m\n");
-	test__graph_initialize();
-	printf("\033[1mgraph__create_square :\033[0m\n");
-	test__graph_create_square();
-	printf("\033[1mgraph__create_torus :\033[0m\n");
-	test__graph_create_torus();
-	printf("\033[1mgraph__create_chopped :\033[0m\n");
-	test__graph_create_chopped();
-	printf("\033[1mgraph__create_snake :\033[0m\n");
-	test__graph_create_snake();
-	printf("\033[1mgraph__copy :\033[0m\n");
-	test__graph_copy();
-	printf("\033[1mgraph__get_neighboor :\033[0m\n");
-	test__graph_get_neighboor();
-	printf("\033[1mgraph__add_edge :\033[0m\n");
-	test__graph_add_edge();
-	printf("\033[1mgraph__remove_edge :\033[0m\n");
-	test__graph_remove_edge();
-	printf("\033[1mgraph__edge_exists :\033[0m\n");
-	test__graph_edge_exists();
-	printf("\033[1mgraph__add_ownership :\033[0m\n");
-	test__graph_add_ownership();
-	printf("\033[1mgraph__display :\033[0m\n");
-	test__graph_display();
-	printf("\n");
 }

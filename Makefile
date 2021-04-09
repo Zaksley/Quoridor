@@ -2,7 +2,7 @@ GSL_PATH ?= /net/ens/renault/save/gsl-2.6/install
 DIR = src
 BIN = 
 TEST_DIR = tests
-TEST_BIN = test_graph_func test_graph_struct
+TEST_BIN = test_graph_fonc test_graph_struct
 
 CC ?= cc
 CFLAGS = -Wall -Wextra -std=c99 -g -lgcov -I${GSL_PATH}/include
@@ -15,15 +15,10 @@ all: clean build test
 
 build: ${BIN}
 
-test: build ${TEST_BIN}
+test:
 
-alltests: build test
-	@for e in ${BIN}; do \
-	echo $${e}; ./$${e}; \
-	done
-	@for e in ${TEST_BIN}; do \
-	echo $${e}; ./$${e}; \
-	done
+alltests: test_graph_fonc.o test_graph_struct.o graph_modif.o
+	${CC} ${CFLAGS} ${LDFLAGS} ${LIBS} ${TEST_DIR}/alltests.c graph_modif.o test_graph_fonc.o test_graph_struct.o -o install/alltests
 
 install: player_move_random player_random
 	${CC} -rdynamic -o install/server ${DIR}/main.c graph_modif.o -ldl ${LIBS} ${CFLAGS} ${LDFLAGS};
@@ -37,6 +32,11 @@ utils.o : ${DIR}/utils.h ${DIR}/utils.c
 graph_modif.o: ${DIR}/graph_modif.h ${DIR}/graph_modif.c
 	${CC} -fPIC ${CFLAGS} ${DIR}/graph_modif.c -c
 
+test_graph_struct.o:
+	${CC} ${CFLAGS} ${LDFLAGS} ${LIBS} ${TEST_DIR}/test_graph_struct.c -c
+
+test_graph_fonc.o:
+	${CC} ${CFLAGS} ${LDFLAGS} ${LIBS} ${TEST_DIR}/test_graph_fonc.c -c
 
 ##################### Players ######################
 
@@ -51,9 +51,3 @@ player_move_random: graph_modif.o utils.o
 
 clean:
 	rm -f *.o ${BIN}/*.so *~ ${TEST_BIN}
-
-test_graph_struct: graph_modif.o
-	${CC} graph_modif.o ${CFLAGS} ${LDFLAGS} ${LIBS} ${TEST_DIR}/test_graph_struct.c -o $@ 
-
-test_graph_func: graph_modif.o
-	${CC} graph_modif.o ${CFLAGS} ${LDFLAGS} ${LIBS} ${TEST_DIR}/test_graph_fonc.c -o $@ 

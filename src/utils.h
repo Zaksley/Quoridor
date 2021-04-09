@@ -21,6 +21,18 @@ struct player
    void (*finalize) (); 
 }; 
 
+struct moves
+{
+   struct move_t* valid; 
+   int number_moves; 
+};
+
+struct walls
+{
+   struct move_t* valid;
+   int number_walls; 
+}; 
+
 /*
  *   Contains every special function of a player
  */
@@ -37,7 +49,7 @@ struct player* get_functions(char* lib);
 *  @return list of move_t
 */
 
-struct move_t* valid_positions(struct player*); 
+struct moves* valid_positions(struct player*); 
 
 /*
 *  Add a position new to the array valid 
@@ -53,7 +65,7 @@ void add_position(struct move_t* valid, struct move_t new, int* count_moves);
 *  @param pointer on the player
 *  @return array of every move_t wall usable
 */
-struct move_t* valid_walls(struct player* p); 
+struct walls* valid_walls(struct player* p); 
 
 /* Put a wall on the board meaning destroying 2 edges on the graph
 *

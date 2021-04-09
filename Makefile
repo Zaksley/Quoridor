@@ -11,7 +11,10 @@ LIBS = -lgsl -lgslcblas -lm
 
 ################ Compilation rules #################
 
-all: build test
+all: build test perso_test
+
+perso_test:
+	ls ${GSL_PATH}
 
 build: ${BIN}
 
@@ -27,7 +30,7 @@ alltests: build test
 
 install: player player_random
 	${CC} -rdynamic -o install/server ${DIR}/main.c graph_modif.o -ldl ${LIBS};
-	#./install/server [-m] [-t] ./install/alltests
+#./install/server [-m] [-t] ./install/alltests
 
 ################## Binary objects ##################
 
@@ -43,7 +46,7 @@ graph_modif.o: ${DIR}/graph_modif.h ${DIR}/graph_modif.c
 player: graph_modif.o utils.o
 	${CC} -fPIC -c ${DIR}/player.c;
 	${CC} -shared -nostartfiles -o install/libplayer.so player.o graph_modif.o utils.o;
-		
+
 player_random: graph_modif.o utils.o
 	${CC} -fPIC -c ${DIR}/player_random.c;
 	${CC} -shared -nostartfiles -o install/libplayer_random.so player_random.o graph_modif.o utils.o;

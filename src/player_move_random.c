@@ -38,7 +38,9 @@ void initialize(enum color_t id, struct graph_t* graph, size_t num_walls)
 {
    self.id = id;
    self.num_walls = num_walls;
+   printf("Adresse graphe central : %p \n", graph);
    self.graph = graph__copy(graph, 3);
+   printf("Adresse graphe local : %p \n", self.graph);
    self.pos = 4;
    self.n = 3;
    //self.ennemy_pos??! 
@@ -58,6 +60,8 @@ struct move_t play(struct move_t previous_move)
  
    // TODO Update Move ennemy 
    // self.ennemy_pos   
+
+   (void) previous_move; 
 
    struct move_t* moves = valid_positions(&self);
    for(int i = 0; i < 5; ++i)

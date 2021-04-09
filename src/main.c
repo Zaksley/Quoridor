@@ -58,8 +58,6 @@ enum color_t other_player(enum color_t player)
 }
 
 
-
-
 int main()
 {
    // ================= Initializing game 
@@ -72,16 +70,20 @@ int main()
    int random = rand() % 2; 
 
    struct graph_t* myGraph = graph__create_square(3);
-   graph__add_ownership(myGraph, 4, WHITE);
-
+   
    // ==================
    for(int p = 0; p < NUMB_PLAYER; p++)
    {
       players[p]->initialize(p, myGraph, 5);
+
+      printf("%p\n", players[p]->graph); 
+
       printf("%s\n", players[p]->get_name());
       if (p == random)   players[p]->id = WHITE;
       else players[p]->id = BLACK; 
    }
+
+   graph__add_ownership(myGraph, 4, WHITE);
 
    int isPlaying = 1; 
    int loop=0; 
@@ -91,17 +93,19 @@ int main()
       if (loop >= 2) break; 
       for (int p=0; p<NUMB_PLAYER; p++)
       {
-            struct move_t update_move = players[p]->player_play((struct move_t){});
+         if(loop == 0) printf("Joueur %d : Position initiale = %ld / Position ennemie initiale = %ld\n", players[p]->id, players[p]->pos, players[p]->ennemy_pos);
 
-               // Update Player_move 
-            if (update_move.t == MOVE)
-            {
-               players[p]->pos = update_move.m;
-               players[other_player(players[p]->id)]->ennemy_pos = update_move.m;
-            }
-            printf("Joueur %d : Sa position = %ld / Position ennemie = %ld\n", players[p]->id, players[p]->pos, players[p]->ennemy_pos);
-            //printf("POSITION JOUEUR %d : %ld\n", players[p]->id, players[p]->pos);
-            //graph__display(players[p]->graph, 2);
+         struct move_t update_move = players[p]->player_play((struct move_t){});
+
+            // Update Player_move 
+         if (update_move.t == MOVE)
+         {
+            players[p]->pos = update_move.m;
+            players[other_player(players[p]->id)]->ennemy_pos = update_move.m;
+         }
+         printf("Joueur %d : Sa position = %ld / Position ennemie = %ld\n", players[p]->id, players[p]->pos, players[p]->ennemy_pos);
+         
+         //graph__display(players[p]->graph, 3);
       }
       loop++; 
    }

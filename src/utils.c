@@ -4,8 +4,9 @@
 // -------- MOVE
 
 // TODO => vérifier que sur les positions, il n'y a pas de joueur adverse
-struct move_t* valid_positions(struct player* p)
+struct moves* valid_positions(struct player* p)
 {
+   struct moves *global = malloc(sizeof(struct moves)); 
    struct move_t *valid = malloc(sizeof(struct move_t) * 5);
    struct move_t new; 
 
@@ -25,12 +26,16 @@ struct move_t* valid_positions(struct player* p)
       new.m = value; 
       if (value != -1)
       {
+         printf("in\n"); 
          valid[count_moves] = new;
          count_moves++; 
       }
    }
 
-   return valid;
+   global->number_moves = count_moves;
+   global->valid = valid; 
+
+   return global;
 }
 
 // -------- MOVE
@@ -44,12 +49,15 @@ struct move_t* valid_positions(struct player* p)
 *  @param p pointer on the player
 *  @return array move_t 
 */
-struct move_t* valid_walls(struct player* p)
+struct walls* valid_walls(struct player* p)
 {
       // Dynamic array Walls
+   struct walls* global = malloc(sizeof(struct walls)); 
    struct move_t* walls = malloc(sizeof(struct move_t) * 1); 
    int size = 0; 
    int capacity = 1; 
+
+   if (global == NULL) exit(0); 
    if (walls == NULL) exit(0); 
 
       // Setup Wall 
@@ -107,7 +115,10 @@ struct move_t* valid_walls(struct player* p)
       }
    }
 
-   return walls;   
+   global->valid = walls;
+   global->number_walls = size; 
+
+   return global;   
 }
 
 

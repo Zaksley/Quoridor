@@ -38,11 +38,20 @@ void initialize(enum color_t id, struct graph_t* graph, size_t num_walls)
 {
    self.id = id;
    self.num_walls = num_walls;
-   printf("Adresse graphe central : %p \n", graph);
-   self.graph = graph__copy(graph, 3);
-   printf("Adresse graphe local : %p \n", self.graph);
-   self.pos = 4;
-   self.n = 3;
+   self.n = 5;
+   self.graph = graph; 
+
+   if (self.id == WHITE)
+   {
+      self.pos = 0;
+      self.ennemy_pos = 20;
+   }
+   else
+   {
+      self.pos = 20;
+      self.ennemy_pos = 0;
+   }
+   
 }
 
 /* Computes next move
@@ -55,10 +64,10 @@ struct move_t play(struct move_t previous_move)
 {
    (void) previous_move; 
 
-   struct move_t* moves = valid_positions(&self);
-   for(int i = 0; i < 5; ++i)
+   struct moves* moves = valid_positions(&self);
+   for(int i = 0; i < moves->number_moves; ++i)
    {
-      //printf("move %d : -> %zu\n", i, moves[i].m);
+      //printf("move %d : -> %zu\n", i, moves->valid[i].m);
    }
 
    // Creation of the new move 
@@ -67,9 +76,14 @@ struct move_t play(struct move_t previous_move)
    move.t = MOVE; 
    move.e[0] = no_wall;
    move.e[1] = no_wall; 
-   move.m = moves[rand() % 4].m; 
+   move.m = moves->valid[rand() % moves->number_moves].m; 
    printf("MOVE CHOISI %ld pour joueur %d\n", move.m, self.id);
    self.pos = move.m;
+
+   // ===== Free tables
+   free(moves->valid);
+   free(moves);
+   // =====
 
    return move;  
 }

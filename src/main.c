@@ -69,22 +69,49 @@ int main()
 
    int random = rand() % 2; 
 
-   struct graph_t* myGraph = graph__create_square(3);
+      // Central Graph - Server 
+   int size_graph = 5; 
+   struct graph_t* server_Graph = graph__create_square(size_graph);
    
-   // ==================
+   struct graph_t* graphs[2] = {graph__copy(server_Graph, size_graph), graph__copy(server_Graph, size_graph)}; 
+
    for(int p = 0; p < NUMB_PLAYER; p++)
    {
-      players[p]->initialize(p, myGraph, 5);
+      players[p]->initialize(p, graphs[p], 5);
 
-      printf("%p\n", players[p]->graph); 
-
-      printf("%s\n", players[p]->get_name());
-      if (p == random)   players[p]->id = WHITE;
-      else players[p]->id = BLACK; 
+      if (p == random)   
+      {
+         players[p]->id = WHITE;
+         players[p]->pos = 0; 
+         players[p]->ennemy_pos = 20; 
+      }
+      else 
+      {
+         printf("%s\n", players[p]->get_name());
+         players[p]->id = BLACK; 
+         players[p]->pos = 20; 
+         players[p]->ennemy_pos = 0; 
+      }
    }
 
-   graph__add_ownership(myGraph, 4, WHITE);
+   // ==================
 
+   // ================== Winning Position
+
+   for(int p=0; p<NUMB_PLAYER; p++)
+   {
+      for(int i=0; i<size_graph; i++)
+      {
+         graph__add_ownership(server_Graph, players[p]->ennemy_pos+i, players[p]->id);
+      }
+   }
+
+   // ==================
+
+
+
+
+   // ================== Loop Game
    int isPlaying = 1; 
    int loop=0; 
 
@@ -93,8 +120,6 @@ int main()
       if (loop >= 2) break; 
       for (int p=0; p<NUMB_PLAYER; p++)
       {
-         if(loop == 0) printf("Joueur %d : Position initiale = %ld / Position ennemie initiale = %ld\n", players[p]->id, players[p]->pos, players[p]->ennemy_pos);
-
          struct move_t update_move = players[p]->player_play((struct move_t){});
 
             // Update Player_move 
@@ -105,7 +130,7 @@ int main()
          }
          printf("Joueur %d : Sa position = %ld / Position ennemie = %ld\n", players[p]->id, players[p]->pos, players[p]->ennemy_pos);
          
-         //graph__display(players[p]->graph, 3);
+         graph__display(server_Graph, size_graph);
       }
       loop++; 
    }

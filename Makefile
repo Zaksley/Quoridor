@@ -27,7 +27,7 @@ alltests: build test
 	done
 
 install: player_move_random player_random
-	${CC} -rdynamic -o install/server ${DIR}/main.c graph_modif.o -ldl ${LIBS} ${CFLAGS};
+	${CC} -rdynamic -o install/server ${DIR}/main.c graph_modif.o -ldl ${LIBS} ${CFLAGS} ${LDFLAGS};
 #./install/server [-m] [-t] ./install/alltests
 
 ################## Binary objects ##################

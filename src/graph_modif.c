@@ -15,8 +15,8 @@ struct graph_t * graph__initialize(size_t n)
 {
    struct graph_t * graph = malloc(sizeof(struct graph_t));
 
-   gsl_spmatrix * t = gsl_spmatrix_alloc(n*n, n*n);
-   gsl_spmatrix * o = gsl_spmatrix_alloc(2,n*n);
+   gsl_spmatrix_uint * t = gsl_spmatrix_uint_alloc(n*n, n*n);
+   gsl_spmatrix_uint * o = gsl_spmatrix_uint_alloc(2,n*n);
 
    graph->num_vertices = 0;
    graph->t = t;
@@ -30,8 +30,8 @@ struct graph_t * graph__initialize(size_t n)
  */
 void graph__free(struct graph_t * graph)
 {
-   gsl_spmatrix_free(graph->t);
-   gsl_spmatrix_free(graph->o);
+   gsl_spmatrix_uint_free(graph->t);
+   gsl_spmatrix_uint_free(graph->o);
    free(graph);
 }
 
@@ -44,8 +44,8 @@ struct graph_t * graph__create_square(size_t n)
 {
    struct graph_t * g = malloc(sizeof(struct graph_t));
    g->num_vertices = n*n;
-   g->t = gsl_spmatrix_alloc(n*n, n*n);
-   g->o = gsl_spmatrix_alloc(2, n*n);
+   g->t = gsl_spmatrix_uint_alloc(n*n, n*n);
+   g->o = gsl_spmatrix_uint_alloc(2, n*n);
    for(size_t i = 0; i < n*n; i++) 
    {
       // Adding left-right edges until right border
@@ -65,8 +65,8 @@ struct graph_t * graph__create_torus(size_t n)
 {
    struct graph_t * g = malloc(sizeof(struct graph_t));
    g->num_vertices = n*n*8/9;
-   g->t = gsl_spmatrix_alloc(n*n, n*n);
-   g->o = gsl_spmatrix_alloc(2, n*n);
+   g->t = gsl_spmatrix_uint_alloc(n*n, n*n);
+   g->o = gsl_spmatrix_uint_alloc(2, n*n);
    for(size_t i = 0; i < n; i++) 
    {
       for(size_t j = 0; j < n; j++) 
@@ -91,8 +91,8 @@ struct graph_t * graph__create_chopped(size_t n)
 {
    struct graph_t * g = malloc(sizeof(struct graph_t));
    g->num_vertices = n*n*7/9;
-   g->t = gsl_spmatrix_alloc(n*n, n*n);
-   g->o = gsl_spmatrix_alloc(2, n*n);
+   g->t = gsl_spmatrix_uint_alloc(n*n, n*n);
+   g->o = gsl_spmatrix_uint_alloc(2, n*n);
    for(size_t i = 0; i < n; i++)
    {
       for(size_t j = 0; j < n; j++)
@@ -117,8 +117,8 @@ struct graph_t * graph__create_snake(size_t n)
 {
    struct graph_t * g = malloc(sizeof(struct graph_t));
    g->num_vertices = n*n*13/25;
-   g->t = gsl_spmatrix_alloc(n*n, n*n);
-   g->o = gsl_spmatrix_alloc(2, n*n);
+   g->t = gsl_spmatrix_uint_alloc(n*n, n*n);
+   g->o = gsl_spmatrix_uint_alloc(2, n*n);
    for(size_t i = 0; i < n; i++)
    {
       for(size_t j = 0; j < n; j++)
@@ -148,7 +148,7 @@ struct graph_t * graph__create_snake(size_t n)
 int graph__get_neighboor(struct graph_t * graph, size_t n, size_t v, enum direction d)
 {
    for (size_t i = 0; i < n*n; i++)
-      if (gsl_spmatrix_get(graph->t, v, i) == d)
+      if ((int)gsl_spmatrix_uint_get(graph->t, v, i) == d)
 			return i;
    return -1;
 }
@@ -163,10 +163,10 @@ struct graph_t * graph__copy(struct graph_t * graph, size_t n)
 {
 	struct graph_t * newgraph = malloc(sizeof(struct graph_t));
   	newgraph->num_vertices = graph->num_vertices;
-  	newgraph->t = gsl_spmatrix_alloc(n*n, n*n);
-  	newgraph->o = gsl_spmatrix_alloc(2, n*n);
-  	gsl_spmatrix_memcpy(newgraph->t, graph->t);
-  	gsl_spmatrix_memcpy(newgraph->o, graph->o);
+  	newgraph->t = gsl_spmatrix_uint_alloc(n*n, n*n);
+  	newgraph->o = gsl_spmatrix_uint_alloc(2, n*n);
+  	gsl_spmatrix_uint_memcpy(newgraph->t, graph->t);
+  	gsl_spmatrix_uint_memcpy(newgraph->o, graph->o);
   	return newgraph;
 }
 
@@ -181,10 +181,10 @@ struct graph_t * graph__copy(struct graph_t * graph, size_t n)
 int graph__add_edge(struct graph_t * graph, size_t first, size_t second, enum direction d)
 {
    if(d == ERROR_DIRECTION) return -1;
-   if (gsl_spmatrix_get(graph->t, first, second) != 0)
+   if (gsl_spmatrix_uint_get(graph->t, first, second) != 0)
       return -1;
-   int edge2 = gsl_spmatrix_set(graph->t, first, second, d);
-   int edge1 = gsl_spmatrix_set(graph->t, second, first, d%2?d+1:d-1);
+   int edge2 = gsl_spmatrix_uint_set(graph->t, first, second, d);
+   int edge1 = gsl_spmatrix_uint_set(graph->t, second, first, d%2?d+1:d-1);
    return (edge1 || edge2);
 }
 
@@ -197,11 +197,11 @@ int graph__add_edge(struct graph_t * graph, size_t first, size_t second, enum di
  */
 int graph__remove_edge(struct graph_t * graph, size_t first, size_t second)
 {
-   if(gsl_spmatrix_get(graph->t, first, second) == 0 
-   	&& gsl_spmatrix_get(graph->t, second, first) == 0)
+   if(gsl_spmatrix_uint_get(graph->t, first, second) == 0 
+   	&& gsl_spmatrix_uint_get(graph->t, second, first) == 0)
    	return -1;
-   int edge1 = gsl_spmatrix_set(graph->t, second, first, 0);
-   int edge2 = gsl_spmatrix_set(graph->t, first, second, 0);
+   int edge1 = gsl_spmatrix_uint_set(graph->t, second, first, 0);
+   int edge2 = gsl_spmatrix_uint_set(graph->t, first, second, 0);
    return (edge1 || edge2);
 }
 
@@ -214,12 +214,12 @@ int graph__remove_edge(struct graph_t * graph, size_t first, size_t second)
  */
 int graph__edge_exists(struct graph_t * graph, size_t first, size_t second)
 {
-	if (gsl_spmatrix_ptr(graph->t, first, second) == NULL)
+	if (gsl_spmatrix_uint_ptr(graph->t, first, second) == NULL)
 		return 0;
-	int d = gsl_spmatrix_get(graph->t, first, second);
+	int d = gsl_spmatrix_uint_get(graph->t, first, second);
 	if (d == 0) return 0;
 	int opp = d%2?d+1:d-1; // Opposite direction
-	return (gsl_spmatrix_get(graph->t, second, first) == opp);
+	return ((int)gsl_spmatrix_uint_get(graph->t, second, first) == opp);
 }
 
 /* Adds an owner to a vertex
@@ -231,8 +231,8 @@ int graph__edge_exists(struct graph_t * graph, size_t first, size_t second)
  */
 int graph__add_ownership(struct graph_t * graph, size_t v, size_t owner)
 {
-   if(gsl_spmatrix_get(graph->o, owner, v) == 1) return -1;
-   int ownership = gsl_spmatrix_set(graph->o, owner, v, 1);
+   if(gsl_spmatrix_uint_get(graph->o, owner, v) == 1) return -1;
+   int ownership = gsl_spmatrix_uint_set(graph->o, owner, v, 1);
    return ownership;
 }
 
@@ -258,12 +258,12 @@ void graph__display(struct graph_t * graph, size_t n)
 	printf("\033[1mWinning positions (\033[1;96mp1\033[1;97m, \033[1;91mp2\033[0;97m) : ");
 	for(size_t i = 0; i < n*n; i++)
 	{
-		if(gsl_spmatrix_get(graph->o, 0, i) == 1){
+		if(gsl_spmatrix_uint_get(graph->o, 0, i) == 1){
 			wp_1[nb_wp_1] = i;
 			nb_wp_1++;
 			printf("\033[1;96m%ld\033[0;97m,", i);
 		}
-		if(gsl_spmatrix_get(graph->o, 1, i) == 1){
+		if(gsl_spmatrix_uint_get(graph->o, 1, i) == 1){
 			wp_2[nb_wp_2] = i;
 			nb_wp_2++;
 			printf("\033[1;91m%ld\033[0;97m,", i);

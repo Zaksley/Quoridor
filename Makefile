@@ -1,4 +1,5 @@
-GSL_PATH = /net/ens/renault/save/gsl-2.6/install
+GSL_PATH ?= /net/ens/renault/save/gsl-2.6/install
+GSL_PATH = /opt/gsl-2.6
 DIR = src
 BIN = 
 TEST_DIR = tests

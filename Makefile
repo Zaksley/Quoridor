@@ -1,4 +1,4 @@
-GSL_PATH ?= /net/ens/renault/save/gsl-2.6/install
+GSL_PATH = /net/ens/renault/save/gsl-2.6/install
 DIR = src
 BIN = 
 TEST_DIR = tests
@@ -14,7 +14,7 @@ LIBS = -lgsl -lgslcblas -lm
 all: build test perso_test
 
 perso_test:
-	ls ${GSL_PATH}
+	ls ${GSL_PATH}/include
 
 build: ${BIN}
 

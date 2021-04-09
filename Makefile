@@ -1,15 +1,17 @@
-GSL_PATH ?= /net/ens/renault/save/gsl-2.6/install 
+GSL_PATH ?= /net/ens/renault/save/gsl-2.6/install
 DIR = src
-TEST_DIR = tests
 BIN = 
-TEST_BIN = test_graph_shape test_graph_fonc test_graph_struct
+TEST_DIR = tests
+TEST_BIN = test_graph_func test_graph_struct
 
 CC ?= cc
 CFLAGS = -Wall -Wextra -std=c99 -g -lgcov -I${GSL_PATH}/include
 LDFLAGS = -L${GSL_PATH}/lib -ldl
 LIBS = -lgsl -lgslcblas -lm
 
-all: build test perso_test
+################ Compilation rules #################
+
+all: build test
 
 build: ${BIN}
 
@@ -25,23 +27,9 @@ alltests: build test
 
 install: player_move_random player_random
 	${CC} -rdynamic -o install/server ${DIR}/main.c graph_modif.o -ldl ${LIBS};
-	
-perso_test: 
-	ls ${GSL_PATH}
+	#./install/server [-m] [-t] ./install/alltests
 
-player_move_random: graph_modif.o utils.o
-	${CC} -fPIC -c ${DIR}/player_move_random.c;
-	${CC} -shared -nostartfiles -o install/libplayer_move_random.so player_move_random.o graph_modif.o utils.o;
-		
-
-
-player_random: graph_modif.o utils.o
-	${CC} -fPIC -c ${DIR}/player_random.c;
-	${CC} -shared -nostartfiles -o install/libplayer_random.so player_random.o graph_modif.o utils.o;
-		
-
-clean:
-	rm -f *.o ${BIN}/*.so *~ ${TEST_BIN}
+################## Binary objects ##################
 
 utils.o : ${DIR}/utils.h ${DIR}/utils.c
 	${CC} -fPIC ${CFLAGS} ${DIR}/utils.c -c
@@ -49,11 +37,23 @@ utils.o : ${DIR}/utils.h ${DIR}/utils.c
 graph_modif.o: ${DIR}/graph_modif.h ${DIR}/graph_modif.c
 	${CC} -fPIC ${CFLAGS} ${DIR}/graph_modif.c -c
 
-test_graph_shape: graph_modif.o
-	${CC} graph_modif.o ${TEST_DIR}/test_graph_shape.c -o $@ ${CFLAGS} ${LDFLAGS} ${LIBS}
+
+##################### Players ######################
+		
+player_random: graph_modif.o utils.o
+	${CC} -fPIC -c ${DIR}/player_random.c;
+	${CC} -shared -nostartfiles -o install/libplayer_random.so player_random.o graph_modif.o utils.o;
+
+player_move_random: graph_modif.o utils.o
+	${CC} -fPIC -c ${DIR}/player_move_random.c;
+	${CC} -shared -nostartfiles -o install/libplayer_move_random.so player_move_random.o graph_modif.o utils.o;
+###################### Tests #######################
+
+clean:
+	rm -f *.o ${BIN}/*.so *~ ${TEST_BIN}
 
 test_graph_struct: graph_modif.o
 	${CC} graph_modif.o ${TEST_DIR}/test_graph_struct.c -o $@ ${CFLAGS} ${LDFLAGS} ${LIBS}
 
-test_graph_fonc: graph_modif.o
+test_graph_func: graph_modif.o
 	${CC} graph_modif.o ${TEST_DIR}/test_graph_fonc.c -o $@ ${CFLAGS} ${LDFLAGS} ${LIBS}

@@ -193,7 +193,7 @@ int test__add__remove_edge()
 
 int main() 
 {
-   printf("\033[1m----- Graph_modif | Fonctionnal tests -----\033[0m\n");
+   printf("\033[1m----- Graph_modif | Functionnal tests -----\033[0m\n");
    printf("\033[1mgraph__edge_exists :\033[0m\n");
    TESTCASE("- edge_exists | empty graph have no existing edge" ,test__empty_graph__edge_exists());
    TESTCASE("- edge_exists | added edge exist", test__added_edge__edge_exists());
@@ -213,5 +213,6 @@ int main()
    printf("\033[1mgraph__remove_edge :\033[0m\n");
    TESTCASE("- remove_edge | removing twice the same edge return error", test__twice__remove_edge());
    TESTCASE("- remove_edge | removed edge can be added again", test__add__remove_edge());
+   printf("\n");
    return 0;
 }

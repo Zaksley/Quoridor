@@ -53,20 +53,20 @@ void test__graph_create_torus()
 			//assert(gsl_spmatrix_get(graph->t, i, i+6) == SOUTH);
 		//if(i > 5  || (1==1)) assert(gsl_spmatrix_get(graph->t, i, i-6) == NORTH);
 	}
-	TESTCASE("- create_torus | right-sized graph has all of its edges", 0);
-	TESTCASE("- create_torus | right-sized graph has its hole", 0);
+	TESTCASE("- create_torus | right-sized graph has all of its edges (td)", 0);
+	TESTCASE("- create_torus | right-sized graph has its hole (todo)", 0);
 	graph__free(graph);
 }
 
 void test__graph_create_chopped()
 {
-	TESTCASE("- todo", 0);
+	TESTCASE("- (todo)", 0);
 	assert(1 == 1);
 }
 
 void test__graph_create_snake()
 {
-	TESTCASE("- todo", 0);
+	TESTCASE("- (todo)", 0);
 	assert(1 == 1);
 }
 

@@ -298,7 +298,7 @@ void graph__display(struct graph_t * graph, size_t n)
 			if(winning_pos == 0)	printf("[\033[0;92m%2ld\033[0;97m]", v); //Random vertex
 			if(winning_pos == 1)	printf("[\033[1;96m%2ld\033[0;97m]", v); //Winning pos for p1
 			if(winning_pos == 2)	printf("[\033[1;91m%2ld\033[0;97m]", v); //Winning pos for p2
-			if(winning_pos == 3)	printf("[\033[1;93m%2ld\033[0;97m]", v); //Winning pos for both
+			if(winning_pos == 3)	printf("[\033[1;35m%2ld\033[0;97m]", v); //Winning pos for both
 		}
 
 		// East links

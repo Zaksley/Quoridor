@@ -53,7 +53,7 @@ clean:
 	rm -f *.o ${BIN}/*.so *~ ${TEST_BIN}
 
 test_graph_struct: graph_modif.o
-	${CC} graph_modif.o ${TEST_DIR}/test_graph_struct.c -o $@ ${CFLAGS} ${LDFLAGS} ${LIBS}
+	${CC} graph_modif.o ${CFLAGS} ${LDFLAGS} ${LIBS} ${TEST_DIR}/test_graph_struct.c -o $@ 
 
 test_graph_func: graph_modif.o
-	${CC} graph_modif.o ${TEST_DIR}/test_graph_fonc.c -o $@ ${CFLAGS} ${LDFLAGS} ${LIBS}
+	${CC} graph_modif.o ${CFLAGS} ${LDFLAGS} ${LIBS} ${TEST_DIR}/test_graph_fonc.c -o $@ 

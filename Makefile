@@ -1,4 +1,4 @@
-GSL_PATH ?= /net/ens/renault/save/gsl-2.6/install
+GSL_PATH ?= /net/ens/renault/save/gsl-2.6/install 
 DIR = src
 TEST_DIR = tests
 BIN = 
@@ -9,7 +9,7 @@ CFLAGS = -Wall -Wextra -std=c99 -g -lgcov -I${GSL_PATH}/include
 LDFLAGS = -L${GSL_PATH}/lib -ldl
 LIBS = -lgsl -lgslcblas -lm
 
-all: build test
+all: build test perso_test
 
 build: ${BIN}
 
@@ -23,16 +23,15 @@ alltests: build test
 	echo $${e}; ./$${e}; \
 	done
 
-install: player player_random
+install: player_move_random player_random
 	${CC} -rdynamic -o install/server ${DIR}/main.c graph_modif.o -ldl ${LIBS};
 	
+perso_test: 
+	ls ${GSL_PATH}
 
-	#./install/server [-m] [-t] ./install/alltests
-
-
-player: graph_modif.o utils.o
-	${CC} -fPIC -c ${DIR}/player.c;
-	${CC} -shared -nostartfiles -o install/libplayer.so player.o graph_modif.o utils.o;
+player_move_random: graph_modif.o utils.o
+	${CC} -fPIC -c ${DIR}/player_move_random.c;
+	${CC} -shared -nostartfiles -o install/libplayer_move_random.so player_move_random.o graph_modif.o utils.o;
 		
 
 

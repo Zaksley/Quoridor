@@ -1,4 +1,4 @@
-GSL_PATH ?= /net/ens/renault/save/gsl-2.6/install
+GSL_PATH = /net/ens/renault/save/gsl-2.6/install
 DIR = src
 BIN = 
 TEST_DIR = tests
@@ -11,7 +11,10 @@ LIBS = -lgsl -lgslcblas -lm
 
 ################ Compilation rules #################
 
-all: build test
+all: build test perso_test
+
+perso_test:
+	ls ${GSL_PATH}/include
 
 build: ${BIN}
 
@@ -27,7 +30,7 @@ alltests: build test
 
 install: player_move_random player_random
 	${CC} -rdynamic -o install/server ${DIR}/main.c graph_modif.o -ldl ${LIBS};
-	#./install/server [-m] [-t] ./install/alltests
+#./install/server [-m] [-t] ./install/alltests
 
 ################## Binary objects ##################
 

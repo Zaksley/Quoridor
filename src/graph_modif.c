@@ -240,9 +240,11 @@ int graph__add_ownership(struct graph_t * graph, size_t v, size_t owner)
  *
  * @param graph a graph
  * @param n the size of the graph
+ * @param w white player
+ * @param b black player
  * @return nothing
  */
-void graph__display(struct graph_t * graph, size_t n)
+void graph__display(struct graph_t * graph, size_t n, size_t w, size_t b)
 {
 	printf("\033[1mDisplaying graph : size \033[1;96m%ld\033[1;97m | \033[1;96m%ld\033[1;97m vertices\033[0m\n",
 		n, graph->num_vertices);
@@ -255,7 +257,7 @@ void graph__display(struct graph_t * graph, size_t n)
 	size_t wp_2[MAX_GRAPH_SIZE] = {0};
 	int nb_wp_2 = 0;
 	int winning_pos;
-	printf("\033[1mWinning positions (\033[1;96mp1\033[1;97m, \033[1;91mp2\033[0;97m) : ");
+	printf("\033[1mWinning positions (\033[1;96mwhite\033[1;97m, \033[1;91mblack\033[0;97m) : ");
 	for(size_t i = 0; i < n*n; i++)
 	{
 		if(gsl_spmatrix_uint_get(graph->o, 0, i) == 1){
@@ -294,11 +296,21 @@ void graph__display(struct graph_t * graph, size_t n)
 			{
 				if(v == wp_2[i]) winning_pos += 2;
 			}
+
 			// Color modifiers
-			if(winning_pos == 0)	printf("[\033[0;92m%2ld\033[0;97m]", v); //Random vertex
-			if(winning_pos == 1)	printf("[\033[1;96m%2ld\033[0;97m]", v); //Winning pos for p1
-			if(winning_pos == 2)	printf("[\033[1;91m%2ld\033[0;97m]", v); //Winning pos for p2
-			if(winning_pos == 3)	printf("[\033[1;35m%2ld\033[0;97m]", v); //Winning pos for both
+			if((v==b || v==w) && (w!=0 || b!=0))
+			{
+				if(v == w)				printf("[\033[7;97m%2ld\033[0;97m]", v); //White player
+				if(v == b)				printf("[\033[7;95m%2ld\033[0;97m]", v); //Black player
+			}
+			else
+			{
+				if(winning_pos == 0)	printf("[\033[0;92m%2ld\033[0;97m]", v); //Random vertex
+				if(winning_pos == 1)	printf("[\033[1;96m%2ld\033[0;97m]", v); //Winning pos for p1
+				if(winning_pos == 2)	printf("[\033[1;91m%2ld\033[0;97m]", v); //Winning pos for p2
+				if(winning_pos == 3)	printf("[\033[7;33m%2ld\033[0;97m]", v); //Winning pos for both
+			}
+
 		}
 
 		// East links

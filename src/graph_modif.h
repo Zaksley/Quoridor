@@ -104,8 +104,10 @@ int graph__add_ownership(struct graph_t * graph, size_t v, size_t owner);
  *
  * @param graph a graph
  * @param n the size of the graph
+ * @param w white player
+ * @param b black player
  * @return nothing
  */
-void graph__display(struct graph_t * graph, size_t n);
+void graph__display(struct graph_t * graph, size_t n, size_t w, size_t b);
 
 #endif // _QUOR_GRAPH_MODIF_H_

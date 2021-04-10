@@ -15,10 +15,11 @@ all: clean build test
 
 build: ${BIN}
 
-test:
-
-alltests: test_graph_fonc.o test_graph_struct.o graph_modif.o
+test: test_graph_fonc.o test_graph_struct.o graph_modif.o
 	${CC} ${CFLAGS} ${LDFLAGS} ${LIBS} ${TEST_DIR}/alltests.c graph_modif.o test_graph_fonc.o test_graph_struct.o -o install/alltests
+
+alltests: test
+	./install/alltests
 
 install: player_move_random player_random
 	${CC} -rdynamic -o install/server ${DIR}/main.c graph_modif.o -ldl ${LIBS} ${CFLAGS} ${LDFLAGS};

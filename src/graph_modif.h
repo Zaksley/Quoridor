@@ -1,6 +1,7 @@
 #ifndef _QUOR_GRAPH_MODIF_H_
 #define _QUOR_GRAPH_MODIF_H_
 
+#include <stddef.h>
 #include <gsl/gsl_spmatrix.h>
 #include <gsl/gsl_spblas.h>
 #include <gsl/gsl_spmatrix_uint.h>

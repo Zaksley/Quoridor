@@ -1,10 +1,10 @@
 #ifndef _QUOR_GRAPH_H_
 #define _QUOR_GRAPH_H_
 
-#include <stddef.h>
 #include <gsl/gsl_spmatrix.h>
 #include <gsl/gsl_spblas.h>
 #include <gsl/gsl_spmatrix_uint.h>
+#include <stddef.h>
 
 #include "move.h"
 

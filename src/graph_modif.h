@@ -1,11 +1,6 @@
 #ifndef _QUOR_GRAPH_MODIF_H_
 #define _QUOR_GRAPH_MODIF_H_
 
-#include <stddef.h>
-#include <gsl/gsl_spmatrix.h>
-#include <gsl/gsl_spblas.h>
-#include <gsl/gsl_spmatrix_uint.h>
-
 #include "graph.h"
 
 enum direction {NORTH=1, SOUTH, WEST, EAST, ERROR_DIRECTION=-1};

@@ -26,14 +26,14 @@ int is_in(size_t e, size_t n, size_t *t)
 void test__valid_positions()
 {
 	struct player *player = initialize_test_player(5, 0);
-	struct moves* moves = valid_positions(player);
-	TESTCASE("Only 2 positions found in a corner", moves->number_moves == 2);
+	struct moves_valids* moves = valid_positions(player);
+	TESTCASE("Only 2 positions found in a corner", moves->number == 2);
 	player->pos = 12;
 	moves = valid_positions(player);
-	TESTCASE("4 positions found in the middle of the board", moves->number_moves == 4);
+	TESTCASE("4 positions found in the middle of the board", moves->number== 4);
 	size_t neighboors[4] = {7, 11, 13, 17};
 	int test = 1;
-	if (moves->number_moves < 4)
+	if (moves->number < 4)
 		test = 0;
 	for(int i = 0; test && i < 4; i++)  
 		if (!is_in(moves->valid[i].m, 4, neighboors))

@@ -64,11 +64,6 @@ struct move_t play(struct move_t previous_move)
 {
    (void) previous_move; 
 
-   struct moves* moves = valid_positions(&self);
-   for(int i = 0; i < moves->number_moves; ++i)
-   {
-      //printf("move %d : -> %zu\n", i, moves->valid[i].m);
-   }
 
    // Creation of the new move 
    struct move_t move; 
@@ -76,14 +71,31 @@ struct move_t play(struct move_t previous_move)
    move.t = MOVE; 
    move.e[0] = no_wall;
    move.e[1] = no_wall; 
-   move.m = moves->valid[rand() % moves->number_moves].m; 
-   printf("MOVE CHOISI %ld pour joueur %d\n", move.m, self.id);
-   self.pos = move.m;
 
-   // ===== Free tables
-   free(moves->valid);
-   free(moves);
-   // =====
+   // ==== First move
+   if (self.first_move)
+   {
+      size_t* list = malloc(sizeof(size_t) * self.n); 
+      graph__list_ownership(self.graph, self.n, self.id, list); 
+      move.m = list[rand() % self.n]; 
+
+      // ===== Free tables
+      free(list);
+      // =====
+   }
+   // ==== Other moves
+   else
+   {
+      struct moves* moves = valid_positions(&self);
+      move.m = moves->valid[rand() % moves->number_moves].m; 
+      printf("MOVE CHOISI %ld pour joueur %d\n", move.m, self.id);
+      self.pos = move.m;
+
+      // ===== Free tables
+      free(moves->valid);
+      free(moves);
+      // =====
+   }
 
    return move;  
 }

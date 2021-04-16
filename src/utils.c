@@ -25,8 +25,7 @@ struct moves* valid_positions(struct player* p)
       value = graph__get_neighboor(p->graph, p->n, p->pos, dir);
       new.m = value; 
       if (value != -1)
-      {
-         printf("in\n"); 
+      { 
          valid[count_moves] = new;
          count_moves++; 
       }

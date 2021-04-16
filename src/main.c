@@ -4,7 +4,7 @@
 #include "utils.h"
 
 #define NUMB_PLAYER 2
-
+#define NUMB_WALLS 5
 
 /*
  * Get functions from a special player with a dynamic lib.so and stock it in a new struct
@@ -67,7 +67,7 @@ int main()
 {
    // ================= Initializing game 
 
-   // Get players 
+      // Get players 
    struct player* player1 = get_functions("./install/libplayer_move_random.so");
    struct player* player2 = get_functions("./install/libplayer_random.so"); 
    struct player* players[2] = {player1, player2}; 
@@ -82,37 +82,35 @@ int main()
 
    for(int p = 0; p < NUMB_PLAYER; p++)
    {
-      players[p]->initialize(p, graphs[p], 5);
-
+         // ===== Initialize players (Server) =====
       if (p == random)   
       {
          players[p]->id = WHITE;
          players[p]->pos = 0; 
          players[p]->ennemy_pos = 20; 
+
+         // Winning positions add 
+         for(int i=0; i<size_graph; i++)
+         {
+            graph__add_ownership(server_Graph, i, players[p]->id);
+         }
       }
       else 
       {
-         printf("%s\n", players[p]->get_name());
          players[p]->id = BLACK; 
          players[p]->pos = 20; 
          players[p]->ennemy_pos = 0; 
+
+         // Winning positions add 
+         for(int i=0; i<size_graph; i++)
+         {
+            graph__add_ownership(server_Graph, server_Graph->num_vertices - size_graph + i, players[p]->id);
+         }
       }
+
+         // ===== Initialize players (Client) ===== 
+      players[p]->initialize(p, graphs[p], NUMB_WALLS);
    }
-
-   // ==================
-
-   // ================== Winning Position
-
-   for(int p=0; p<NUMB_PLAYER; p++)
-   {
-      for(int i=0; i<size_graph; i++)
-      {
-         graph__add_ownership(server_Graph, players[p]->ennemy_pos+i, players[p]->id);
-      }
-   }
-
-   // ==================
-
 
 
 

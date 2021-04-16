@@ -47,6 +47,20 @@ struct player* get_functions(char* lib)
    return player; 
 }
 
+
+enum color_t other_player(enum color_t player)
+{
+   if (player == WHITE) return BLACK; 
+   else return WHITE; 
+}
+
+struct player* player_color(struct player** p, enum color_t c)
+{
+   if (p[0]->id == c) return p[0];
+   else return p[1]; 
+}
+
+
 // -------- MOVE
 
 // TODO => vérifier que sur les positions, il n'y a pas de joueur adverse
@@ -173,13 +187,13 @@ struct walls* valid_walls(struct player* p)
 *  @param wall the wall we are posing 
 *  @return 0 if the wall's installation is successful, -1 if it failed
 */
-int put_wall(struct player* p, struct move_t wall)
+int put_wall(struct graph_t* graph, struct move_t wall)
 {
       // Remove edges
    int removed;
-   removed = graph__remove_edge(p->graph, wall.e[0].fr, wall.e[0].to); 
+   removed = graph__remove_edge(graph, wall.e[0].fr, wall.e[0].to); 
    if (removed == -1) return -1;
-   removed = graph__remove_edge(p->graph, wall.e[1].fr, wall.e[1].to);
+   removed = graph__remove_edge(graph, wall.e[1].fr, wall.e[1].to);
    if (removed == -1) return -1;
 
    return 0; 
@@ -262,7 +276,7 @@ int existPath_Player(struct player* p, size_t number_player, size_t pos_player)
 int checkPath(struct player* p, struct move_t wall)
 {
       // Put Fake Wall (for test)
-   put_wall(p, wall); 
+   put_wall(p->graph, wall); 
 
    int check_1 = existPath_Player(p, p->pos, p->id);
    int check_2; 
@@ -286,3 +300,5 @@ int checkPath(struct player* p, struct move_t wall)
 
 
 // -------- WALL
+
+

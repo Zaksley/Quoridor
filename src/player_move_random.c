@@ -40,18 +40,8 @@ void initialize(enum color_t id, struct graph_t* graph, size_t num_walls)
    self.num_walls = num_walls;
    self.n = 5;
    self.graph = graph__copy(graph, self.n);
+   self.first_move = 1; 
 
-   if (self.id == WHITE)
-   {
-      self.pos = 0;
-      self.ennemy_pos = 20;
-   }
-   else
-   {
-      self.pos = 20;
-      self.ennemy_pos = 0;
-   }
-   
 }
 
 /* Computes next move
@@ -66,15 +56,17 @@ struct move_t play(struct move_t previous_move)
    * Player: Only move - Random move
    */
  
-   // TODO Update Move ennemy 
-   // self.ennemy_pos   
 
-   (void) previous_move; 
-
-   struct moves* moves = valid_positions(&self);
-   for(int i = 0; i < moves->number_moves; ++i)
+      // === Update ennemy player
+   if (previous_move.t == MOVE) 
    {
-      //printf("move %d : -> %zu\n", i, moves->valid[i].m);
+      self.ennemy_pos = previous_move.m; 
+   }
+      // Update le graphe en cas de Wall 
+   else if (previous_move.t == WALL)
+   {
+      int wall_destroyed = put_wall(self.graph, previous_move); 
+      if (wall_destroyed == -1)  fprintf(stderr, "Erreur (Client) - Retirer un mur n'a pas fonctionné\n"); 
    }
 
    // Creation of the new move 
@@ -83,9 +75,37 @@ struct move_t play(struct move_t previous_move)
    move.t = MOVE; 
    move.e[0] = no_wall;
    move.e[1] = no_wall; 
-   move.m = moves->valid[rand() % moves->number_moves].m; 
-   printf("MOVE CHOISI %ld pour joueur %d\n", move.m, self.id);
-   self.pos = move.m;
+
+   // ==== First move
+   if (self.first_move)
+   {
+      size_t* list = malloc(sizeof(size_t) * self.n); 
+      graph__list_ownership(self.graph, self.n, other_player(self.id), list); 
+      move.m = list[rand() % self.n]; 
+      self.pos = move.m;
+      self.first_move = 0; 
+
+      // ===== Free tables
+      free(list);
+      // =====
+
+
+   }
+   // ==== Other moves
+   else
+   {
+      struct moves* moves = valid_positions(&self);
+      move.m = moves->valid[rand() % moves->number_moves].m; 
+      //printf("MOVE CHOISI %ld pour joueur %d\n", move.m, self.id);
+      self.pos = move.m;
+
+      // ===== Free tables
+      free(moves->valid);
+      free(moves);
+      // =====
+   }
+
+   printf("Côté Client : Joueur %d (position = %ld, position ennemie = %ld) \n", self.id, self.pos, self.ennemy_pos);
 
    return move;  
 }
@@ -98,7 +118,7 @@ struct move_t play(struct move_t previous_move)
  */
 void finalize()
 {
-   printf("Libération de Random...\n");
+   printf("Libération de Move Random...\n");
    graph__free(self.graph);
    printf("OK !\n");
 }

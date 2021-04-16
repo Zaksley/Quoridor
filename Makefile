@@ -16,7 +16,7 @@ all: clean build
 build: install test
 
 test: test_graph_fonc.o test_graph_struct.o test_utils_func.o graph_modif.o utils.o
-	${CC} ${CFLAGS} ${TEST_DIR}/alltests.c graph_modif.o utils.o test_graph_fonc.o test_graph_struct.o test_utils_func.o -o install/alltests  ${LDFLAGS} ${LIBS}
+	${CC} --coverage ${CFLAGS} ${TEST_DIR}/alltests.c graph_modif.o utils.o test_graph_fonc.o test_graph_struct.o test_utils_func.o -o install/alltests  ${LDFLAGS} ${LIBS}
 
 alltests: test
 	LD_LIBRARY_PATH=${GSL_PATH}/lib ./install/alltests

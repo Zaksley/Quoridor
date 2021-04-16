@@ -77,6 +77,25 @@ void test__graph_edge_exists();
  */ 
 void test__graph_add_ownership();
 
+/* Tests :
+ *	 - non-owned position is not found
+ * 	 - ennemy owned position is not found
+ *   - owned position is found
+ */ 
+void test__graph_is_owned();
+
+/* Tests :
+ *   - empty list is found with no owned positions
+ *   - every position found is a winning pos
+ *   - no winning positions missed
+ */ 
+void test__graph_list_ownership();
+
+/* Test :
+ * 	 - correct size is returned
+ */
+void test__graph_get_size();
+
 /* Display a graph (visual tests)
  */
 void test__graph_display();

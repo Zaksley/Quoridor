@@ -40,18 +40,8 @@ void initialize(enum color_t id, struct graph_t* graph, size_t num_walls)
    self.num_walls = num_walls;
    self.n = 5;
    self.graph = graph; 
+   self.first_move = 1; 
 
-   if (self.id == WHITE)
-   {
-      self.pos = 0;
-      self.ennemy_pos = 20;
-   }
-   else
-   {
-      self.pos = 20;
-      self.ennemy_pos = 0;
-   }
-   
 }
 
 /* Computes next move
@@ -62,8 +52,16 @@ void initialize(enum color_t id, struct graph_t* graph, size_t num_walls)
 */
 struct move_t play(struct move_t previous_move)
 {
-   (void) previous_move; 
-
+   if (previous_move.t == MOVE) 
+   {
+      self.ennemy_pos = previous_move.m; 
+   }
+      // Update le graphe en cas de Wall 
+   else if (previous_move.t == WALL)
+   {
+      int wall_destroyed = put_wall(self.graph, previous_move); 
+      if (wall_destroyed == -1)  fprintf(stderr, "Erreur (Client) - Retirer un mur n'a pas fonctionné\n"); 
+   }
 
    // Creation of the new move 
    struct move_t move; 
@@ -76,19 +74,22 @@ struct move_t play(struct move_t previous_move)
    if (self.first_move)
    {
       size_t* list = malloc(sizeof(size_t) * self.n); 
-      graph__list_ownership(self.graph, self.n, self.id, list); 
+      graph__list_ownership(self.graph, self.n, other_player(self.id), list); 
       move.m = list[rand() % self.n]; 
+      self.pos = move.m;
+      self.first_move = 0; 
 
       // ===== Free tables
       free(list);
       // =====
+
    }
    // ==== Other moves
    else
    {
       struct moves* moves = valid_positions(&self);
       move.m = moves->valid[rand() % moves->number_moves].m; 
-      printf("MOVE CHOISI %ld pour joueur %d\n", move.m, self.id);
+      //printf("MOVE CHOISI %ld pour joueur %d\n", move.m, self.id);
       self.pos = move.m;
 
       // ===== Free tables
@@ -96,6 +97,8 @@ struct move_t play(struct move_t previous_move)
       free(moves);
       // =====
    }
+
+   printf("Côté Client : Joueur %d (position = %ld, position ennemie = %ld) \n", self.id, self.pos, self.ennemy_pos);
 
    return move;  
 }

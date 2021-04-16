@@ -1,5 +1,6 @@
 #include "test_graph_struct.h"
 #include "test_graph_fonc.h"
+#include "test_utils_func.h"
 
 #define TESTCASE(msg, test) printf("%-60s : %s\n", msg, test ? "\033[1;92mPassed\033[0m" : "\033[1;91mFailed\033[0m")
 
@@ -54,4 +55,20 @@ int main()
    TESTCASE("- remove_edge | removing twice the same edge return error", test__twice__remove_edge());
    TESTCASE("- remove_edge | removed edge can be added again", test__add__remove_edge());
    printf("\n");
+
+
+   printf("\033[1m----- Utils | Functionnal tests -----\033[0m\n");
+	printf("\033[1mvalid_positions :\033[0m\n");
+	test__valid_positions();
+	printf("\033[1mvalid_walls :\033[0m\n");
+	test__valid_walls();
+	printf("\033[1mput_wall :\033[0m\n");
+	test__put_wall();
+	printf("\033[1mexist_path_player :\033[0m\n");
+	test__exist_path_player();
+	printf("\033[1mcheck_path :\033[0m\n");
+	test__check_path();
+	printf("\033[1mshift_left :\033[0m\n");
+	test__shift_left();
+	printf("\n");
 }

@@ -15,14 +15,14 @@ all: clean build
 
 build: install test
 
-test: test_graph_fonc.o test_graph_struct.o graph_modif.o
-	${CC} ${CFLAGS} ${TEST_DIR}/alltests.c graph_modif.o test_graph_fonc.o test_graph_struct.o -o install/alltests  ${LDFLAGS} ${LIBS}
+test: test_graph_fonc.o test_graph_struct.o test_utils_func.o graph_modif.o utils.o
+	${CC} ${CFLAGS} ${TEST_DIR}/alltests.c graph_modif.o utils.o test_graph_fonc.o test_graph_struct.o test_utils_func.o -o install/alltests  ${LDFLAGS} ${LIBS}
 
 alltests: test
 	LD_LIBRARY_PATH=${GSL_PATH}/lib ./install/alltests
 
 install: player_move_random player_random
-	${CC} -rdynamic -o install/server ${DIR}/main.c graph_modif.o -ldl ${LIBS} ${CFLAGS} ${LDFLAGS};
+	${CC} -rdynamic -o install/server ${DIR}/main.c graph_modif.o utils.o -ldl ${LIBS} ${CFLAGS} ${LDFLAGS};
 #./install/server [-m] [-t] ./install/alltests
 
 ################## Binary objects ##################
@@ -38,6 +38,9 @@ test_graph_struct.o:
 
 test_graph_fonc.o:
 	${CC} ${CFLAGS} ${LDFLAGS} ${LIBS} ${TEST_DIR}/test_graph_fonc.c -c
+
+test_utils_func.o: 
+	${CC} ${CFLAGS} ${LDFLAGS} ${LIBS} ${TEST_DIR}/test_utils_func.c -c
 
 ##################### Players ######################
 

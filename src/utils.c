@@ -1,5 +1,51 @@
 #include <stdlib.h>
+#include <dlfcn.h>
 #include "utils.h"
+
+/*
+ * Get functions from a special player with a dynamic lib.so and stock it in a new struct
+ * 
+ * @param lib path to the player library 
+ * @precond lib is a valid path to a dynamic library
+ * @returns a player with initialized functions
+ */
+struct player* get_functions(char* lib)
+{
+   // Initialization 
+   struct player* player = malloc(sizeof(struct player)); 
+
+   // Get functions
+   char* (*get_name)(); 
+   void (*initialize) (enum color_t, struct graph_t*, size_t);
+   struct move_t (*player_play) (struct move_t); 
+   void (*finalize) (); 
+
+   // Open the lib 
+   void * handle;
+   handle = dlopen(lib, RTLD_LAZY);
+
+   if (!handle) {
+      fprintf(stderr, "%s\n", dlerror());
+      exit(EXIT_FAILURE);
+   }
+
+   dlerror(); // Clear any existing error 
+
+   // Putting functions in the struct 
+   *(void **) (&get_name) = dlsym(handle, "get_player_name");
+   *(void **) (&player_play) = dlsym(handle, "play"); 
+   *(void **) (&initialize) = dlsym(handle, "initialize"); 
+   *(void **) (&finalize) = dlsym(handle, "finalize"); 
+
+   player->get_name = get_name; 
+   player->player_play = player_play;
+   player->initialize = initialize;
+   player->finalize = finalize;
+
+   // dlclose(handle); - To close at the end ?
+
+   return player; 
+}
 
 // -------- MOVE
 

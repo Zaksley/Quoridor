@@ -159,6 +159,51 @@ void test__graph_add_ownership()
 	graph__free(graph);
 }
 
+void test__graph_is_owned()
+{
+	struct graph_t * graph = graph__create_square(4);
+	graph__add_ownership(graph, 3, 1);
+	TESTCASE("- is_owned | non-owned position is not found", graph__is_owned(graph, 2, 1) == 0);
+	TESTCASE("- is_owned | ennemy owned position is not found", graph__is_owned(graph, 3, 0) == 0);
+	TESTCASE("- is_owned | owned position is found", graph__is_owned(graph, 3, 1) == 1);
+	graph__free(graph);
+}
+
+void test__graph_list_ownership()
+{
+	struct graph_t * graph = graph__create_square(4);
+	size_t l[4] = {0};
+	int n = graph__list_ownership(graph, 4, 1, l);
+	for (int i = 0; i < n; i++)
+	{
+		assert(l[i] == 0);
+	}
+	TESTCASE("- list_ownership | empty list found with no positions", 1);
+	graph__add_ownership(graph, 3, 1);
+	n = graph__list_ownership(graph, 4, 1, l);
+	TESTCASE("- list_ownership | correct number of positions found", n == 1);
+	for (int i = 0; i < n; i++)
+	{
+		assert(gsl_spmatrix_uint_get(graph->o, 1, l[i]) == 1);
+	}
+	TESTCASE("- list_ownership | every position found is owned", 1);
+	for (size_t i = 0; i < 16; i++)
+	{
+		for(int j = 0; j < n; j++)
+			if(l[j] != i)
+				assert(gsl_spmatrix_uint_get(graph->o, 1, i) == 0);
+	}
+	TESTCASE("- list_ownership | no positions are missing", 1);
+	graph__free(graph);
+}
+
+void test__graph_get_size()
+{
+	struct graph_t * graph = graph__create_square(4);
+	TESTCASE("- get_size | correct position is found", graph__get_size(graph) == 4);
+	graph__free(graph);
+}
+
 void test__graph_display()
 {
 	struct graph_t * graph = graph__create_chopped(6);

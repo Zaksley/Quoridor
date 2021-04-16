@@ -28,6 +28,12 @@ int main()
    test__graph_edge_exists();
    printf("\033[1mgraph__add_ownership :\033[0m\n");
    test__graph_add_ownership();
+   printf("\033[1mgraph__is_owned :\033[0m\n");
+   test__graph_is_owned();
+   printf("\033[1mgraph__list_ownership :\033[0m\n");
+   test__graph_list_ownership();
+   printf("\033[1mgraph__get_size :\033[0m\n");
+   test__graph_get_size();
    printf("\033[1mgraph__display :\033[0m\n");
    test__graph_display();
    printf("\n");

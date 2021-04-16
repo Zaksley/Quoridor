@@ -63,10 +63,10 @@ struct move_t play(struct move_t previous_move)
       self.ennemy_pos = previous_move.m; 
    }
       // Update le graphe en cas de Wall 
-   else
+   else if (previous_move.t == WALL)
    {
-      int wall_destroyed = put_wall(&self, previous_move); 
-      if (wall_destroyed == -1)  fprintf(stderr, "Erreur - Retirer un mur n'a pas fonctionné"); 
+      int wall_destroyed = put_wall(self.graph, previous_move); 
+      if (wall_destroyed == -1)  fprintf(stderr, "Erreur (Client) - Retirer un mur n'a pas fonctionné\n"); 
    }
 
    // Creation of the new move 
@@ -80,7 +80,7 @@ struct move_t play(struct move_t previous_move)
    if (self.first_move)
    {
       size_t* list = malloc(sizeof(size_t) * self.n); 
-      graph__list_ownership(self.graph, self.n, self.id, list); 
+      graph__list_ownership(self.graph, self.n, other_player(self.id), list); 
       move.m = list[rand() % self.n]; 
       self.pos = move.m;
       self.first_move = 0; 
@@ -105,7 +105,7 @@ struct move_t play(struct move_t previous_move)
       // =====
    }
 
-   //printf("Côté Client : Joueur %d (position = %ld, position ennemie = %ld) \n", self.id, self.pos, self.ennemy_pos);
+   printf("Côté Client : Joueur %d (position = %ld, position ennemie = %ld) \n", self.id, self.pos, self.ennemy_pos);
 
    return move;  
 }

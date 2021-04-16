@@ -78,11 +78,10 @@ int main()
    int size_graph = 5; 
    struct graph_t* server_Graph = graph__create_square(size_graph);
    
-   struct graph_t* graphs[2] = {graph__copy(server_Graph, size_graph), graph__copy(server_Graph, size_graph)}; 
-
+    // ===== Initialize players (Server) =====
    for(int p = 0; p < NUMB_PLAYER; p++)
    {
-         // ===== Initialize players (Server) =====
+        
       if (p == random)   
       {
          players[p]->id = WHITE;
@@ -106,12 +105,17 @@ int main()
          {
             graph__add_ownership(server_Graph, server_Graph->num_vertices - size_graph + i, players[p]->id);
          }
-      }
-
-         // ===== Initialize players (Client) ===== 
-      players[p]->initialize(p, graphs[p], NUMB_WALLS);
+      }     
    }
 
+
+   struct graph_t* graphs[2] = {graph__copy(server_Graph, size_graph), graph__copy(server_Graph, size_graph)}; 
+
+      // ===== Initialize players (Client) ===== 
+   for(int p = 0; p < NUMB_PLAYER; p++)
+   {
+      players[p]->initialize(p, graphs[p], NUMB_WALLS);
+   }
 
 
 

@@ -248,7 +248,7 @@ int graph__add_ownership(struct graph_t * graph, size_t v, size_t owner)
 int graph__is_owned(struct graph_t * graph, size_t v, size_t c)
 {
 	if(gsl_spmatrix_uint_get(graph->o, c, v) == 1) return 1;
-	return 0
+	return 0;
 }
 
 /* Gets a list of owned positions for a player
@@ -261,7 +261,7 @@ int graph__is_owned(struct graph_t * graph, size_t v, size_t c)
  */
 void graph__list_ownership(struct graph_t * graph, size_t n, size_t c, size_t* l)
 {
-	num = 0;
+	int num = 0;
 	for (size_t i = 0; i < n*n; i++)
 		if(graph__is_owned(graph, i, c))
 			l[num++] = i;

@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <gsl/gsl_spmatrix.h>
+#include <gsl/gsl_spmatrix_uint.h>
 
 #define MAX_GRAPH_SIZE 200
 

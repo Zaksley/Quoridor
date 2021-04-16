@@ -59,7 +59,8 @@ struct move_t play(struct move_t previous_move)
       // Update le graphe en cas de Wall 
    else
    {
-
+      int wall_destroyed = put_wall(&self, previous_move); 
+      if (wall_destroyed == -1)  fprintf(stderr, "Erreur - Retirer un mur n'a pas fonctionné"); 
    }
 
    // Creation of the new move 
@@ -97,7 +98,7 @@ struct move_t play(struct move_t previous_move)
       // =====
    }
 
-   printf("Côté Client : Joueur %d (position = %ld, position ennemie = %ld) \n", self.id, self.pos, self.ennemy_pos);
+   //printf("Côté Client : Joueur %d (position = %ld, position ennemie = %ld) \n", self.id, self.pos, self.ennemy_pos);
 
    return move;  
 }

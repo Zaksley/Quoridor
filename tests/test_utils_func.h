@@ -1,3 +1,6 @@
+#ifndef _TEST_UTILS_FUNC_H_
+#define _TEST_UTILS_FUNC_H_
+
 /*
  * Only 2 positions found in a corner
  * 4 positions found in the middle of the board
@@ -38,3 +41,5 @@ void test__check_path();
  * 
  */
 void test__shift_left();
+
+#endif //_TEST_UTILS_FUNC_H_

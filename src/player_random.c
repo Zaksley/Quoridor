@@ -18,7 +18,7 @@ struct edge_t no_wall = {-1, -1};
  */
 char const* get_player_name()
 {
-   return "Move & Walls - Random"; 
+   return "Donald Trump"; 
 }
 
 /* Player initialization

@@ -65,7 +65,7 @@ int main()
    int random = rand() % 2; 
 
       // Central Graph - Server 
-   int size_graph = 3; 
+   int size_graph = 5; 
    struct graph_t* server_Graph = graph__create_square(size_graph);
    
       // ===== Initialize players (Server) =====

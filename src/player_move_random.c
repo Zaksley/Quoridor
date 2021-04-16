@@ -18,7 +18,7 @@ struct edge_t no_wall = {-1, -1};
  */
 char const* get_player_name()
 {
-   return "Move ONLY - Random"; 
+   return "Patrick"; 
 }
 
 /* Player initialization
@@ -41,7 +41,6 @@ void initialize(enum color_t id, struct graph_t* graph, size_t num_walls)
    self.n = graph__get_size(graph);
    self.graph = graph__copy(graph, self.n);
    self.first_move = 1; 
-
 }
 
 /* Computes next move
@@ -53,7 +52,7 @@ void initialize(enum color_t id, struct graph_t* graph, size_t num_walls)
 struct move_t play(struct move_t previous_move)
 {
    /*
-   * Player: Only move - Random move
+   * Player Patrick: Only random move - No walls
    */
  
 
@@ -89,7 +88,6 @@ struct move_t play(struct move_t previous_move)
       free(list);
       // =====
 
-
    }
    // ==== Other moves
    else
@@ -105,7 +103,8 @@ struct move_t play(struct move_t previous_move)
       // =====
    }
 
-   printf("Côté Client : Joueur %d (position = %ld, position ennemie = %ld) \n", self.id, self.pos, self.ennemy_pos);
+      // === Debug === 
+   //printf("Côté Client : Joueur %d (position = %ld, position ennemie = %ld) \n", self.id, self.pos, self.ennemy_pos);
 
    return move;  
 }

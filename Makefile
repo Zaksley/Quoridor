@@ -1,8 +1,8 @@
 GSL_PATH ?= /net/ens/renault/save/gsl-2.6/install
+
 DIR = src
-BIN = 
+BIN_DIR = install
 TEST_DIR = tests
-TEST_BIN = test_graph_fonc test_graph_struct
 
 CC ?= cc
 CFLAGS = -Wall -Wextra -std=c99 -g -lgcov -I${GSL_PATH}/include
@@ -11,15 +11,15 @@ LIBS = -lgsl -lgslcblas -lm
 
 ################ Compilation rules #################
 
-all: clean build test
+all: clean build
 
-build: ${BIN}
+build: install test
 
 test: test_graph_fonc.o test_graph_struct.o graph_modif.o
-	${CC} ${CFLAGS} ${LDFLAGS} ${LIBS} ${TEST_DIR}/alltests.c graph_modif.o test_graph_fonc.o test_graph_struct.o -o install/alltests
+	${CC} ${CFLAGS} ${TEST_DIR}/alltests.c graph_modif.o test_graph_fonc.o test_graph_struct.o -o install/alltests  ${LDFLAGS} ${LIBS}
 
 alltests: test
-	./install/alltests
+	LD_LIBRARY_PATH=${GSL_PATH}/lib ./install/alltests
 
 install: player_move_random player_random
 	${CC} -rdynamic -o install/server ${DIR}/main.c graph_modif.o -ldl ${LIBS} ${CFLAGS} ${LDFLAGS};
@@ -51,4 +51,4 @@ player_move_random: graph_modif.o utils.o
 ###################### Tests #######################
 
 clean:
-	rm -f *.o ${BIN}/*.so *~ ${TEST_BIN}
+	rm -f *.o ${BIN_DIR}/* *~

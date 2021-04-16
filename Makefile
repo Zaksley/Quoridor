@@ -22,7 +22,7 @@ alltests: test
 	LD_LIBRARY_PATH=${GSL_PATH}/lib ./install/alltests
 
 install: player_move_random player_random
-	${CC} -rdynamic -o install/server ${DIR}/main.c graph_modif.o -ldl ${LIBS} ${CFLAGS} ${LDFLAGS};
+	${CC} -rdynamic -o install/server ${DIR}/main.c graph_modif.o utils.o -ldl ${LIBS} ${CFLAGS} ${LDFLAGS};
 #./install/server [-m] [-t] ./install/alltests
 
 ################## Binary objects ##################

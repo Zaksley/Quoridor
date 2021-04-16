@@ -39,8 +39,9 @@ struct walls
  */
 struct player* get_functions(char* lib);
 
+enum color_t other_player(enum color_t player); 
 
-
+struct player* player_color(struct player** p, enum color_t c); 
 
 // ******************* Functions with MOVE = 1 (Moving pawn)
 
@@ -70,11 +71,11 @@ struct walls* valid_walls(struct player* p);
 
 /* Put a wall on the board meaning destroying 2 edges on the graph
 *
-*  @param pointer on the player
+*  @param graph we want to update
 *  @param wall the wall we are posing 
 *  @return 0 if the wall's installation is successful, -1 if it failed
 */
-int put_wall(struct player* p, struct move_t wall); 
+int put_wall(struct graph_t* graph, struct move_t wall); 
 
 /* Shifting by the left an array
 *  

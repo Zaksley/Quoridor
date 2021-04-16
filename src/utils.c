@@ -38,10 +38,54 @@ struct moves* valid_positions(struct player* p)
    {
       value = graph__get_neighboor(p->graph, p->n, p->pos, dir);
       new.m = value; 
+
+         // Authorized move
       if (value != -1)
       { 
-         valid[count_moves] = new;
-         count_moves++; 
+            // Legal move 
+         if (value != (int) p->ennemy_pos)
+         {
+            valid[count_moves] = new;
+            count_moves++; 
+         }
+            // On ennemy position 
+         else
+         {
+            int double_jump = graph__get_neighboor(p->graph, p->n, value, dir);
+            new.m = double_jump; 
+               // Legal move
+            if (double_jump != -1)
+            {
+               valid[count_moves] = new;
+               count_moves++; 
+            }
+               // Have to move on side 
+            else
+            {  
+               enum direction d1, d2; 
+               if (dir == NORTH || dir == SOUTH) 
+               {
+                  d1 = EAST; 
+                  d2 = WEST; 
+               }
+               else
+               {
+                  d1 = NORTH;
+                  d2 = SOUTH; 
+               }
+
+               int jump_side = graph__get_neighboor(p->graph, p->n, value, d1);
+               new.m = jump_side; 
+               valid[count_moves] = new;
+               count_moves++; 
+
+               jump_side = graph__get_neighboor(p->graph, p->n, value, d2);
+               new.m = jump_side;
+               valid[count_moves] = new; 
+               count_moves++; 
+            }
+
+         }
       }
    }
 

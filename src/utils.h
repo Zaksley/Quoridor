@@ -22,25 +22,32 @@ struct player
    void (*finalize) (); 
 }; 
 
-struct moves
+struct moves_valids
 {
    struct move_t* valid; 
-   int number_moves; 
+   int number; 
 };
 
-struct walls
-{
-   struct move_t* valid;
-   int number_walls; 
-}; 
+
 
 /*
  *   Contains every special function of a player
  */
 struct player* get_functions(char* lib);
 
+/* Return the color of the other player
+*
+*  @param color of a player
+*  @return opposite color 
+*/
 enum color_t other_player(enum color_t player); 
 
+/* Return a player in relation to a specific color 
+*
+*  @param array of players
+*  @param color we want
+*  @return player with the color specified
+*/
 struct player* player_color(struct player** p, enum color_t c); 
 
 // ******************* Functions with MOVE = 1 (Moving pawn)
@@ -51,7 +58,7 @@ struct player* player_color(struct player** p, enum color_t c);
 *  @return list of move_t
 */
 
-struct moves* valid_positions(struct player*); 
+struct moves_valids* valid_positions(struct player*); 
 
 /*
 *  Add a position new to the array valid 
@@ -67,7 +74,7 @@ void add_position(struct move_t* valid, struct move_t new, int* count_moves);
 *  @param pointer on the player
 *  @return array of every move_t wall usable
 */
-struct walls* valid_walls(struct player* p); 
+struct moves_valids* valid_walls(struct player* p); 
 
 /* Put a wall on the board meaning destroying 2 edges on the graph
 *

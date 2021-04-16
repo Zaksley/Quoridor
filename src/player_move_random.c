@@ -92,8 +92,8 @@ struct move_t play(struct move_t previous_move)
    // ==== Other moves
    else
    {
-      struct moves* moves = valid_positions(&self);
-      move.m = moves->valid[rand() % moves->number_moves].m; 
+      struct moves_valids* moves = valid_positions(&self);
+      move.m = moves->valid[rand() % moves->number].m; 
       //printf("MOVE CHOISI %ld pour joueur %d\n", move.m, self.id);
       self.pos = move.m;
 

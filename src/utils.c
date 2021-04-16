@@ -61,12 +61,11 @@ struct player* player_color(struct player** p, enum color_t c)
 }
 
 
-// -------- MOVE
+// ===================  MOVE =================== 
 
-// TODO => vérifier que sur les positions, il n'y a pas de joueur adverse
-struct moves* valid_positions(struct player* p)
+struct moves_valids* valid_positions(struct player* p)
 {
-   struct moves *global = malloc(sizeof(struct moves)); 
+   struct moves_valids *global = malloc(sizeof(struct moves_valids)); 
    struct move_t *valid = malloc(sizeof(struct move_t) * 5);
    struct move_t new; 
 
@@ -135,27 +134,27 @@ struct moves* valid_positions(struct player* p)
       }
    }
 
-   global->number_moves = count_moves;
+   global->number = count_moves;
    global->valid = valid; 
 
    return global;
 }
 
-// -------- MOVE
+// =================== MOVE =================== 
 
 
 
-// -------- WALL
+// =================== WALL =================== 
 
 /* Return every possible wall usable on the board 
 *
 *  @param p pointer on the player
 *  @return array move_t 
 */
-struct walls* valid_walls(struct player* p)
+struct moves_valids* valid_walls(struct player* p)
 {
       // Dynamic array Walls
-   struct walls* global = malloc(sizeof(struct walls)); 
+   struct moves_valids* global = malloc(sizeof(struct moves_valids)); 
    struct move_t* walls = malloc(sizeof(struct move_t) * 1); 
    int size = 0; 
    int capacity = 1; 
@@ -219,7 +218,7 @@ struct walls* valid_walls(struct player* p)
    }
 
    global->valid = walls;
-   global->number_walls = size; 
+   global->number = size; 
 
    return global;   
 }

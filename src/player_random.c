@@ -52,6 +52,11 @@ void initialize(enum color_t id, struct graph_t* graph, size_t num_walls)
 */
 struct move_t play(struct move_t previous_move)
 {
+
+   /*
+   *  Player Donald Trump: Only random (Move & walls)
+   */
+
    if (previous_move.t == MOVE) 
    {
       self.ennemy_pos = previous_move.m; 
@@ -66,13 +71,14 @@ struct move_t play(struct move_t previous_move)
    // Creation of the new move 
    struct move_t move; 
    move.c = self.id; 
-   move.t = MOVE; 
-   move.e[0] = no_wall;
-   move.e[1] = no_wall; 
 
    // ==== First move
    if (self.first_move)
    {
+      move.t = MOVE; 
+      move.e[0] = no_wall;
+      move.e[1] = no_wall; 
+
       size_t* list = malloc(sizeof(size_t) * self.n); 
       graph__list_ownership(self.graph, self.n, other_player(self.id), list); 
       move.m = list[rand() % self.n]; 
@@ -84,18 +90,35 @@ struct move_t play(struct move_t previous_move)
       // =====
 
    }
-   // ==== Other moves
+   // ===== Other moves =====
    else
    {
-      struct moves* moves = valid_positions(&self);
-      move.m = moves->valid[rand() % moves->number_moves].m; 
-      //printf("MOVE CHOISI %ld pour joueur %d\n", move.m, self.id);
-      self.pos = move.m;
+      int random = rand() % 2; 
 
-      // ===== Free tables
-      free(moves->valid);
-      free(moves);
-      // =====
+      // === Chosed to move === 
+      if (random == 0 || random == 1)
+      {
+         move.t = MOVE; 
+         move.e[0] = no_wall;
+         move.e[1] = no_wall; 
+
+         struct moves_valids* moves = valid_positions(&self);
+         move.m = moves->valid[rand() % moves->number].m; 
+         self.pos = move.m;
+
+         // ===== Free tables
+         free(moves->valid);
+         free(moves);
+         // =====
+      }
+      // === Chosed to put a wall ===
+      /*
+      else
+      {
+         move.t = WALL; 
+      }
+      */
+
    }
 
    //printf("Côté Client : Joueur %d (position = %ld, position ennemie = %ld) \n", self.id, self.pos, self.ennemy_pos);

@@ -40,7 +40,9 @@ void initialize(enum color_t id, struct graph_t* graph, size_t num_walls)
    self.num_walls = num_walls;
    self.n = 5;
    self.graph = graph__copy(graph, self.n);
+   self.first_move = 1; 
 
+   /*
    if (self.id == WHITE)
    {
       self.pos = 0;
@@ -51,6 +53,7 @@ void initialize(enum color_t id, struct graph_t* graph, size_t num_walls)
       self.pos = 20;
       self.ennemy_pos = 0;
    }
+   */
    
 }
 
@@ -66,15 +69,16 @@ struct move_t play(struct move_t previous_move)
    * Player: Only move - Random move
    */
  
-   // TODO Update Move ennemy 
-   // self.ennemy_pos   
 
-   (void) previous_move; 
-
-   struct moves* moves = valid_positions(&self);
-   for(int i = 0; i < moves->number_moves; ++i)
+      // === Update ennemy player
+   if (previous_move.t == MOVE) 
    {
-      //printf("move %d : -> %zu\n", i, moves->valid[i].m);
+      self.ennemy_pos = previous_move.m; 
+   }
+      // Update le graphe en cas de Wall 
+   else
+   {
+
    }
 
    // Creation of the new move 
@@ -83,9 +87,36 @@ struct move_t play(struct move_t previous_move)
    move.t = MOVE; 
    move.e[0] = no_wall;
    move.e[1] = no_wall; 
-   move.m = moves->valid[rand() % moves->number_moves].m; 
-   printf("MOVE CHOISI %ld pour joueur %d\n", move.m, self.id);
-   self.pos = move.m;
+
+   // ==== First move
+   if (self.first_move)
+   {
+      size_t* list = malloc(sizeof(size_t) * self.n); 
+      graph__list_ownership(self.graph, self.n, self.id, list); 
+      move.m = list[rand() % self.n]; 
+      self.pos = move.m;
+      self.first_move = 0; 
+      printf("Je suis le joueur move random et j'apparaît sur la case %ld\n", move.m); 
+
+      // ===== Free tables
+      free(list);
+      // =====
+
+
+   }
+   // ==== Other moves
+   else
+   {
+      struct moves* moves = valid_positions(&self);
+      move.m = moves->valid[rand() % moves->number_moves].m; 
+      printf("MOVE CHOISI %ld pour joueur %d\n", move.m, self.id);
+      self.pos = move.m;
+
+      // ===== Free tables
+      free(moves->valid);
+      free(moves);
+      // =====
+   }
 
    return move;  
 }
@@ -98,7 +129,7 @@ struct move_t play(struct move_t previous_move)
  */
 void finalize()
 {
-   printf("Libération de Random...\n");
+   printf("Libération de Move Random...\n");
    graph__free(self.graph);
    printf("OK !\n");
 }

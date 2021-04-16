@@ -79,14 +79,14 @@ int main()
    struct graph_t* server_Graph = graph__create_square(size_graph);
    
     // ===== Initialize players (Server) =====
+
    for(int p = 0; p < NUMB_PLAYER; p++)
    {
         
       if (p == random)   
       {
          players[p]->id = WHITE;
-         players[p]->pos = 0; 
-         players[p]->ennemy_pos = 20; 
+         players[p]->first_move = 1; 
 
          // Winning positions add 
          for(int i=0; i<size_graph; i++)
@@ -97,8 +97,7 @@ int main()
       else 
       {
          players[p]->id = BLACK; 
-         players[p]->pos = 20; 
-         players[p]->ennemy_pos = 0; 
+         players[p]->first_move = 1; 
 
          // Winning positions add 
          for(int i=0; i<size_graph; i++)
@@ -108,27 +107,41 @@ int main()
       }     
    }
 
+   // ======
+
+
+   // ===== Initialize players (Client) ===== 
 
    struct graph_t* graphs[2] = {graph__copy(server_Graph, size_graph), graph__copy(server_Graph, size_graph)}; 
-
-      // ===== Initialize players (Client) ===== 
    for(int p = 0; p < NUMB_PLAYER; p++)
    {
       players[p]->initialize(p, graphs[p], NUMB_WALLS);
    }
 
+   // ======
 
 
    // ================== Loop Game
    int isPlaying = 1; 
    int loop=0; 
 
+   struct move_t update_move; 
    while (isPlaying) 
    {
       if (loop >= 6) break; 
+
       for (int p=0; p<NUMB_PLAYER; p++)
       {
-         struct move_t update_move = players[p]->player_play((struct move_t){});
+
+            // FIRST MOVE - No move before to give
+         if (loop == 0 && p == 0)
+         {
+            update_move = players[p]->player_play((struct move_t){}); 
+         }
+         else
+         {
+            update_move = players[p]->player_play(update_move);
+         }
 
             // Update Player_move 
          if (update_move.t == MOVE)
@@ -136,7 +149,8 @@ int main()
             players[p]->pos = update_move.m;
             players[other_player(players[p]->id)]->ennemy_pos = update_move.m;
          }
-         printf("Joueur %d : Sa position = %ld / Position ennemie = %ld\n", players[p]->id, players[p]->pos, players[p]->ennemy_pos);
+         
+         printf("Côté serveur: Joueur %d (position = %ld / position ennemie = %ld) \n", players[p]->id, players[p]->pos, players[p]->ennemy_pos);
          
          //graph__display(server_Graph, size_graph, player_color(players, WHITE)->pos, player_color(players, BLACK)->pos );
       }

@@ -40,7 +40,9 @@ void initialize(enum color_t id, struct graph_t* graph, size_t num_walls)
    self.num_walls = num_walls;
    self.n = 5;
    self.graph = graph; 
+   self.first_move = 1; 
 
+   /*
    if (self.id == WHITE)
    {
       self.pos = 0;
@@ -51,6 +53,7 @@ void initialize(enum color_t id, struct graph_t* graph, size_t num_walls)
       self.pos = 20;
       self.ennemy_pos = 0;
    }
+   */
    
 }
 
@@ -62,8 +65,15 @@ void initialize(enum color_t id, struct graph_t* graph, size_t num_walls)
 */
 struct move_t play(struct move_t previous_move)
 {
-   (void) previous_move; 
+   if (previous_move.t == MOVE) 
+   {
+      self.ennemy_pos = previous_move.m; 
+   }
+      // Update le graphe en cas de Wall 
+   else
+   {
 
+   }
 
    // Creation of the new move 
    struct move_t move; 
@@ -78,10 +88,15 @@ struct move_t play(struct move_t previous_move)
       size_t* list = malloc(sizeof(size_t) * self.n); 
       graph__list_ownership(self.graph, self.n, self.id, list); 
       move.m = list[rand() % self.n]; 
+      self.pos = move.m;
+      self.first_move = 0; 
+      printf("Je suis le joueur random et j'apparaît sur la case %ld\n", move.m); 
 
       // ===== Free tables
       free(list);
       // =====
+
+
    }
    // ==== Other moves
    else

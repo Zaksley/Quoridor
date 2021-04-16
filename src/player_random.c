@@ -42,19 +42,6 @@ void initialize(enum color_t id, struct graph_t* graph, size_t num_walls)
    self.graph = graph; 
    self.first_move = 1; 
 
-   /*
-   if (self.id == WHITE)
-   {
-      self.pos = 0;
-      self.ennemy_pos = 20;
-   }
-   else
-   {
-      self.pos = 20;
-      self.ennemy_pos = 0;
-   }
-   */
-   
 }
 
 /* Computes next move
@@ -90,12 +77,10 @@ struct move_t play(struct move_t previous_move)
       move.m = list[rand() % self.n]; 
       self.pos = move.m;
       self.first_move = 0; 
-      printf("Je suis le joueur random et j'apparaît sur la case %ld\n", move.m); 
 
       // ===== Free tables
       free(list);
       // =====
-
 
    }
    // ==== Other moves
@@ -103,7 +88,7 @@ struct move_t play(struct move_t previous_move)
    {
       struct moves* moves = valid_positions(&self);
       move.m = moves->valid[rand() % moves->number_moves].m; 
-      printf("MOVE CHOISI %ld pour joueur %d\n", move.m, self.id);
+      //printf("MOVE CHOISI %ld pour joueur %d\n", move.m, self.id);
       self.pos = move.m;
 
       // ===== Free tables
@@ -111,6 +96,8 @@ struct move_t play(struct move_t previous_move)
       free(moves);
       // =====
    }
+
+   printf("Côté Client : Joueur %d (position = %ld, position ennemie = %ld) \n", self.id, self.pos, self.ennemy_pos);
 
    return move;  
 }

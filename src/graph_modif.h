@@ -117,7 +117,14 @@ int graph__is_owned(struct graph_t * graph, size_t v, size_t c);
  * @param *l a size_t list of size n
  * @return nothing (side-effect on l)
  */
-void graph__list_ownership(struct graph_t * graph, size_t n, size_t c, size_t* l);
+int graph__list_ownership(struct graph_t * graph, size_t n, size_t c, size_t* l);
+
+/* Gets the size of the graph
+ * 
+ * @param graph a graph
+ * @return the graph size
+ */
+size_t graph__get_size(struct graph_t * graph);
 
 /* Displays a graph for debug usage
  *

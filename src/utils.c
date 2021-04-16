@@ -172,6 +172,7 @@ struct moves_valids* valid_walls(struct player* p)
    size_t checkTest = -1; 
    for(size_t node = 0; node < p->graph->num_vertices; node++)
    {
+      fprintf(stderr, "here to check nodes\n");
       for(int i=0; i<2; i++)
       {
             // Neighboors EAST-WEST
@@ -187,6 +188,7 @@ struct moves_valids* valid_walls(struct player* p)
             n2 = graph__get_neighboor(p->graph,p->n, node, SOUTH); 
          }
 
+         fprintf(stderr, "Before checkPath\n"); 
          if (n1 != checkTest && n2 != checkTest)
          {
             if (graph__edge_exists(p->graph, node, n1) && graph__edge_exists(p->graph, node, n2))
@@ -199,6 +201,7 @@ struct moves_valids* valid_walls(struct player* p)
                wall.e[1] = e2; 
 
                   // Check if we can put the wall
+               
                int pathOk = checkPath(p, wall);
                if (pathOk)
                {

@@ -94,32 +94,41 @@ struct move_t play(struct move_t previous_move)
    else
    {
       int random = rand() % 2; 
-
+      struct moves_valids* moves;
       // === Chosed to move === 
-      if (random == 0 || random == 1)
+      if (random == 0)
       {
          move.t = MOVE; 
          move.e[0] = no_wall;
          move.e[1] = no_wall; 
 
-         struct moves_valids* moves = valid_positions(&self);
+         moves = valid_positions(&self);
          move.m = moves->valid[rand() % moves->number].m; 
          self.pos = move.m;
-
-         // ===== Free tables
-         free(moves->valid);
-         free(moves);
-         // =====
       }
       // === Chosed to put a wall ===
-      /*
       else
       {
          move.t = WALL; 
-      }
-      */
+         moves = valid_walls(&self); 
+         struct move_t chosen_wall = moves->valid[rand() % moves->number]; 
+         move.e[0] = chosen_wall.e[0]; 
+         move.e[1] = chosen_wall.e[1];
+         move.m = chosen_wall.m; 
 
+         int wall_destroyed = put_wall(self.graph, chosen_wall); 
+         if (wall_destroyed == -1)  fprintf(stderr, "Erreur (Client) - Retirer un mur n'a pas fonctionné\n"); 
+
+         printf("Côté Client : Joueur %d pose mur entre %ld et %ld\n", self.id, move.e[0].fr, move.e[0].to);
+      }
+
+      // ===== Free tables
+      free(moves->valid);
+      free(moves);
+      // =====
    }
+
+
 
    //printf("Côté Client : Joueur %d (position = %ld, position ennemie = %ld) \n", self.id, self.pos, self.ennemy_pos);
 

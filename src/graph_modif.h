@@ -100,6 +100,25 @@ int graph__remove_edge(struct graph_t * graph, size_t first, size_t second);
  */
 int graph__add_ownership(struct graph_t * graph, size_t v, size_t owner);
 
+/* Verifies if a vertex is owned by a color
+ *
+ * @param graph a graph
+ * @param v the vertex number
+ * @param c the player number
+ * @return 1 if the vertex is owned, 0 else
+ */
+int graph__is_owned(struct graph_t * graph, size_t v, size_t c);
+
+/* Gets a list of owned positions for a player
+ *
+ * @param graph a graph
+ * @param n the size of the graph
+ * @param c the player number
+ * @param *l a size_t list of size n
+ * @return nothing (side-effect on l)
+ */
+void graph__list_ownership(struct graph_t * graph, size_t n, size_t c, size_t* l);
+
 /* Displays a graph for debug usage
  *
  * @param graph a graph

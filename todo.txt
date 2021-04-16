@@ -23,19 +23,32 @@ Séance 1 (12/03):
 TODO NEXT
 - Killian : Faire des tests concluants sur l'utilisation de GSL et des matrices
 - Léna : Commencer à écrire des fonctions de manipulations de graphes
-- Matthieu : Se renseigner sur GSL, et aider Enzo avec les librairies partagées
+- Mathieu : Se renseigner sur GSL, et aider Enzo avec les librairies partagées
 - Enzo : Finaliser l'importation des .so, et se renseigner sur GSL par la suite
 
 Séance 2 (19/03):
 TODO NEXT
 - Killian : Finir player.c (play) et faire le utils.h
 - Léna : Finir les fonctions de modifications de graphe (avec Matthieu)
-- Matthieu : Finir les fonctions de modifications de graphe (avec Léna)
+- Mathieu : Finir les fonctions de modifications de graphe (avec Léna)
 - Enzo : Continuer les utils (positions valides, déplacement, etc)
 
 Séance 3 (26/03):
 TODO NEXT
 - Killian : Tester et débug les déplacements + gérer le Makefile
 - Léna : Finir les tests structurels pour les graphs
-- Matthieu : Finir les tests fonctionnels pour les graphs
+- Mathieu : Finir les tests fonctionnels pour les graphs
 - Enzo : Tester et débug les déplacements + gérer le Makefile
+
+Pas de séance le 02/04
+
+Séance 4 (9/04):
+TODO NEXT
+- Continuer la dernière séance + régler le makefile
+
+Séance 5 (16/04):
+TODO NEXT
+- Killian : Continuer les tests sur utils & réfléchir à des stratégies
+- Léna : Continuer les tests sur utils & réfléchir à des stratégies
+- Mathieu : Continuer les tests sur utils & réfléchir à des stratégies
+- Enzo : Finir de changer utils.c et avancer la boucle de jeu

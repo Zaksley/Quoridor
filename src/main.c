@@ -114,6 +114,7 @@ int main()
 
 
 
+
    // ================== Loop Game
    int isPlaying = 1; 
    int loop=0; 

@@ -38,8 +38,8 @@ void initialize(enum color_t id, struct graph_t* graph, size_t num_walls)
 {
    self.id = id;
    self.num_walls = num_walls;
-   self.n = 5;
-   self.graph = graph; 
+   self.n = graph__get_size(graph);
+   self.graph = graph__copy(graph, self.n);
    self.first_move = 1; 
 
 }

@@ -65,7 +65,7 @@ int main()
    int random = rand() % 2; 
 
       // Central Graph - Server 
-   int size_graph = 5; 
+   int size_graph = 3; 
    struct graph_t* server_Graph = graph__create_square(size_graph);
    
       // ===== Initialize players (Server) =====
@@ -173,7 +173,7 @@ int main()
          
             // === Debug ===
          printf("Côté Serveur: Joueur %d (position = %ld / position ennemie = %ld) \n", players[p]->id, players[p]->pos, players[p]->ennemy_pos);
-         graph__display(server_Graph, size_graph, player_color(players, WHITE)->pos, player_color(players, BLACK)->pos );
+         //graph__display(server_Graph, size_graph, player_color(players, WHITE)->pos, player_color(players, BLACK)->pos );
       }
       loop++; 
    }

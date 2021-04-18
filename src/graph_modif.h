@@ -73,6 +73,15 @@ int graph__edge_exists(struct graph_t * graph, size_t first, size_t second);
  */
 int graph__get_neighboor(struct graph_t * graph, size_t n, size_t v, enum direction d);
 
+/* Get the direction between 2 vertex
+ *
+ * @param graph a graph
+ * @param first first vertex
+ * @param second second vertex
+ * @return 0 if there is no direction, 1:N, 2:S, 3:W, 4:E
+ */
+int graph__get_dir(struct graph_t* graph, size_t v1, size_t v2); 
+
 /* Adds an edge between two vertices in a graph
  *
  * @param graph a graph

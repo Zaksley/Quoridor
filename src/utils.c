@@ -172,7 +172,6 @@ struct moves_valids* valid_walls(struct player* p)
    size_t checkTest = -1; 
    for(size_t node = 0; node < p->graph->num_vertices; node++)
    {
-      fprintf(stderr, "here to check nodes\n");
       for(int i=0; i<2; i++)
       {
             // Neighboors EAST-WEST
@@ -181,6 +180,7 @@ struct moves_valids* valid_walls(struct player* p)
             n1 = graph__get_neighboor(p->graph, p->n, node, EAST); 
             n2 = graph__get_neighboor(p->graph, p->n, node, WEST); 
          }
+         
             // Neighboors NORTH-SOUTH
          else
          {
@@ -188,11 +188,13 @@ struct moves_valids* valid_walls(struct player* p)
             n2 = graph__get_neighboor(p->graph,p->n, node, SOUTH); 
          }
 
-         fprintf(stderr, "Before checkPath\n"); 
+         
          if (n1 != checkTest && n2 != checkTest)
          {
+            
             if (graph__edge_exists(p->graph, node, n1) && graph__edge_exists(p->graph, node, n2))
             {
+               
                   // Set the struct move_t wall 
                struct edge_t e1 = {node, n1};
                struct edge_t e2 = {node, n2}; 
@@ -203,6 +205,8 @@ struct moves_valids* valid_walls(struct player* p)
                   // Check if we can put the wall
                
                int pathOk = checkPath(p, wall);
+               
+
                if (pathOk)
                {
                      // Realloc size to Walls 
@@ -212,6 +216,7 @@ struct moves_valids* valid_walls(struct player* p)
                      walls = realloc(walls, sizeof(struct move_t) * capacity);
                   }
 
+                  // Add a wall to the array
                   walls[size] = wall; 
                   size++; 
                }
@@ -254,6 +259,8 @@ int put_wall(struct graph_t* graph, struct move_t wall)
 void shift_left(size_t s[], int begin, int end)
 {
    int i=0;
+   
+   printf("valgrind shift_left problem\n");
 
    while(i <= end-begin )
    { 
@@ -262,6 +269,27 @@ void shift_left(size_t s[], int begin, int end)
    }  
 }
 
+/* Checking if a vertex isn't already in the vertex list
+*  
+*  @param waiting Waitinglist - size_t array
+*  @param size Size of the waiting list 
+*  @param v vertex studied
+*  @return Booleen: 0 => In waitingList / 1 => Not in waiting list
+*/
+int not_already_inWaitinglist(size_t* waitingList, int size, size_t v)
+{
+   for(int i=0; i<size; i++)
+   {
+      if (waitingList[i] == v)
+      {
+         return 0; 
+      }
+   }
+
+   return 1; 
+}
+
+
 /* Checking if a player is still able to move to the victory if we put a specific wall
 *
 *  @param pointer on the player
@@ -269,48 +297,72 @@ void shift_left(size_t s[], int begin, int end)
 *  @param Where the studied player is
 *  @return 1 if player can still win, 0 instead
 */
-int existPath_Player(struct player* p, size_t number_player, size_t pos_player)
+int existPath_Player(struct graph_t* graph, size_t n, size_t color, size_t pos)
 {
-   int* marked = calloc(p->graph->num_vertices, sizeof(int)); 
-   size_t* waitingList = malloc(p->graph->num_vertices * sizeof(size_t)); 
+   int* marked = calloc(graph->num_vertices, sizeof(int)); 
+   size_t* waitingList = malloc(graph->num_vertices * sizeof(size_t)); 
+   for(size_t i =0; i<graph->num_vertices; i++)
+   {
+      waitingList[i] = -1; 
+   }
 
-   size_t current = pos_player; 
-   int size = 0; 
-   waitingList[size] = current;
-   size++; 
+   size_t current = pos; 
+   int size = 1; 
+   int to_treat = 0; 
+   waitingList[to_treat] = current;
 
    size_t neighboor = -1; 
-   
-   while (size != 0)
+   int loop = 0;
+   while (waitingList[to_treat] != (size_t) -1 && (size_t) to_treat < graph->num_vertices )
    {  
-      current = waitingList[0]; 
+      current = waitingList[to_treat]; 
       marked[current] = 1; 
-      shift_left(waitingList, size-1, 0); 
-      size--;
+      //shift_left(waitingList, 0, size-1); 
+      to_treat++; 
 
-      for(int dir = 0; dir < 5; dir++)
+      for(int dir = NORTH; dir < 5; dir++)
       {
             // If neighboor exist + non treated 
-         neighboor = graph__get_neighboor(p->graph, p->n, current, dir);
-         if ( neighboor != (size_t) -1 && marked[neighboor] != 0)
+         neighboor = graph__get_neighboor(graph, n, current, dir);
+         if ( (neighboor != (size_t) -1))
          {
-            waitingList[size] = graph__get_neighboor(p->graph, p->n, current, dir); 
-            size++;
+            if (marked[neighboor] == 0 && not_already_inWaitinglist(waitingList, size, neighboor))
+            {
+               waitingList[size] = neighboor;
+               size++;
+            }
+         }
+      }
+
+      loop++; 
+   }
+
+   
+   size_t* list = malloc(sizeof(size_t) * n); 
+   graph__list_ownership(graph, n, color, list); 
+   
+   for(size_t node = 0; node < graph->num_vertices; node++)
+   {
+         // Find a winning path 
+      if (marked[node])
+      {
+         for(size_t i = 0; i<n; i++)
+         {
+            if (node == list[i])
+            {
+               free(marked);
+               free(list); 
+               free(waitingList);
+               return 1; 
+            }
          }
       }
    }
 
-   for(size_t node = 0; node < p->graph->num_vertices; node++)
-   {
-         // Find a winning path 
-      if (marked[node] && (int) gsl_spmatrix_uint_get(p->graph->o, number_player, node) == 1)
-      {
-         return 1; 
-      }
-   }
-
+   free(list); 
+   free(marked);
+   free(waitingList);
    return 0; 
-
 }
 
 /* Check if posing a wall is allowed 
@@ -323,21 +375,29 @@ int checkPath(struct player* p, struct move_t wall)
 {
       // Put Fake Wall (for test)
    put_wall(p->graph, wall); 
-
-   int check_1 = existPath_Player(p, p->pos, p->id);
+   
+   int check_1 = existPath_Player(p->graph, p->n, p->id, p->pos);
    int check_2; 
-   if (p->id == BLACK) check_2 = existPath_Player(p, p->ennemy_pos, WHITE);
-   else existPath_Player(p, p->ennemy_pos, BLACK);
+   
+   if (p->id == BLACK) check_2 = existPath_Player(p->graph, p->n, WHITE, p->ennemy_pos);
+   else check_2 = existPath_Player(p->graph, p->n, BLACK, p->ennemy_pos);
    
 
       // Remove testing Wall
+   int d0 = graph__get_dir(p->graph, wall.e[0].fr, wall.e[0].to); 
+   int d1 = graph__get_dir(p->graph, wall.e[1].fr, wall.e[1].to); 
+
    int test = -1; 
-   test = graph__remove_edge(p->graph, wall.e[0].fr, wall.e[0].to);
+   test = graph__add_edge(p->graph, wall.e[0].fr, wall.e[0].to, d0);
    if (test == -1) return -1; 
-   test = graph__remove_edge(p->graph, wall.e[1].fr, wall.e[1].to);
+   test = graph__add_edge(p->graph, wall.e[1].fr, wall.e[1].to, d1);
    if (test == -1) return -1; 
 
-   if (check_1 && check_2) return 1;
+   if (check_1 && check_2) 
+   {
+      printf("Je peux remove un wall\n");
+      return 1;
+   }
    return 0; 
 
 }

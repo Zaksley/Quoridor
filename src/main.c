@@ -85,7 +85,6 @@ int main()
    struct move_t update_move; 
    while (isPlaying) 
    {
-      //if (loop >= 6) break; 
 
       // ===== Players Playing =====
 
@@ -126,7 +125,7 @@ int main()
          
             // === Debug ===
          printf("Côté Serveur: Joueur %d (position = %ld / position ennemie = %ld) \n", players[p]->id, players[p]->pos, players[p]->ennemy_pos);
-         //graph__display(server_Graph, size_graph, player_color(players, WHITE)->pos, player_color(players, BLACK)->pos );
+         graph__display(server_Graph, size_graph, player_color(players, WHITE)->pos, player_color(players, BLACK)->pos );
       }
       loop++; 
    }

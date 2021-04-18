@@ -92,6 +92,15 @@ int put_wall(struct graph_t* graph, struct move_t wall);
 */
 void shift_left(size_t s[], int begin, int end); 
 
+/* Checking if a vertex isn't already in the vertex list
+*  
+*  @param waiting Waitinglist - size_t array
+*  @param size Size of the waiting list 
+*  @param v vertex studied
+*  @return Booleen: 0 => In waitingList / 1 => Not in waiting list
+*/
+int not_already_inWaitinglist(size_t* waitingList, int size, size_t v);
+
 /* Checking if a player is still able to move to the victory if we put a specific wall
 *
 *  @param pointer on the player
@@ -99,7 +108,7 @@ void shift_left(size_t s[], int begin, int end);
 *  @param Where the studied player is
 *  @return 1 if player can still win, 0 otherwise
 */
-int existPath_Player(struct player* p, size_t number_player, size_t pos_player);
+int existPath_Player(struct graph_t* graph, size_t n, size_t color, size_t pos);
 
 /* Check if posing a wall is allowed 
 *

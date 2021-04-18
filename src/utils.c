@@ -170,6 +170,7 @@ struct moves_valids* valid_walls(struct player* p)
 
    size_t n1, n2; 
    size_t checkTest = -1; 
+   int d1, d2; 
    for(size_t node = 0; node < p->graph->num_vertices; node++)
    {
       for(int i=0; i<2; i++)
@@ -179,6 +180,8 @@ struct moves_valids* valid_walls(struct player* p)
          {
             n1 = graph__get_neighboor(p->graph, p->n, node, EAST); 
             n2 = graph__get_neighboor(p->graph, p->n, node, WEST); 
+            d1 = EAST;
+            d2 = WEST;
          }
          
             // Neighboors NORTH-SOUTH
@@ -186,9 +189,10 @@ struct moves_valids* valid_walls(struct player* p)
          {
             n1 = graph__get_neighboor(p->graph,p->n, node, NORTH); 
             n2 = graph__get_neighboor(p->graph,p->n, node, SOUTH); 
+            d1 = NORTH;
+            d2 = SOUTH;
          }
 
-         
          if (n1 != checkTest && n2 != checkTest)
          {
             
@@ -204,7 +208,7 @@ struct moves_valids* valid_walls(struct player* p)
 
                   // Check if we can put the wall
                
-               int pathOk = checkPath(p, wall);
+               int pathOk = checkPath(p, wall, d1, d2);
                
 
                if (pathOk)
@@ -371,7 +375,7 @@ int existPath_Player(struct graph_t* graph, size_t n, size_t color, size_t pos)
 *  @param specific wall we test
 *  @return 1 if posing this wall is allowed, 0 if not and -1 if errors
 */
-int checkPath(struct player* p, struct move_t wall)
+int checkPath(struct player* p, struct move_t wall, int d1, int d2)
 {
       // Put Fake Wall (for test)
    put_wall(p->graph, wall); 
@@ -384,18 +388,19 @@ int checkPath(struct player* p, struct move_t wall)
    
 
       // Remove testing Wall
+   /*
    int d0 = graph__get_dir(p->graph, wall.e[0].fr, wall.e[0].to); 
    int d1 = graph__get_dir(p->graph, wall.e[1].fr, wall.e[1].to); 
+   */ 
 
    int test = -1; 
-   test = graph__add_edge(p->graph, wall.e[0].fr, wall.e[0].to, d0);
+   test = graph__add_edge(p->graph, wall.e[0].fr, wall.e[0].to, d1);
    if (test == -1) return -1; 
-   test = graph__add_edge(p->graph, wall.e[1].fr, wall.e[1].to, d1);
+   test = graph__add_edge(p->graph, wall.e[1].fr, wall.e[1].to, d2);
    if (test == -1) return -1; 
 
    if (check_1 && check_2) 
    {
-      printf("Je peux remove un wall\n");
       return 1;
    }
    return 0; 

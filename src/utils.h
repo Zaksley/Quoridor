@@ -114,8 +114,10 @@ int existPath_Player(struct graph_t* graph, size_t n, size_t color, size_t pos);
 *
 *  @param pointer on the player
 *  @param specific wall we test
+*  @param d1 direction 1 of center vertex
+*  @param d2 direction 2 of center vertex
 *  @return 1 if posing this wall is allowed, 0 otherwise
 */
-int checkPath(struct player* p, struct move_t wall); 
+int checkPath(struct player* p, struct move_t wall, int d1, int d2); 
 
 #endif

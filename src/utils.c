@@ -294,11 +294,12 @@ int not_already_inWaitinglist(size_t* waitingList, int size, size_t v)
 }
 
 
-/* Checking if a player is still able to move to the victory if we put a specific wall
+/* Checking if a player at a specific pos can reach a winning position depending of the color
 *
-*  @param pointer on the player
-*  @param Specific color of studied player
-*  @param Where the studied player is
+*  @param graph graph of the game
+*  @param n n size of the graph
+*  @param color color studied
+*  @param pos position studied
 *  @return 1 if player can still win, 0 instead
 */
 int existPath_Player(struct graph_t* graph, size_t n, size_t color, size_t pos)
@@ -380,13 +381,12 @@ int checkPath(struct player* p, struct move_t wall, int d1, int d2)
       // Put Fake Wall (for test)
    put_wall(p->graph, wall); 
    
-   int check_1 = existPath_Player(p->graph, p->n, p->id, p->pos);
-   int check_2; 
-   
-   if (p->id == BLACK) check_2 = existPath_Player(p->graph, p->n, WHITE, p->ennemy_pos);
-   else check_2 = existPath_Player(p->graph, p->n, BLACK, p->ennemy_pos);
-   
+   int check_player1_one = existPath_Player(p->graph, p->n, WHITE, p->pos);
+   int check_player1_two = existPath_Player(p->graph, p->n, BLACK, p->pos);
 
+   int check_player2_one = existPath_Player(p->graph, p->n, WHITE, p->ennemy_pos);
+   int check_player2_two = existPath_Player(p->graph, p->n, BLACK, p->ennemy_pos);
+   
       // Remove testing Wall
    /*
    int d0 = graph__get_dir(p->graph, wall.e[0].fr, wall.e[0].to); 
@@ -399,7 +399,7 @@ int checkPath(struct player* p, struct move_t wall, int d1, int d2)
    test = graph__add_edge(p->graph, wall.e[1].fr, wall.e[1].to, d2);
    if (test == -1) return -1; 
 
-   if (check_1 && check_2) 
+   if (check_player1_one && check_player1_two && check_player2_one && check_player2_two) 
    {
       return 1;
    }

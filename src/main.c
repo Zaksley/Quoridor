@@ -4,7 +4,7 @@
 #include "utils.h"
 
 #define NUMB_PLAYER 2
-#define NUMB_WALLS 5 
+#define NUMB_WALLS 8
 
 int main()
 {
@@ -18,14 +18,14 @@ int main()
    int random = rand() % 2; 
 
       // Central Graph - Server 
-   int size_graph = 5; 
+   int size_graph = 8; 
    struct graph_t* server_Graph = graph__create_square(size_graph);
    
       // ===== Initialize players (Server) =====
 
    for(int p = 0; p < NUMB_PLAYER; p++)
    {
-        
+      players[p]->num_walls = NUMB_WALLS; 
       if (p == random)   
       {
          players[p]->id = WHITE;
@@ -101,14 +101,25 @@ int main()
 
 
             // === Update Server ===
+
+         // === Move ===
          if (update_move.t == MOVE)
          {
             players[p]->pos = update_move.m;
             players[other_player(players[p]->id)]->ennemy_pos = update_move.m;
          }
+         // === Wall ===
          else if (update_move.t == WALL)
          {  
+               // = Tentative de triche = 
+            if (players[p]->num_walls <= 0)
+            {
+               fprintf(stderr, "TRICHE - Tentative de poser un mur alors que plus de mur disponible\n"); 
+               exit(3); 
+            }
+            
             int wall_destroyed = put_wall(server_Graph, update_move); 
+            players[p]->num_walls -= 1; 
             if (wall_destroyed == -1)  fprintf(stderr, "Erreur (Server) - Retirer un mur n'a pas fonctionné"); 
          }
 
@@ -118,7 +129,7 @@ int main()
          {
             if (players[p]->pos == wins_places[p][i])
             {
-               printf("VICTOIRE DU JOUEUR %d - Nombre de tours : %d \n", players[p]->id, loop); 
+               printf("VICTOIRE DU JOUEUR %s - Nombre de tours : %d \n", players[p]->get_name(), loop); 
                return 1; 
             }
          }

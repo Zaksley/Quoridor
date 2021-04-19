@@ -94,9 +94,10 @@ struct move_t play(struct move_t previous_move)
    else
    {
       int random = rand() % 2; 
-      struct moves_valids* moves;
+      struct moves_valids* moves = valid_walls(&self);
+
       // === Chosed to move === 
-      if (random == 0)
+      if (random == 0 || self.num_walls <= 0 || moves->number <= 0 )
       {
          move.t = MOVE; 
          move.e[0] = no_wall;
@@ -110,28 +111,25 @@ struct move_t play(struct move_t previous_move)
          }
          else
          {
-            printf("C'est la merde - 0 move trouvé ?!?!");
-            exit(12);
+            fprintf(stderr, "0 move trouvé - BUG");
+            exit(1);
          }
       }
       // === Chosed to put a wall ===
       else
       {
          move.t = WALL; 
-         
-         moves = valid_walls(&self); 
-         
          struct move_t chosen_wall = moves->valid[rand() % moves->number]; 
          move.e[0] = chosen_wall.e[0]; 
          move.e[1] = chosen_wall.e[1];
          move.m = chosen_wall.m; 
          
          int wall_destroyed = put_wall(self.graph, chosen_wall); 
-         if (wall_destroyed == -1)  
+         self.num_walls -= 1; 
+         if (wall_destroyed == -1) 
          {
-            
-            printf("Les nodes : %ld et %ld\n", chosen_wall.e[1].fr, chosen_wall.e[1].to); 
             fprintf(stderr, "Erreur (Client) - Retirer un mur n'a pas fonctionné\n"); 
+            exit(2); 
          }
          printf("Côté Client : Joueur %d pose mur entre %ld et %ld\n", self.id, move.e[0].fr, move.e[0].to);
       }
@@ -141,8 +139,6 @@ struct move_t play(struct move_t previous_move)
       free(moves);
       // =====
    }
-
-
 
    //printf("Côté Client : Joueur %d (position = %ld, position ennemie = %ld) \n", self.id, self.pos, self.ennemy_pos);
 

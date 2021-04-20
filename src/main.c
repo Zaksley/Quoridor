@@ -130,7 +130,6 @@ int main()
          {
             if (players[p]->pos == wins_places[p][i])
             {
-               printf("Edge 3-9 existe? %d \n", graph__edge_exists(server_Graph, 3, 9));
                printf("VICTOIRE DU JOUEUR %s - Nombre de tours : %d & Position gagnante : %ld\n", players[p]->get_name(), loop, players[p]->pos); 
                return 1; 
             }

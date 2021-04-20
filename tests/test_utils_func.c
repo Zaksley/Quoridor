@@ -44,7 +44,42 @@ void test__valid_positions()
 
 void test__valid_walls()
 {
-	TESTCASE("todo", 0);
+	//	=== Initialize graph test ===
+	size_t size = 3; 
+	struct graph_t* graph = graph__create_square(size); 
+	size_t pos_white = 8;
+	size_t pos_black = 0; 
+
+	struct player* p = initialize_test_player(size, pos_white);
+
+	for(int i=0; i<size; i++)
+	{
+		graph__add_ownership(graph, i, BLACK);
+		graph__add_ownership(graph, graph->num_vertices - size + i, WHITE);
+	}	
+	//	=== Initialize graph test ===
+
+	//TESTCASE("- valid_walls | without putting a wall", valid_walls(p)->number == 8); 
+
+			// Initialize wall
+	struct move_t wall = {.t = WALL, .c = WHITE, .m = 4};
+
+	struct edge_t e1_test1 = {4, 3}; 
+	struct edge_t e2_test1 = {1, 0}; 
+	wall.e[0] = e1_test1;
+	wall.e[1] = e2_test1; 
+	put_wall(graph, wall);
+	p->graph = graph; 
+	graph__display(graph, size, pos_white, pos_black);
+
+	struct moves_valids* moves = valid_walls(p); 
+	for(int i=0; i<5; i++)
+	{
+		printf("Mur dispo: {%ld, %ld} et {%ld, %ld}\n", moves->valid[i].e[0].fr, moves->valid[i].e[0].to, moves->valid[i].e[1].fr, moves->valid[i].e[1].to); 
+	}
+
+	TESTCASE("- valid_walls | put a wall => -2 walls available", moves->number == 6); 
+
 }
 
 void test__put_wall()
@@ -129,7 +164,7 @@ void test__exist_path_player()
 	/*
 	*	Put a wall in position 7 direction EAST and WEST
 	*	Put a wall in position 5 direction NORTH and SOUTH
-	* 	==> No more path for black player
+	* 	==> No more path for white player
 	*/
 
 	struct edge_t e1_test2 = {7, 6};
@@ -150,7 +185,7 @@ void test__exist_path_player()
 
 	/*
 	*	Put a wall in position 3 direction NORTH and SOUTH
-	*	==> No more path for white player
+	*	==> No more path for black player
 	*/
 	struct edge_t e1_test4 = {7, 4};
 	struct edge_t e2_test4 = {6, 3}; 
@@ -159,6 +194,11 @@ void test__exist_path_player()
 	put_wall(graph, wall);
 	
 	TESTCASE("- existPath | 4 specific walls, find no path for black player", !existPath_Player(graph, size, BLACK, pos_black));
+
+	/*
+	*	Putting a wall again
+	*	==> Path is again available
+	*/
 	destroy_wall(graph, wall, 1); 
 	TESTCASE("- existPath | removing a wall, find a path for black player", existPath_Player(graph, size, BLACK, pos_black));
 }

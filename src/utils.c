@@ -60,6 +60,13 @@ struct player* player_color(struct player** p, enum color_t c)
    else return p[1]; 
 }
 
+int edge_equal(struct edge_t e1, struct edge_t e2)
+{
+   if (e1.fr == e2.fr && e1.to == e2.to)  return 1; 
+   else if (e1.fr == e2.to && e1.to == e2.fr)   return 1; 
+
+   return 0; 
+}
 
 // ===================  MOVE =================== 
 
@@ -165,6 +172,27 @@ size_t rushing_path(struct player* p, size_t winning_node, struct moves_valids* 
 
 // =================== WALL =================== 
 
+
+/* Check if a wall isn't already in the list
+*
+*  @param size size of array moves
+*  @param moves array stocking the moves
+*  @param wall checking a specific wall
+*  @return booleen 1 if wall is in the list, 0 otherwise 
+*/
+int wall_not_in_list(int size, struct move_t* moves, struct move_t wall)
+{
+   for(int i=0; i < size; i++)
+   {
+      if (edge_equal(wall.e[0], moves[i].e[0])) return 0;
+      else if (edge_equal(wall.e[1], moves[i].e[0])) return 0;
+   }
+
+   return 1; 
+}
+
+//e[2] = { {a, b}, {c, d}    }
+
 /* Return every possible wall usable on the board 
 *
 *  @param p pointer on the player
@@ -212,13 +240,16 @@ struct moves_valids* valid_walls(struct player* p)
          
          for(int second_dir = initial_dir; second_dir < end_dir; second_dir++)
          {
+
+
                // Getting 3 others nodes
             n_neighboor = graph__get_neighboor(p->graph, p->n, node, dir);
-            if (n_neighboor == checkTest)  continue;
+            if (n_neighboor == checkTest) continue;
             n1 = graph__get_neighboor(p->graph, p->n, node, second_dir); 
-            if (n1 == checkTest)  continue;
+            if (n1 == checkTest) continue;
             n2 = graph__get_neighboor(p->graph, p->n, n_neighboor, second_dir);
             if (n2 == checkTest)  continue;
+
             
                // No wall already cutting the option 
             if (graph__edge_exists(p->graph, node, n1) || graph__edge_exists(p->graph, n_neighboor, n2))
@@ -230,21 +261,25 @@ struct moves_valids* valid_walls(struct player* p)
                wall.e[0] = e1;
                wall.e[1] = e2; 
                
-                  // Check if we can put the wall
-               int pathOk = checkPath(p, wall, dir);
-
-               if (pathOk)
+               if(wall_not_in_list(size, walls, wall))
                {
-                     // Realloc size to Walls 
-                  if (size == capacity)
-                  {
-                     capacity *= 2; 
-                     walls = realloc(walls, sizeof(struct move_t) * capacity);
-                  }
+                  // Check if we can put the wall
+                  int pathOk = checkPath(p, wall, dir);
 
-                  // Add a wall to the array
-                  walls[size] = wall; 
-                  size++; 
+                  if (pathOk)
+                  {
+
+                        // Realloc size to Walls 
+                     if (size == capacity)
+                     {
+                        capacity *= 2; 
+                        walls = realloc(walls, sizeof(struct move_t) * capacity);
+                     }
+
+                     // Add a wall to the array
+                     walls[size] = wall; 
+                     size++; 
+                  }
                }
             }
          }
@@ -490,11 +525,6 @@ int checkPath(struct player* p, struct move_t wall, int dir)
    int check_player2 = existPath_Player(p->graph, p->n, other_player(p->id), p->ennemy_pos);
 
       // Remove testing Wall
-   /*
-   int d0 = graph__get_dir(p->graph, wall.e[0].fr, wall.e[0].to); 
-   int d1 = graph__get_dir(p->graph, wall.e[1].fr, wall.e[1].to); 
-   */ 
-
    destroy_wall(p->graph, wall, dir); 
 
    if (check_player1 && check_player2)

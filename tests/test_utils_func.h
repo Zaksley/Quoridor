@@ -24,8 +24,11 @@ void test__valid_walls();
  * Valid wall is added
  * Wall with missing first edge is not added
  * Wall with missing second edge is not added 
+ * Can't add the same wall
  */
 void test__put_wall();
+
+void test__destroy_wall(); 
 
 /*
  * 

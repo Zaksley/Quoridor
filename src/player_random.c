@@ -80,7 +80,7 @@ struct move_t play(struct move_t previous_move)
       move.e[1] = no_wall; 
 
       size_t* list = malloc(sizeof(size_t) * self.n); 
-      graph__list_ownership(self.graph, self.n, other_player(self.id), list); 
+      graph__list_ownership(self.graph, self.n, self.id, list); 
       move.m = list[rand() % self.n]; 
       self.pos = move.m;
       self.first_move = 0; 

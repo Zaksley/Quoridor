@@ -29,7 +29,6 @@ struct moves_valids
 };
 
 
-
 /*
  *   Contains every special function of a player
  */
@@ -50,14 +49,13 @@ enum color_t other_player(enum color_t player);
 */
 struct player* player_color(struct player** p, enum color_t c); 
 
-// ******************* Functions with MOVE = 1 (Moving pawn)
+// =================== Functions with MOVE = 1 (Moving pawn) ===================
 
 /* Return a list of every valid position to move
 *
 *  @param p struct player who has to move 
 *  @return list of move_t
 */
-
 struct moves_valids* valid_positions(struct player*); 
 
 /*
@@ -65,7 +63,10 @@ struct moves_valids* valid_positions(struct player*);
 */
 void add_position(struct move_t* valid, struct move_t new, int* count_moves); 
 
-
+/*
+*
+*/
+size_t rushing_path(struct player* p, size_t winning_node, struct moves_valids* moves);
 
 
 // ******************* Functions with MOVE = 0 (Posing wall)

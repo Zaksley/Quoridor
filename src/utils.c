@@ -119,6 +119,7 @@ struct moves_valids* valid_positions(struct player* p)
                   d2 = SOUTH; 
                }
 
+
                int jump_side = graph__get_neighboor(p->graph, p->n, value, d1);
                new.m = jump_side; 
                valid[count_moves] = new;
@@ -138,6 +139,24 @@ struct moves_valids* valid_positions(struct player* p)
    global->valid = valid; 
 
    return global;
+}
+
+size_t rushing_path(struct player* p, size_t winning_node, struct moves_valids* moves)
+{
+   size_t gap = (size_t) abs( (int) (winning_node - p->pos)); 
+   size_t best = p->pos; 
+   size_t test_gap; 
+   for(int i=0; i<moves->number; i++)
+   {
+      test_gap = (size_t) abs( (int) (winning_node - moves->valid[i].m));
+      if (test_gap < gap)
+      {
+         gap = test_gap; 
+         best = moves->valid[i].m;
+      }
+   }
+
+   return best;
 }
 
 // =================== MOVE =================== 
@@ -305,10 +324,11 @@ int not_already_inWaitinglist(size_t* waitingList, int size, size_t v)
 int existPath_Player(struct graph_t* graph, size_t n, size_t color, size_t pos)
 {
    int* marked = calloc(graph->num_vertices, sizeof(int)); 
-   size_t* waitingList = malloc(graph->num_vertices * sizeof(size_t)); 
-   for(size_t i =0; i<graph->num_vertices; i++)
+   size_t* waitingList = malloc(sizeof(size_t) * graph->num_vertices); 
+
+   for(size_t i = 0; i<graph->num_vertices; i++)
    {
-      waitingList[i] = -1; 
+      waitingList[i] = (size_t) -1; 
    }
 
    size_t current = pos; 
@@ -317,7 +337,6 @@ int existPath_Player(struct graph_t* graph, size_t n, size_t color, size_t pos)
    waitingList[to_treat] = current;
 
    size_t neighboor = -1; 
-   int loop = 0;
    while (waitingList[to_treat] != (size_t) -1 && (size_t) to_treat < graph->num_vertices )
    {  
       current = waitingList[to_treat]; 
@@ -338,13 +357,11 @@ int existPath_Player(struct graph_t* graph, size_t n, size_t color, size_t pos)
             }
          }
       }
-
-      loop++; 
    }
 
-   
+   // - List winning position
    size_t* list = malloc(sizeof(size_t) * n); 
-   graph__list_ownership(graph, n, color, list); 
+   graph__list_ownership(graph, n, other_player(color), list); 
    
    for(size_t node = 0; node < graph->num_vertices; node++)
    {
@@ -381,12 +398,11 @@ int checkPath(struct player* p, struct move_t wall, int d1, int d2)
       // Put Fake Wall (for test)
    put_wall(p->graph, wall); 
    
-   int check_player1_one = existPath_Player(p->graph, p->n, WHITE, p->pos);
-   int check_player1_two = existPath_Player(p->graph, p->n, BLACK, p->pos);
-
-   int check_player2_one = existPath_Player(p->graph, p->n, WHITE, p->ennemy_pos);
-   int check_player2_two = existPath_Player(p->graph, p->n, BLACK, p->ennemy_pos);
+   int check_player1 = existPath_Player(p->graph, p->n, other_player(p->id), p->pos);
+   int check_player2 = existPath_Player(p->graph, p->n, p->id, p->ennemy_pos);
    
+   int check1 = existPath_Player(p->graph, p->n, p->id, p->pos);
+   int check2 = existPath_Player(p->graph, p->n, other_player(p->id), p->ennemy_pos);
       // Remove testing Wall
    /*
    int d0 = graph__get_dir(p->graph, wall.e[0].fr, wall.e[0].to); 
@@ -399,7 +415,7 @@ int checkPath(struct player* p, struct move_t wall, int d1, int d2)
    test = graph__add_edge(p->graph, wall.e[1].fr, wall.e[1].to, d2);
    if (test == -1) return -1; 
 
-   if (check_player1_one && check_player1_two && check_player2_one && check_player2_two) 
+   if (check_player1 && check_player2 && check1 && check2)
    {
       return 1;
    }

@@ -4,8 +4,8 @@
 #include "utils.h"
 
 #define NUMB_PLAYER 2
-#define NUMB_WALLS 8
-
+#define NUMB_WALLS 5
+#define SIZE_GRAPH 5
 int main()
 {
    // ================== Initializing game ==================
@@ -18,7 +18,8 @@ int main()
    int random = rand() % 2; 
 
       // Central Graph - Server 
-   int size_graph = 8; 
+
+   int size_graph = SIZE_GRAPH; 
    struct graph_t* server_Graph = graph__create_square(size_graph);
    
       // ===== Initialize players (Server) =====
@@ -31,10 +32,10 @@ int main()
          players[p]->id = WHITE;
          players[p]->first_move = 1; 
 
-         // Winning positions add 
+         // add Owner position
          for(int i=0; i<size_graph; i++)
          {
-            graph__add_ownership(server_Graph, i, players[p]->id);
+            graph__add_ownership(server_Graph, server_Graph->num_vertices - size_graph + i, WHITE);
          }
       }
       else 
@@ -42,10 +43,10 @@ int main()
          players[p]->id = BLACK; 
          players[p]->first_move = 1; 
 
-         // Winning positions add 
+         // add Owner position
          for(int i=0; i<size_graph; i++)
          {
-            graph__add_ownership(server_Graph, server_Graph->num_vertices - size_graph + i, players[p]->id);
+            graph__add_ownership(server_Graph, i, BLACK);
          }
       }     
    }
@@ -56,8 +57,8 @@ int main()
 
    size_t* list_p0 = malloc(sizeof(size_t) * size_graph); 
    size_t* list_p1 = malloc(sizeof(size_t) * size_graph); 
-   graph__list_ownership(server_Graph, size_graph, players[0]->id, list_p0); 
-   graph__list_ownership(server_Graph, size_graph, players[1]->id, list_p1);
+   graph__list_ownership(server_Graph, size_graph, other_player(players[0]->id), list_p0); 
+   graph__list_ownership(server_Graph, size_graph, other_player(players[1]->id), list_p1);
    size_t* wins_places[2] = {list_p0, list_p1}; 
 
 

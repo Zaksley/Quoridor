@@ -39,6 +39,7 @@ void test__valid_positions()
 		if (!is_in(moves->valid[i].m, 4, neighboors))
 			test = 0;
 	TESTCASE("Found positions are neighboors", test);
+
 }
 
 void test__valid_walls()
@@ -51,17 +52,88 @@ void test__put_wall()
 	TESTCASE("todo", 0);
 }
 
-void test__exist_path_player()
+void test__shift_left()
 {
+
 	TESTCASE("todo", 0);
+}
+
+//int existPath_Player(struct graph_t* graph, size_t n, size_t color, size_t pos)
+void test__exist_path_player()
+{	
+
+	//	=== Initialize graph test ===
+	size_t size = 3; 
+	struct graph_t* graph = graph__create_square(size); 
+	size_t pos_white = 8;
+	size_t pos_black = 0; 
+	for(int i=0; i<size; i++)
+	{
+		graph__add_ownership(graph, i, BLACK);
+		graph__add_ownership(graph, graph->num_vertices - size + i, WHITE);
+	}	
+	//	=== Initialize graph test ===
+
+	//graph__display(graph, size, pos_white, pos_black);
+	TESTCASE("- existPath | initially no walls, find a path for white player", existPath_Player(graph, size, WHITE, pos_white));
+	TESTCASE("- existPath | initially no walls, find a path	for black player", existPath_Player(graph, size, BLACK, pos_black)); 
+	
+	/*
+	*	Put a mur in position 4 direction NORTH and SOUTH
+	* 	==> No problem for both players
+	*/
+	size_t node = 4; 
+		// Initialize wall
+	struct move_t wall = {.t = WALL, .c = WHITE, .m = node};
+
+	struct edge_t e1_test1 = {node, (size_t) 1}; 
+	struct edge_t e2_test1 = {node, (size_t) 7}; 
+	wall.e[0] = e1_test1;
+	wall.e[1] = e2_test1; 
+	put_wall(graph, wall);
+
+	//graph__display(graph, size, pos_white, pos_black);
+	TESTCASE("- existPath | 1 central wall, find a path for white player", existPath_Player(graph, size, WHITE, pos_white));
+	TESTCASE("- existPath | 1 central wall, find a path for black player", existPath_Player(graph, size, BLACK, pos_black)); 
+
+	/*
+	*	Put a wall in position 7 direction EAST and WEST
+	*	Put a wall in position 5 direction NORTH and SOUTH
+	* 	==> No more path for black player
+	*/
+
+	struct edge_t e1_test2 = {(size_t) 7, 6};
+	struct edge_t e2_test2 = {7, 8}; 
+	wall.e[0] = e1_test2;
+	wall.e[1] = e2_test2;
+	put_wall(graph, wall);
+
+	struct edge_t e1_test3 = {5, 2};
+	struct edge_t e2_test3 = {5, 8}; 
+	wall.e[0] = e1_test3;
+	wall.e[1] = e2_test3;
+	put_wall(graph, wall);
+	
+	//graph__display(graph, size, pos_white, pos_black);
+	TESTCASE("- existPath | 3 specific walls, find no path for white player", !existPath_Player(graph, size, WHITE, pos_white));
+	TESTCASE("- existPath | 3 specific walls, find path for black player", existPath_Player(graph, size, BLACK, pos_black)); 
+
+	/*
+	*	Put a wall in position 3 direction NORTH and SOUTH
+	*	==> No more path for white player
+	*/
+	struct edge_t e1_test4 = {3, 0};
+	struct edge_t e2_test4 = {3, 6}; 
+	wall.e[0] = e1_test4;
+	wall.e[1] = e2_test4;
+	put_wall(graph, wall);
+	
+	//graph__display(graph, size, pos_white, pos_black);
+	TESTCASE("- existPath | 4 specific walls, find no path for black player", !existPath_Player(graph, size, WHITE, pos_white));
+
 }
 
 void test__check_path()
-{
-	TESTCASE("todo", 0);
-}
-
-void test__shift_left()
 {
 	TESTCASE("todo", 0);
 }

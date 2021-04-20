@@ -4,8 +4,8 @@
 #include "utils.h"
 
 #define NUMB_PLAYER 2
-#define NUMB_WALLS 5
-#define SIZE_GRAPH 5
+#define NUMB_WALLS 20
+#define SIZE_GRAPH 6
 int main()
 {
    // ================== Initializing game ==================
@@ -130,7 +130,8 @@ int main()
          {
             if (players[p]->pos == wins_places[p][i])
             {
-               printf("VICTOIRE DU JOUEUR %s - Nombre de tours : %d \n", players[p]->get_name(), loop); 
+               printf("Edge 3-9 existe? %d \n", graph__edge_exists(server_Graph, 3, 9));
+               printf("VICTOIRE DU JOUEUR %s - Nombre de tours : %d & Position gagnante : %ld\n", players[p]->get_name(), loop, players[p]->pos); 
                return 1; 
             }
          }

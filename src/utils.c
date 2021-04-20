@@ -186,7 +186,80 @@ struct moves_valids* valid_walls(struct player* p)
    wall.t = WALL; 
    wall.c = p->id; 
 
+     
+   size_t n1, n2; 
+   size_t n_neighboor; 
+   int initial_dir, end_dir; 
 
+   size_t checkTest = -1; 
+
+   for(size_t node = 0; node < p->graph->num_vertices; node++)
+   {
+      for(int dir=1; dir<5; dir++)
+      {
+            // Neighboors EAST-WEST
+         if (dir == 3 || dir == 4 )
+         {
+            initial_dir = 1;
+            end_dir = 3; 
+         }
+            // Neighboors NORTH-SOUTH
+         else
+         {
+            initial_dir = 3; 
+            end_dir = 5; 
+         }
+         
+         for(int second_dir = initial_dir; second_dir < end_dir; second_dir++)
+         {
+               // Getting 3 others nodes
+            n_neighboor = graph__get_neighboor(p->graph, p->n, node, dir);
+            if (n_neighboor == checkTest)  continue;
+            n1 = graph__get_neighboor(p->graph, p->n, node, second_dir); 
+            if (n1 == checkTest)  continue;
+            n2 = graph__get_neighboor(p->graph, p->n, n_neighboor, second_dir);
+            if (n2 == checkTest)  continue;
+            
+               // No wall already cutting the option 
+            if (graph__edge_exists(p->graph, node, n1) || graph__edge_exists(p->graph, n_neighboor, n2))
+            {
+                  // Set the struct move_t wall 
+               struct edge_t e1 = {node, n_neighboor};
+               struct edge_t e2 = {n1, n2}; 
+               wall.m = node;
+               wall.e[0] = e1;
+               wall.e[1] = e2; 
+               
+                  // Check if we can put the wall
+               int pathOk = checkPath(p, wall, dir);
+
+               if (pathOk)
+               {
+                     // Realloc size to Walls 
+                  if (size == capacity)
+                  {
+                     capacity *= 2; 
+                     walls = realloc(walls, sizeof(struct move_t) * capacity);
+                  }
+
+                  // Add a wall to the array
+                  walls[size] = wall; 
+                  size++; 
+               }
+            }
+         }
+      }
+   }
+
+   global->valid = walls;
+   global->number = size; 
+
+   return global;   
+}
+
+   // ====== Save old way to put walls ====== 
+
+   /*
    size_t n1, n2; 
    size_t checkTest = -1; 
    int d1, d2; 
@@ -246,32 +319,47 @@ struct moves_valids* valid_walls(struct player* p)
             }
          }
       }
-   }
+      */
 
-   global->valid = walls;
-   global->number = size; 
-
-   return global;   
-}
+     // ====== Save old way to put walls ====== 
 
 
 /* Put a wall on the board meaning destroying 2 edges on the graph
 *
 *  @param p pointer on the player
 *  @param wall the wall we are posing 
-*  @return 0 if the wall's installation is successful, -1 if it failed
+*  @return 1 if the wall installation is successful, -1 if it failed
 */
 int put_wall(struct graph_t* graph, struct move_t wall)
 {
       // Remove edges
-   int removed;
-   removed = graph__remove_edge(graph, wall.e[0].fr, wall.e[0].to); 
-   if (removed == -1) return -1;
-   removed = graph__remove_edge(graph, wall.e[1].fr, wall.e[1].to);
-   if (removed == -1) return -1;
+   int test1, test2; 
+   test1 = graph__remove_edge(graph, wall.e[0].fr, wall.e[0].to); 
+   test2 = graph__remove_edge(graph, wall.e[1].fr, wall.e[1].to);
+   
+   if (test1 == -1 && test2 == -1)  return -1; 
+
+   return 1; 
+}
+
+/* Destroy a wall on the board meaning adding 2 edges on the graph
+*
+*  @param graph graph of the board
+*  @param wall the wall we are posing 
+*  @param dir direction used to add edge
+*  @return 0 if the wall destruction is successful, -1 if it failed
+*/
+int destroy_wall(struct graph_t* graph, struct move_t wall, int dir)
+{
+   int test = -1; 
+   test = graph__add_edge(graph, wall.e[0].fr, wall.e[0].to, dir);
+   if (test == -1) return -1; 
+   test = graph__add_edge(graph, wall.e[1].fr, wall.e[1].to, dir);
+   if (test == -1) return -1; 
 
    return 0; 
 }
+
 
 /* Shifting by the left an array
 *  
@@ -393,29 +481,23 @@ int existPath_Player(struct graph_t* graph, size_t n, size_t color, size_t pos)
 *  @param specific wall we test
 *  @return 1 if posing this wall is allowed, 0 if not and -1 if errors
 */
-int checkPath(struct player* p, struct move_t wall, int d1, int d2)
+int checkPath(struct player* p, struct move_t wall, int dir)
 {
       // Put Fake Wall (for test)
    put_wall(p->graph, wall); 
    
-   int check_player1 = existPath_Player(p->graph, p->n, other_player(p->id), p->pos);
-   int check_player2 = existPath_Player(p->graph, p->n, p->id, p->ennemy_pos);
-   
-   int check1 = existPath_Player(p->graph, p->n, p->id, p->pos);
-   int check2 = existPath_Player(p->graph, p->n, other_player(p->id), p->ennemy_pos);
+   int check_player1 = existPath_Player(p->graph, p->n, p->id, p->pos);
+   int check_player2 = existPath_Player(p->graph, p->n, other_player(p->id), p->ennemy_pos);
+
       // Remove testing Wall
    /*
    int d0 = graph__get_dir(p->graph, wall.e[0].fr, wall.e[0].to); 
    int d1 = graph__get_dir(p->graph, wall.e[1].fr, wall.e[1].to); 
    */ 
 
-   int test = -1; 
-   test = graph__add_edge(p->graph, wall.e[0].fr, wall.e[0].to, d1);
-   if (test == -1) return -1; 
-   test = graph__add_edge(p->graph, wall.e[1].fr, wall.e[1].to, d2);
-   if (test == -1) return -1; 
+   destroy_wall(p->graph, wall, dir); 
 
-   if (check_player1 && check_player2 && check1 && check2)
+   if (check_player1 && check_player2)
    {
       return 1;
    }

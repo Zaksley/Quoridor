@@ -69,7 +69,7 @@ void add_position(struct move_t* valid, struct move_t new, int* count_moves);
 size_t rushing_path(struct player* p, size_t winning_node, struct moves_valids* moves);
 
 
-// ******************* Functions with MOVE = 0 (Posing wall)
+// =================== Functions with MOVE = 0 (Posing wall) ===================
 
 /*
 *  @param pointer on the player
@@ -84,6 +84,15 @@ struct moves_valids* valid_walls(struct player* p);
 *  @return 0 if the wall's installation is successful, -1 if it failed
 */
 int put_wall(struct graph_t* graph, struct move_t wall); 
+
+/* Destroy a wall on the board meaning adding 2 edges on the graph
+*
+*  @param graph graph of the board
+*  @param wall the wall we are posing 
+*  @param dir direction used to add edge
+*  @return 0 if the wall destruction is successful, -1 if it failed
+*/
+int destroy_wall(struct graph_t* graph, struct move_t wall, int dir); 
 
 /* Shifting by the left an array
 *  
@@ -119,6 +128,6 @@ int existPath_Player(struct graph_t* graph, size_t n, size_t color, size_t pos);
 *  @param d2 direction 2 of center vertex
 *  @return 1 if posing this wall is allowed, 0 otherwise
 */
-int checkPath(struct player* p, struct move_t wall, int d1, int d2); 
+int checkPath(struct player* p, struct move_t wall, int dir); 
 
 #endif

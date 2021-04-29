@@ -42,6 +42,9 @@ void initialize(enum color_t id, struct graph_t* graph, size_t num_walls)
    self.graph = graph__copy(graph, self.n);
    self.first_move = 1; 
 
+      // WARNING : self.n needs to change
+   self.winning_nodes = malloc(sizeof(size_t) * self.n);
+   self.numb_win = self.n; 
 }
 
 /* Computes next move
@@ -107,10 +110,7 @@ struct move_t play(struct move_t previous_move)
          moves = valid_positions(&self);
          if (moves->number > 0)
          {
-            //move.m = moves->valid[rand() % moves->number].m; 
-            size_t* list = malloc(sizeof(size_t) * self.graph->num_vertices); 
-            graph__list_ownership(self.graph, self.graph->num_vertices, other_player(self.id), list); 
-            move.m = rushing_path(self.pos, list, self.n, moves);
+            move.m = rushing_path(self.pos, self.winning_nodes, self.numb_win, moves);
             self.pos = move.m;
          }
          else
@@ -157,7 +157,8 @@ struct move_t play(struct move_t previous_move)
  */
 void finalize()
 {
-   printf("Libération de Random...\n");
+   printf("Libération %s ...\n", self.get_name());
+   free(self.winning_nodes);
    graph__free(self.graph);
    printf("OK !\n");
 }

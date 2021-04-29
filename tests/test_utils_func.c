@@ -221,24 +221,28 @@ void test__rushing_path()
 	
 	size_t* list_WIN_BLACK = malloc(sizeof(size_t) * size); 
 	graph__list_ownership(p->graph, size, WHITE, list_WIN_BLACK); 
-
+	p->winning_nodes = list_WIN_BLACK; 
+	p->numb_win = size;
+	
 	size_t* list_WIN_WHITE = malloc(sizeof(size_t) * size); 
 	graph__list_ownership(p->graph, size, BLACK, list_WIN_WHITE); 
+	p2->winning_nodes = list_WIN_WHITE; 
+	p2->numb_win = size;
+
 	//	=== Initialize graph test ===
 
 	// ===== TESTS =====
 
 		// === Test Black player rushing down
-	size_t move = 0; 
 	struct moves_valids* moves = valid_positions(p); 
 	
-	size_t rush = rushing_path(pos_black, list_WIN_BLACK, size, moves); 
+	size_t rush = rushing_path(pos_black, p->winning_nodes, p->numb_win, moves); 
 	TESTCASE("- rushingPath | Black player rushing straight down (1)", rush == (size_t) 3); 
 
 	pos_black = rush; 
 	p->pos = rush; 
 	moves = valid_positions(p);
-	rush = rushing_path(pos_black, list_WIN_BLACK, size, moves);
+	rush = rushing_path(pos_black, p->winning_nodes, p->numb_win, moves);
 	TESTCASE("- rushingPath | Black player rushing straight down (2)", rush == (size_t) 6); 
 	pos_black = rush; 
 	p->pos = rush; 
@@ -256,28 +260,28 @@ void test__rushing_path()
 
 	put_wall(p2->graph, wall); 
 	moves = valid_positions(p2); 
-	rush = rushing_path(p2->pos, list_WIN_WHITE, size, moves);
+	rush = rushing_path(p2->pos, p2->winning_nodes, p2->numb_win, moves);
 	p2->pos = rush;
 	TESTCASE("- rushingPath | White player goes around wall (1)", rush == (size_t) 7);
 
 	moves = valid_positions(p2); 
-	rush = rushing_path(p2->pos, list_WIN_WHITE, size, moves);
+	rush = rushing_path(p2->pos, p2->winning_nodes, p2->numb_win, moves);
 	p2->pos = rush;
 	TESTCASE("- rushingPath | White player goes around wall (2)", rush == (size_t) 6);
 
 	moves = valid_positions(p2); 
-	rush = rushing_path(p2->pos, list_WIN_WHITE, size, moves);
+	rush = rushing_path(p2->pos, p2->winning_nodes, p2->numb_win, moves);
 	p2->pos = rush;
-	TESTCASE("- rushingPath | White player rushing up (1)", rush == (size_t) 3);
+	TESTCASE("- rushingPath | White player rushing up", rush == (size_t) 3);
 
 
 	moves = valid_positions(p2); 
-	rush = rushing_path(p2->pos, list_WIN_WHITE, size, moves);
+	rush = rushing_path(p2->pos, p2->winning_nodes, p2->numb_win, moves);
 	p2->pos = rush;
 	TESTCASE("- rushingPath | White player jump onto black player to reach winning", rush == (size_t) 1);
 
 	//graph__display(p2->graph, size, p2->pos, pos_black);
-	
+
 	free(list_WIN_WHITE);
 	free(list_WIN_BLACK);
 

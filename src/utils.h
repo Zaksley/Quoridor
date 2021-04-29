@@ -6,14 +6,20 @@
 
 struct player
 {
+      // Description player
    size_t pos; 
    size_t ennemy_pos; 
    enum color_t id;
    int first_move; 
 
+      // Description graph
    struct graph_t * graph;
    size_t n; 
    size_t num_walls;
+
+      // Win
+   size_t* winning_nodes;
+   int numb_win; 
 
 
    char* (*get_name)();
@@ -63,8 +69,13 @@ struct moves_valids* valid_positions(struct player*);
 */
 void add_position(struct move_t* valid, struct move_t new, int* count_moves); 
 
-/*
+/* Return either a winning move reachable (first choice) or the best move to close the gap
 *
+*  @param pos Position of the player
+*  @param winning_nodes List of winning position
+*  @param numb_win Length of the winning list
+*  @param moves List of moves available
+*  @return The best move possible to rush
 */
 size_t rushing_path(size_t pos, size_t* winning_nodes, size_t numb_win, struct moves_valids* moves); 
 

@@ -12,7 +12,7 @@ int main()
 
       // Get players 
    struct player* player1 = get_functions("./install/libplayer_move_random.so");
-   struct player* player2 = get_functions("./install/libplayer_random.so"); 
+   struct player* player2 = get_functions("./install/libplayer_usain_bolt.so"); 
    struct player* players[2] = {player1, player2}; 
 
    int random = rand() % 2; 
@@ -21,6 +21,7 @@ int main()
 
    int size_graph = SIZE_GRAPH; 
    struct graph_t* server_Graph = graph__create_square(size_graph);
+   struct graph_t* server_copy = graph__copy(server_Graph, size_graph);
    
       // ===== Initialize players (Server) =====
 
@@ -48,8 +49,11 @@ int main()
          {
             graph__add_ownership(server_Graph, i, BLACK);
          }
-      }     
+      }    
    }
+
+   players[0]->graph = server_Graph;
+   players[1]->graph = server_copy; 
 
       // ====== 
 
@@ -59,8 +63,12 @@ int main()
    size_t* list_p1 = malloc(sizeof(size_t) * size_graph); 
    graph__list_ownership(server_Graph, size_graph, other_player(players[0]->id), list_p0); 
    graph__list_ownership(server_Graph, size_graph, other_player(players[1]->id), list_p1);
-   size_t* wins_places[2] = {list_p0, list_p1}; 
 
+   // WARNING size_graph = n => Needs to change
+   players[0]->winning_nodes = list_p0;
+   players[0]->numb_win = size_graph; 
+   players[1]->winning_nodes = list_p1; 
+   players[1]->numb_win = size_graph;
 
       // ======
 
@@ -126,18 +134,23 @@ int main()
 
          
             // === Victory ===
-         for(int i=0; i<size_graph; i++)
+         for(int i=0; i<players[p]->numb_win; i++)
          {
-            if (players[p]->pos == wins_places[p][i])
+            if (players[p]->pos == players[p]->winning_nodes[i])
             {
                printf("VICTOIRE DU JOUEUR %s - Nombre de tours : %d & Position gagnante : %ld\n", players[p]->get_name(), loop, players[p]->pos); 
-               return 1; 
+               graph__display(server_Graph, size_graph, player_color(players, WHITE)->pos, player_color(players, BLACK)->pos );
+               isPlaying = 0; 
             }
          }
          
             // === Debug ===
-         printf("Côté Serveur: Joueur %d (position = %ld / position ennemie = %ld) \n", players[p]->id, players[p]->pos, players[p]->ennemy_pos);
-         graph__display(server_Graph, size_graph, player_color(players, WHITE)->pos, player_color(players, BLACK)->pos );
+         if (isPlaying)
+         {
+            printf("Côté Serveur: Joueur %d (position = %ld / position ennemie = %ld) \n", players[p]->id, players[p]->pos, players[p]->ennemy_pos);
+            graph__display(server_Graph, size_graph, player_color(players, WHITE)->pos, player_color(players, BLACK)->pos );
+         }
+
       }
       loop++; 
    }
@@ -145,17 +158,23 @@ int main()
    // ================== Free elements ==================
 
       // ===== Free Graphs
+      /*
    for(int p=0; p<NUMB_PLAYER; p++)
    {
+      fprintf(stderr, "ATTENTION TENTATIVE DE FREE LE GRAPH\n");
+      fprintf(stderr, "%p\n", (void*) &(players[p]->graph));
+      fprintf(stderr, "%p\n", (void*) &(players[p]->winning_nodes));
       players[p]->finalize();
    }
-   graph__display(server_Graph, size_graph, 0, 0);
+      */
+
    graph__free(server_Graph); 
+
       // =====
 
       // ===== Free Winning lists
-   free(list_p0);
-   free(list_p1); 
+   free(players[0]->winning_nodes);
+   free(players[1]->winning_nodes);
       // =====
 
    // ============================================

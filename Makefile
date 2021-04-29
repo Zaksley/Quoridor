@@ -21,7 +21,7 @@ test: test_graph_fonc.o test_graph_struct.o test_utils_func.o graph_modif.o util
 alltests: test
 	LD_LIBRARY_PATH=${GSL_PATH}/lib ./install/alltests
 
-install: player_move_random player_random
+install: player_move_random player_random player_usain_bolt
 	${CC} -rdynamic -o install/server ${DIR}/main.c graph_modif.o utils.o -ldl ${LIBS} ${CFLAGS} ${LDFLAGS};
 #./install/server [-m] [-t] ./install/alltests
 
@@ -51,6 +51,10 @@ player_random: graph_modif.o utils.o
 player_move_random: graph_modif.o utils.o
 	${CC} -fPIC -c ${CFLAGS} ${DIR}/player_move_random.c;
 	${CC} -shared -nostartfiles -o install/libplayer_move_random.so player_move_random.o graph_modif.o utils.o;
+
+player_usain_bolt: graph_modif.o utils.o
+	${CC} -fPIC -c ${CFLAGS} ${DIR}/player_usain_bolt.c;
+	${CC} -shared -nostartfiles -o install/libplayer_usain_bolt.so player_usain_bolt.o graph_modif.o utils.o;
 ###################### Tests #######################
 
 clean:

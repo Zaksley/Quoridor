@@ -74,7 +74,7 @@ int main()
 	test__exist_path_player();
 	printf("\033[1mcheck_path :\033[0m\n");
 	test__check_path();
-	printf("\033[1mshift_left :\033[0m\n");
-	test__shift_left();
+	printf("\033[1mrushing_path :\033[0m\n");
+   test__rushing_path(); 
 	printf("\n");
 }

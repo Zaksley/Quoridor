@@ -109,8 +109,8 @@ struct move_t play(struct move_t previous_move)
          {
             //move.m = moves->valid[rand() % moves->number].m; 
             size_t* list = malloc(sizeof(size_t) * self.graph->num_vertices); 
-            graph__list_ownership(self.graph, self.graph->num_vertices, self.id, list); 
-            move.m = rushing_path(&self, list[0], moves);
+            graph__list_ownership(self.graph, self.graph->num_vertices, other_player(self.id), list); 
+            move.m = rushing_path(self.pos, list, self.n, moves);
             self.pos = move.m;
          }
          else

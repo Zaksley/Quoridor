@@ -105,6 +105,7 @@ struct moves_valids* valid_positions(struct player* p)
          {
             int double_jump = graph__get_neighboor(p->graph, p->n, value, dir);
             new.m = double_jump; 
+
                // Legal move
             if (double_jump != -1)
             {
@@ -128,14 +129,20 @@ struct moves_valids* valid_positions(struct player* p)
 
 
                int jump_side = graph__get_neighboor(p->graph, p->n, value, d1);
-               new.m = jump_side; 
-               valid[count_moves] = new;
-               count_moves++; 
+               if (jump_side != -1)
+               {
+                  new.m = jump_side; 
+                  valid[count_moves] = new;
+                  count_moves++; 
+               }
 
                jump_side = graph__get_neighboor(p->graph, p->n, value, d2);
-               new.m = jump_side;
-               valid[count_moves] = new; 
-               count_moves++; 
+               if (jump_side != -1)
+               {
+                  new.m = jump_side;
+                  valid[count_moves] = new; 
+                  count_moves++; 
+               }
             }
 
          }
@@ -148,14 +155,24 @@ struct moves_valids* valid_positions(struct player* p)
    return global;
 }
 
-size_t rushing_path(struct player* p, size_t winning_node, struct moves_valids* moves)
+size_t rushing_path(size_t pos, size_t* winning_nodes, size_t numb_win, struct moves_valids* moves)
 {
-   size_t gap = (size_t) abs( (int) (winning_node - p->pos)); 
-   size_t best = p->pos; 
+   size_t gap = (size_t) abs( (int) (winning_nodes[0] - pos)); 
+   size_t best = pos; 
    size_t test_gap; 
    for(int i=0; i<moves->number; i++)
    {
-      test_gap = (size_t) abs( (int) (winning_node - moves->valid[i].m));
+         // Fiding winning position
+      for(size_t j=0; j<numb_win; j++)
+      {
+         if (moves->valid[i].m == winning_nodes[j])
+         {
+            return moves->valid[i].m;
+         }
+      }
+
+         // Else => Closing up the gap
+      test_gap = (size_t) abs( (int) (winning_nodes[0] - moves->valid[i].m));
       if (test_gap < gap)
       {
          gap = test_gap; 

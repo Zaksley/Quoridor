@@ -52,7 +52,7 @@ void test__valid_walls()
 
 	struct player* p = initialize_test_player(size, pos_white);
 
-	for(int i=0; i<size; i++)
+	for(size_t i=0; i<size; i++)
 	{
 		graph__add_ownership(graph, i, BLACK);
 		graph__add_ownership(graph, graph->num_vertices - size + i, WHITE);
@@ -87,9 +87,8 @@ void test__put_wall()
 	//	=== Initialize graph test ===
 	size_t size = 3; 
 	struct graph_t* graph = graph__create_square(size); 
-	size_t pos_white = 8;
-	size_t pos_black = 0; 
-	for(int i=0; i<size; i++)
+
+	for(size_t i=0; i<size; i++)
 	{
 		graph__add_ownership(graph, i, BLACK);
 		graph__add_ownership(graph, graph->num_vertices - size + i, WHITE);
@@ -118,13 +117,7 @@ void test__destroy_wall()
 	TESTCASE("todo", 0);
 }
 
-void test__shift_left()
-{
 
-	TESTCASE("todo", 0);
-}
-
-//int existPath_Player(struct graph_t* graph, size_t n, size_t color, size_t pos)
 void test__exist_path_player()
 {	
 
@@ -133,7 +126,7 @@ void test__exist_path_player()
 	struct graph_t* graph = graph__create_square(size); 
 	size_t pos_white = 8;
 	size_t pos_black = 0; 
-	for(int i=0; i<size; i++)
+	for(size_t i=0; i<size; i++)
 	{
 		graph__add_ownership(graph, i, BLACK);
 		graph__add_ownership(graph, graph->num_vertices - size + i, WHITE);
@@ -206,4 +199,86 @@ void test__exist_path_player()
 void test__check_path()
 {
 	TESTCASE("todo", 0);
+}
+
+void test__rushing_path()
+{
+	
+		//	=== Initialize graph test ===
+	size_t size = 3; 
+	size_t pos_white = 8;
+	size_t pos_black = 0; 
+	struct player* p = initialize_test_player(size, pos_black);
+	struct player* p2 = initialize_test_player(size, pos_white);
+	for(size_t i=0; i<size; i++)
+	{
+		graph__add_ownership(p->graph, i, BLACK);
+		graph__add_ownership(p->graph, p->graph->num_vertices - size + i, WHITE);
+
+		graph__add_ownership(p2->graph, i, BLACK);
+		graph__add_ownership(p2->graph, p->graph->num_vertices - size + i, WHITE);
+	}	
+	
+	size_t* list_WIN_BLACK = malloc(sizeof(size_t) * size); 
+	graph__list_ownership(p->graph, size, WHITE, list_WIN_BLACK); 
+
+	size_t* list_WIN_WHITE = malloc(sizeof(size_t) * size); 
+	graph__list_ownership(p->graph, size, BLACK, list_WIN_WHITE); 
+	//	=== Initialize graph test ===
+
+	// ===== TESTS =====
+
+		// === Test Black player rushing down
+	size_t move = 0; 
+	struct moves_valids* moves = valid_positions(p); 
+	
+	size_t rush = rushing_path(pos_black, list_WIN_BLACK, size, moves); 
+	TESTCASE("- rushingPath | Black player rushing straight down (1)", rush == (size_t) 3); 
+
+	pos_black = rush; 
+	p->pos = rush; 
+	moves = valid_positions(p);
+	rush = rushing_path(pos_black, list_WIN_BLACK, size, moves);
+	TESTCASE("- rushingPath | Black player rushing straight down (2)", rush == (size_t) 6); 
+	pos_black = rush; 
+	p->pos = rush; 
+		// === Test Black player rushing down
+
+		// === Test White player go around wall
+	struct move_t wall = {.t = WALL, .c = WHITE, .m = 4};
+	struct edge_t e1 = {7, 4};
+	struct edge_t e2 = {5, 8}; 
+	wall.e[0] = e1; 
+	wall.e[1] = e2; 
+	pos_white = 8;
+	pos_black = 0; 
+
+
+	put_wall(p2->graph, wall); 
+	moves = valid_positions(p2); 
+	rush = rushing_path(p2->pos, list_WIN_WHITE, size, moves);
+	p2->pos = rush;
+	TESTCASE("- rushingPath | White player goes around wall (1)", rush == (size_t) 7);
+
+	moves = valid_positions(p2); 
+	rush = rushing_path(p2->pos, list_WIN_WHITE, size, moves);
+	p2->pos = rush;
+	TESTCASE("- rushingPath | White player goes around wall (2)", rush == (size_t) 6);
+
+	moves = valid_positions(p2); 
+	rush = rushing_path(p2->pos, list_WIN_WHITE, size, moves);
+	p2->pos = rush;
+	TESTCASE("- rushingPath | White player rushing up (1)", rush == (size_t) 3);
+
+
+	moves = valid_positions(p2); 
+	rush = rushing_path(p2->pos, list_WIN_WHITE, size, moves);
+	p2->pos = rush;
+	TESTCASE("- rushingPath | White player jump onto black player to reach winning", rush == (size_t) 1);
+
+	//graph__display(p2->graph, size, p2->pos, pos_black);
+	
+	free(list_WIN_WHITE);
+	free(list_WIN_BLACK);
+
 }

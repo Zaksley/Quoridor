@@ -333,7 +333,7 @@ struct moves_valids* valid_walls(struct player* p)
 
             
                // No wall already cutting the option 
-            if (graph__edge_exists(p->graph, node, n1) || graph__edge_exists(p->graph, n_neighboor, n2))
+            if (graph__edge_exists(p->graph, node, n1) && graph__edge_exists(p->graph, n_neighboor, n2))
             {
                   // Set the struct move_t wall 
                struct edge_t e1 = {node, n_neighboor};

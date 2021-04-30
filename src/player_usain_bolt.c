@@ -42,9 +42,8 @@ void initialize(enum color_t id, struct graph_t* graph, size_t num_walls)
    self.graph = graph__copy(graph, self.n);
    self.first_move = 1; 
 
-      // WARNING : self.n needs to change
-   self.winning_nodes = malloc(sizeof(size_t) * self.n);
-   self.numb_win = self.n; 
+   self.numb_win = graph__count_ownership(self.graph, self.n, self.id); 
+   self.winning_nodes = malloc(sizeof(size_t) * self.numb_win);
 }
 
 /* Computes next move
@@ -135,7 +134,7 @@ struct move_t play(struct move_t previous_move)
             fprintf(stderr, "Erreur (Client) - Retirer un mur n'a pas fonctionné\n"); 
             exit(2); 
          }
-         printf("Côté Client : Joueur %d pose mur entre %ld et %ld\n", self.id, move.e[0].fr, move.e[0].to);
+         //printf("Côté Client : Joueur %d pose mur entre %ld et %ld\n", self.id, move.e[0].fr, move.e[0].to);
       }
 
       // ===== Free tables

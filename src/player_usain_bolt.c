@@ -40,7 +40,10 @@ void initialize(enum color_t id, struct graph_t* graph, size_t num_walls)
    self.num_walls = num_walls;
    self.n = graph__get_size(graph);
    self.graph = graph__copy(graph, self.n);
+   self.naked_graph = graph__copy(self.graph, self.n); 
    self.first_move = 1; 
+
+   self.wall_installed = calloc(self.n*self.n, sizeof(int)); 
 
    self.numb_win = graph__count_ownership(self.graph, self.n, self.id); 
    self.winning_nodes = malloc(sizeof(size_t) * self.numb_win);
@@ -68,6 +71,10 @@ struct move_t play(struct move_t previous_move)
    else if (previous_move.t == WALL)
    {
       int wall_destroyed = put_wall(self.graph, previous_move); 
+
+      size_t left_square = min_node(previous_move.e[0].fr, previous_move.e[0].to, previous_move.e[1].fr, previous_move.e[1].to);
+      self.wall_installed[(left_square - left_square%self.n)] = 1; 
+
       if (wall_destroyed == -1)  fprintf(stderr, "Erreur (Client) - Retirer un mur n'a pas fonctionné\n"); 
    }
 
@@ -129,6 +136,17 @@ struct move_t play(struct move_t previous_move)
          
          int wall_destroyed = put_wall(self.graph, chosen_wall); 
          self.num_walls -= 1; 
+
+         size_t left_square = min_node(move.e[0].fr, move.e[0].to, move.e[1].fr, move.e[1].to); 
+
+         /*fprintf(stderr," HERE\n");
+         for(int i=0; i<self.n*self.n; i++)
+         {
+            printf("%ld\n", self.wall_installed[i]);
+         }
+         */
+         self.wall_installed[position_square(left_square, self.n)] = 1; 
+
          if (wall_destroyed == -1) 
          {
             fprintf(stderr, "Erreur (Client) - Retirer un mur n'a pas fonctionné\n"); 

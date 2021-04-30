@@ -17,6 +17,10 @@ struct player
    size_t n; 
    size_t num_walls;
 
+      // Stock walls
+   struct graph_t* naked_graph;
+   int* wall_installed; 
+
       // Win
    size_t* winning_nodes;
    int numb_win; 
@@ -83,6 +87,16 @@ size_t path_dijkstra(struct player* p);
 
 
 // =================== Functions with MOVE = 0 (Posing wall) ===================
+
+size_t position_square(size_t left_square, int n);
+
+size_t min_node(size_t node, size_t n_neighboor, size_t n1, size_t n2);
+
+/* Check if in a square of 4 nodes, there is already a wall
+*
+*
+*/
+int already_wall_in_square(int wall_used[], size_t n, size_t left_square);
 
 /*
 *  @param pointer on the player

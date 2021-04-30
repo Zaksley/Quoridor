@@ -64,7 +64,8 @@ void test__valid_walls()
 	}	
 	//	=== Initialize graph test ===
 
-	//TESTCASE("- valid_walls | without putting a wall", valid_walls(p)->number == 8); 
+	struct moves_valids* moves = valid_walls(p); 
+	TESTCASE("- valid_walls | without putting a wall", moves->number == 8); 
 
 			// Initialize wall
 	struct move_t wall = {.t = WALL, .c = WHITE, .m = 4};
@@ -79,12 +80,24 @@ void test__valid_walls()
 	size_t left_square = min_node(wall.e[0].fr, wall.e[0].to, wall.e[1].fr, wall.e[1].to); 
 	p->wall_installed[position_square(left_square, p->n)] = 1;
 
+	moves = valid_walls(p); 
+	TESTCASE("- valid_walls | put a wall => -2 walls available", moves->number == 5); 
+
+	struct edge_t e1_test2 = {1, 2}; 
+	struct edge_t e2_test2 = {4, 5}; 
+	wall.e[0] = e1_test2;
+	wall.e[1] = e2_test2; 
+	put_wall(graph, wall);
+	p->graph = graph; 
+
+	left_square = min_node(wall.e[0].fr, wall.e[0].to, wall.e[1].fr, wall.e[1].to); 
+	p->wall_installed[position_square(left_square, p->n)] = 1;
+
+	moves = valid_walls(p);
 	graph__display(graph, size, pos_white, pos_black);
+	TESTCASE("- valid_walls | put a wall => -2 walls available", moves->number == 2); 
 
 	
-	
-	struct moves_valids* moves = valid_walls(p); 
-	TESTCASE("- valid_walls | put a wall => -2 walls available", moves->number == 5); 
 
 }
 

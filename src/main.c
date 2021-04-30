@@ -22,7 +22,7 @@ int main()
    int size_graph = SIZE_GRAPH; 
    struct graph_t* server_Graph = graph__create_square(size_graph);
    struct graph_t* server_copy = graph__copy(server_Graph, size_graph);
-   
+
       // ===== Initialize players (Server) =====
 
    for(int p = 0; p < NUMB_PLAYER; p++)
@@ -36,7 +36,7 @@ int main()
          // add Owner position
          for(int i=0; i<size_graph; i++)
          {
-            graph__add_ownership(server_Graph, server_Graph->num_vertices - size_graph + i, WHITE);
+            graph__add_ownership(server_Graph, size_graph*size_graph - size_graph + i, WHITE);
          }
       }
       else 

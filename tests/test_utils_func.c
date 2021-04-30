@@ -6,12 +6,16 @@
 
 #define TESTCASE(msg, test) printf("%-60s : %s\n", msg, test ? "\033[1;92mPassed\033[0m" : "\033[1;91mFailed\033[0m")
 
-struct player* initialize_test_player(size_t n, size_t pos)
+struct player* initialize_test_player(size_t n, size_t pos, size_t ennemy_pos)
 {
 	struct player* test_player = get_functions("./install/libplayer_move_random.so");
 	test_player->pos = pos;
+	test_player->ennemy_pos = ennemy_pos; 
+
    	test_player->graph = graph__create_square(n);
 	test_player->n = n;
+	test_player->naked_graph = graph__copy(test_player->graph, test_player->n);
+	test_player->wall_installed = calloc(test_player->n*test_player->n, sizeof(int)); 
 	return test_player;
 }
 
@@ -25,7 +29,7 @@ int is_in(size_t e, size_t n, size_t *t)
 
 void test__valid_positions()
 {
-	struct player *player = initialize_test_player(5, 0);
+	struct player *player = initialize_test_player(5, 0, 24);
 	struct moves_valids* moves = valid_positions(player);
 	TESTCASE("Only 2 positions found in a corner", moves->number == 2);
 	player->pos = 12;
@@ -45,12 +49,13 @@ void test__valid_positions()
 void test__valid_walls()
 {
 	//	=== Initialize graph test ===
+	
 	size_t size = 3; 
 	struct graph_t* graph = graph__create_square(size); 
 	size_t pos_white = 8;
 	size_t pos_black = 0; 
 
-	struct player* p = initialize_test_player(size, pos_white);
+	struct player* p = initialize_test_player(size, pos_white, pos_black);
 
 	for(size_t i=0; i<size; i++)
 	{
@@ -70,8 +75,14 @@ void test__valid_walls()
 	wall.e[1] = e2_test1; 
 	put_wall(graph, wall);
 	p->graph = graph; 
+
+	size_t left_square = min_node(wall.e[0].fr, wall.e[0].to, wall.e[1].fr, wall.e[1].to); 
+	p->wall_installed[position_square(left_square, p->n)] = 1;
+
 	graph__display(graph, size, pos_white, pos_black);
 
+	
+	
 	struct moves_valids* moves = valid_walls(p); 
 	TESTCASE("- valid_walls | put a wall => -2 walls available", moves->number == 5); 
 
@@ -203,8 +214,8 @@ void test__rushing_path()
 	size_t size = 3; 
 	size_t pos_white = 8;
 	size_t pos_black = 0; 
-	struct player* p = initialize_test_player(size, pos_black);
-	struct player* p2 = initialize_test_player(size, pos_white);
+	struct player* p = initialize_test_player(size, pos_black, pos_white);
+	struct player* p2 = initialize_test_player(size, pos_white, pos_black);
 	for(size_t i=0; i<size; i++)
 	{
 		graph__add_ownership(p->graph, i, BLACK);

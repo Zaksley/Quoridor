@@ -79,6 +79,8 @@ void add_position(struct move_t* valid, struct move_t new, int* count_moves);
 */
 size_t rushing_path(size_t pos, size_t* winning_nodes, size_t numb_win, struct moves_valids* moves); 
 
+size_t path_dijkstra(struct player* p);
+
 
 // =================== Functions with MOVE = 0 (Posing wall) ===================
 

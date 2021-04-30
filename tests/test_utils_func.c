@@ -10,6 +10,7 @@ struct player* initialize_test_player(size_t n, size_t pos)
 {
 	struct player* test_player = get_functions("./install/libplayer_move_random.so");
 	test_player->pos = pos;
+	test_player->ennemy_pos = -1;
    	test_player->graph = graph__create_square(n);
 	test_player->n = n;
 	return test_player;
@@ -39,7 +40,8 @@ void test__valid_positions()
 		if (!is_in(moves->valid[i].m, 4, neighboors))
 			test = 0;
 	TESTCASE("Found positions are neighboors", test);
-
+	
+	//player->finalize();
 }
 
 void test__valid_walls()
@@ -75,6 +77,7 @@ void test__valid_walls()
 	struct moves_valids* moves = valid_walls(p); 
 	TESTCASE("- valid_walls | put a wall => -2 walls available", moves->number == 5); 
 
+	//p->finalize();
 }
 
 void test__put_wall()
@@ -279,5 +282,31 @@ void test__rushing_path()
 
 	free(list_WIN_WHITE);
 	free(list_WIN_BLACK);
+	free(moves->valid);
+	free(moves);
+	//p->finalize();
+	//p2->finalize();
 
+}
+
+void test__dijkstra_path() 
+{
+	//	=== Initialize graph test ===
+	size_t size = 3; 
+	size_t pos_black = 0; 
+	struct player* p = initialize_test_player(size, pos_black);
+	for(size_t i=0; i<size; i++)
+	{
+		graph__add_ownership(p->graph, i, BLACK);
+		graph__add_ownership(p->graph, p->graph->num_vertices - size + i, WHITE);
+	}	
+	
+	size_t* list_WIN_BLACK = malloc(sizeof(size_t) * size); 
+	graph__list_ownership(p->graph, size, WHITE, list_WIN_BLACK); 
+	p->winning_nodes = list_WIN_BLACK; 
+	p->numb_win = size;
+	
+	//	=== Initialize graph test ===
+
+	TESTCASE("- dijkstra path | Square graph at position 0", path_dijkstra(p) == 3);
 }

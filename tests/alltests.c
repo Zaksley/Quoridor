@@ -77,6 +77,8 @@ int main()
 	printf("\033[1mcheck_path :\033[0m\n");
 	test__check_path();
 	printf("\033[1mrushing_path :\033[0m\n");
-   test__rushing_path(); 
+   test__rushing_path();
+   printf("\033[1mdijkstra_path :\033[0m\n");
+   test__dijkstra_path();  
 	printf("\n");
 }

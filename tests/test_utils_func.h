@@ -45,4 +45,9 @@ void test__check_path();
  */
 void test__rushing_path(); 
 
+/*
+ * 
+ */
+void test__dijkstra_path();
+
 #endif //_TEST_UTILS_FUNC_H_

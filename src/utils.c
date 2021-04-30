@@ -225,7 +225,7 @@ int dijkstra(size_t n, struct graph_t *graph, size_t p0, int numb_win, size_t* w
    int nb_pos = 1;
    size_t *visited_pos = malloc(sizeof(size_t) * capacity);
    visited_pos[0] = p0;
-
+   
    int add_pos(int n, int e)
    {
       if (e == -1)
@@ -248,9 +248,10 @@ int dijkstra(size_t n, struct graph_t *graph, size_t p0, int numb_win, size_t* w
    {
       for(int i = 0; i < n1; i++)
       {
-         for(int j = 0; j < n2; i++)
+         for(int j = 0; j < n2; j++) {
             if(l1[i] == l2[j])
                return 0;
+         }
       }
       return 1;
    }

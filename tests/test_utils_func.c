@@ -73,11 +73,6 @@ void test__valid_walls()
 	graph__display(graph, size, pos_white, pos_black);
 
 	struct moves_valids* moves = valid_walls(p); 
-	for(int i=0; i<5; i++)
-	{
-		printf("Mur dispo: {%ld, %ld} et {%ld, %ld}\n", moves->valid[i].e[0].fr, moves->valid[i].e[0].to, moves->valid[i].e[1].fr, moves->valid[i].e[1].to); 
-	}
-
 	TESTCASE("- valid_walls | put a wall => -2 walls available", moves->number == 6); 
 
 }

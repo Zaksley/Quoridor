@@ -118,15 +118,26 @@ int graph__add_ownership(struct graph_t * graph, size_t v, size_t owner);
  */
 int graph__is_owned(struct graph_t * graph, size_t v, size_t c);
 
-/* Gets a list of owned positions for a player
+/* Gets a list of owned positions for a player (containing non-accessible ones)
  *
  * @param graph a graph
  * @param n the size of the graph
  * @param c the player number
  * @param *l a size_t list of size n
  * @return nothing (side-effect on l)
+ * @side-effect : l contains max n winning positions
+ * @side-effect : if l[0] == n then there is no winning pos
  */
 int graph__list_ownership(struct graph_t * graph, size_t n, size_t c, size_t* l);
+
+/* Counts all the accessible owned positions
+ *
+ * @param graph a graph
+ * @param n the size of the graph
+ * @param c the player number
+ * @return the number of accessible owned positions for player c
+ */
+int graph__count_ownership(struct graph_t * graph, size_t n, size_t c);
 
 /* Gets the size of the graph
  * 

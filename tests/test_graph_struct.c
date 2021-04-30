@@ -197,6 +197,23 @@ void test__graph_list_ownership()
 	graph__free(graph);
 }
 
+void test__graph_count_ownership()
+{
+	struct graph_t * graph = graph__create_square(4);
+	graph__add_ownership(graph, 1, 0);
+	graph__add_ownership(graph, 2, 0);
+	graph__add_ownership(graph, 13, 1);
+	graph__add_ownership(graph, 14, 1);
+	graph__add_ownership(graph, 15, 1);
+	TESTCASE("- count_ownership | accessible white pos are found", graph__count_ownership(graph, 4, 0) == 2);
+	TESTCASE("- count_ownership | accessible black pos are found", graph__count_ownership(graph, 4, 1) == 3);
+	graph__remove_edge(graph, 2, 6);
+	graph__remove_edge(graph, 14, 10);
+	TESTCASE("- count_ownership | non-accessible white pos are not found", graph__count_ownership(graph, 4, 0) == 1);
+	TESTCASE("- count_ownership | non-accessible black pos are not found", graph__count_ownership(graph, 4, 1) == 2);
+	graph__free(graph);
+}
+
 void test__graph_get_size()
 {
 	struct graph_t * graph = graph__create_square(4);

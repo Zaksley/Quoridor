@@ -91,6 +91,14 @@ void test__graph_is_owned();
  */ 
 void test__graph_list_ownership();
 
+/* Tests :
+ *	 - accessible white pos is found
+ *   - non-accessible white pos is not found
+ *   - accessible black pos is found
+ *   - non-accessible black pos is nof found
+ */
+void test__graph_count_ownership();
+
 /* Test :
  * 	 - correct size is returned
  */

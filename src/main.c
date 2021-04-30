@@ -58,6 +58,7 @@ int main()
       // ====== 
 
       // ===== Initialize Winning positions 
+   int numb_win = graph__count_ownership(server_Graph, size_graph, WHITE);
 
    size_t* list_p0 = malloc(sizeof(size_t) * size_graph); 
    size_t* list_p1 = malloc(sizeof(size_t) * size_graph); 
@@ -66,9 +67,9 @@ int main()
 
    // WARNING size_graph = n => Needs to change
    players[0]->winning_nodes = list_p0;
-   players[0]->numb_win = size_graph; 
+   players[0]->numb_win = numb_win; 
    players[1]->winning_nodes = list_p1; 
-   players[1]->numb_win = size_graph;
+   players[1]->numb_win = numb_win;
 
       // ======
 
@@ -141,6 +142,7 @@ int main()
                printf("VICTOIRE DU JOUEUR %s - Nombre de tours : %d & Position gagnante : %ld\n", players[p]->get_name(), loop, players[p]->pos); 
                graph__display(server_Graph, size_graph, player_color(players, WHITE)->pos, player_color(players, BLACK)->pos );
                isPlaying = 0; 
+               break;
             }
          }
          

@@ -33,6 +33,8 @@ int main()
    test__graph_is_owned();
    printf("\033[1mgraph__list_ownership :\033[0m\n");
    test__graph_list_ownership();
+   printf("\033[1mgraph__count_ownership : \033[0m\n");
+   test__graph_count_ownership();
    printf("\033[1mgraph__get_size :\033[0m\n");
    test__graph_get_size();
    printf("\033[1mgraph__display :\033[0m\n");

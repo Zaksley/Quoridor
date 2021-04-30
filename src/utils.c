@@ -68,6 +68,34 @@ int edge_equal(struct edge_t e1, struct edge_t e2)
    return 0; 
 }
 
+int opposite_dir(int dir)
+{
+   switch(dir)
+   {
+         // North => South
+      case 1:
+         return 2; 
+         break; 
+
+         // South => North
+      case 2:
+         return 1; 
+         break;
+
+         // West => East
+      case 3:
+         return 4; 
+         break; 
+      
+         // East => West
+      case 4:
+         return 3; 
+         break; 
+   }   
+   
+   return 0; 
+}
+
 // ===================  MOVE =================== 
 
 struct moves_valids* valid_positions(struct player* p)
@@ -265,19 +293,47 @@ struct moves_valids* valid_walls(struct player* p)
          
          for(int second_dir = initial_dir; second_dir < end_dir; second_dir++)
          {
-
-
-               // Getting 3 others nodes
+                  // Getting 3 others nodes
             n_neighboor = graph__get_neighboor(p->graph, p->n, node, dir);
+               // targeted edge already cut
             if (n_neighboor == checkTest) continue;
+
             n1 = graph__get_neighboor(p->graph, p->n, node, second_dir); 
-            if (n1 == checkTest) continue;
             n2 = graph__get_neighboor(p->graph, p->n, n_neighboor, second_dir);
+
+               // * 2 walls cutting down our wall
+            if (n1 == checkTest && n2 == checkTest) continue; 
+
+               // * 1 edge is already cut (First case)
+            else if (n2 == checkTest)
+            {
+               n2 = graph__get_neighboor(p->graph, p->n, n1, dir);
+                  // other one edge is cut
+               if (n2 == checkTest) continue; 
+               else
+               {
+                  // We add the wall
+               }
+            }
+
+               // * 1 edge is already cut (Second case)
+            else if (n1 == checkTest)
+            {
+               n1 = graph__get_neighboor(p->graph, p->n, n2, opposite_dir(dir)); 
+                  // other one edge is cut
+               if (n1 == checkTest) continue; 
+               else
+               {
+                  // We add the wall
+               }
+               
+            }
+
             if (n2 == checkTest)  continue;
 
             
                // No wall already cutting the option 
-            if (graph__edge_exists(p->graph, node, n1) || graph__edge_exists(p->graph, n_neighboor, n2))
+            if (graph__edge_exists(p->graph, node, n1) && graph__edge_exists(p->graph, n_neighboor, n2))
             {
                   // Set the struct move_t wall 
                struct edge_t e1 = {node, n_neighboor};

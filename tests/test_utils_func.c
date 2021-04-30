@@ -73,7 +73,7 @@ void test__valid_walls()
 	graph__display(graph, size, pos_white, pos_black);
 
 	struct moves_valids* moves = valid_walls(p); 
-	TESTCASE("- valid_walls | put a wall => -2 walls available", moves->number == 6); 
+	TESTCASE("- valid_walls | put a wall => -2 walls available", moves->number == 5); 
 
 }
 

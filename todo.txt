@@ -52,3 +52,14 @@ TODO NEXT
 - Léna : Continuer les tests sur utils & réfléchir à des stratégies
 - Mathieu : Continuer les tests sur utils & réfléchir à des stratégies
 - Enzo : Finir de changer utils.c et avancer la boucle de jeu
+
+VACANCES
+Debug d'Enzo pour le passage sur le ladder
+
+Séance 6 (30/04):
+// Rappel : pour dijkstra, alterner les directions si ligne non-droite
+TODO NEXT
+- Killian : Implémenter White Mage (après avoir fini le pseudo-algorithme)
+- Léna : Implémenter White Mage (après avoir fini le pseudo-algorithme)
+- Mathieu : Corriger Dijkstra
+- Enzo : Corriger Smart Usain Bolt

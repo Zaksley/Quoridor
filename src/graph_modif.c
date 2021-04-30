@@ -144,6 +144,7 @@ struct graph_t * graph__create_snake(size_t n)
 /* Gets the neighboor of a vertex
  *
  * @param graph a graph
+ * @param n the size of the graph
  * @param v a vertex
  * @param d a direction (1:N, 2:S, 3:W, 4:E)
  * @return the neighboor number, -1 if there is no neighboor
@@ -264,7 +265,7 @@ int graph__is_owned(struct graph_t * graph, size_t v, size_t c)
 	return 0;
 }
 
-/* Gets a list of owned positions for a player
+/* Gets a list of owned positions for a player (containing non-accessible ones)
  *
  * @param graph a graph
  * @param n the size of the graph
@@ -280,6 +281,35 @@ int graph__list_ownership(struct graph_t * graph, size_t n, size_t c, size_t* l)
 	for (size_t i = 0; i < n*n; i++)
 		if(graph__is_owned(graph, i, c))
 			l[num++] = i;
+	return num;
+}
+
+/* Counts all the accessible owned positions
+ *
+ * @param graph a graph
+ * @param n the size of the graph
+ * @param c the player number
+ * @return the number of accessible owned positions for player c
+ */
+int graph__count_ownership(struct graph_t * graph, size_t n, size_t c)
+{
+	int num = 0;
+	// Player 0
+	size_t startpos = 0;
+	size_t dir = SOUTH;
+	// Player 1
+	if(c == 1)
+	{
+		startpos = n*(n-1);
+		dir = NORTH;
+	}
+
+	for (size_t i = 0; i < n; i++)
+	{
+		if(graph__is_owned(graph, startpos+i, c))
+			if(graph__get_neighboor(graph, n, startpos+i, dir) != -1)
+				num++;
+	}
 	return num;
 }
 

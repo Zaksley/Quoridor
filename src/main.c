@@ -28,6 +28,9 @@ int main()
    for(int p = 0; p < NUMB_PLAYER; p++)
    {
       players[p]->num_walls = NUMB_WALLS; 
+      players[p]->n = size_graph; 
+      players[p]->wall_installed = calloc(players[p]->n*players[p]->n, sizeof(int)); 
+
       if (p == random)   
       {
          players[p]->id = WHITE;
@@ -128,7 +131,8 @@ int main()
                exit(3); 
             }
             
-            int wall_destroyed = put_wall(server_Graph, update_move); 
+            fprintf(stderr, "Server N : %ld\n", players[p]->n); 
+            int wall_destroyed = put_wall(players[p], update_move); 
             players[p]->num_walls -= 1; 
             if (wall_destroyed == -1)  fprintf(stderr, "Erreur (Server) - Retirer un mur n'a pas fonctionné"); 
          }

@@ -98,6 +98,21 @@ size_t min_node(size_t node, size_t n_neighboor, size_t n1, size_t n2);
 */
 int already_wall_in_square(int wall_used[], size_t n, size_t left_square);
 
+
+      // ======= Usefull functions on walls =======
+
+/* Check if a wall isn't already in the list
+*
+*  @param size size of array moves
+*  @param moves array stocking the moves
+*  @param wall checking a specific wall
+*  @return booleen 1 if wall is in the list, 0 otherwise 
+*/
+int wall_in_list(int size, struct move_t* moves, struct move_t wall);
+
+
+      // ======= Usefull functions on walls =======
+
 /*
 *  @param pointer on the player
 *  @return array of every move_t wall usable
@@ -106,20 +121,20 @@ struct moves_valids* valid_walls(struct player* p);
 
 /* Put a wall on the board meaning destroying 2 edges on the graph
 *
-*  @param graph we want to update
+*  @param p pointer on the player
 *  @param wall the wall we are posing 
 *  @return 0 if the wall's installation is successful, -1 if it failed
 */
-int put_wall(struct graph_t* graph, struct move_t wall); 
+int put_wall(struct player* p, struct move_t wall); 
 
 /* Destroy a wall on the board meaning adding 2 edges on the graph
 *
-*  @param graph graph of the board
+*  @param p player used
 *  @param wall the wall we are posing 
 *  @param dir direction used to add edge
 *  @return 0 if the wall destruction is successful, -1 if it failed
 */
-int destroy_wall(struct graph_t* graph, struct move_t wall, int dir); 
+int destroy_wall(struct player* p, struct move_t wall, int dir); 
 
 /* Shifting by the left an array
 *  

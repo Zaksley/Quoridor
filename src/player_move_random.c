@@ -71,10 +71,7 @@ struct move_t play(struct move_t previous_move)
       // Update le graphe en cas de Wall 
    else if (previous_move.t == WALL)
    {
-      int wall_destroyed = put_wall(self.graph, previous_move); 
-
-      size_t left_square = min_node(previous_move.e[0].fr, previous_move.e[0].to, previous_move.e[1].fr, previous_move.e[1].to);
-      self.wall_installed[(left_square - left_square%self.n)] = 1; 
+      int wall_destroyed = put_wall(&self, previous_move); 
 
       if (wall_destroyed == -1)  fprintf(stderr, "Erreur (Client) - Retirer un mur n'a pas fonctionné\n"); 
    }

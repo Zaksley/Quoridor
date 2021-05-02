@@ -49,13 +49,13 @@ void test__valid_positions()
 void test__valid_walls()
 {
 	//	=== Initialize graph test ===
-	
-	size_t size = 3; 
+	size_t size = 4; 
 	struct graph_t* graph = graph__create_square(size); 
-	size_t pos_white = 8;
+	size_t pos_white = 15;
 	size_t pos_black = 0; 
 
 	struct player* p = initialize_test_player(size, pos_white, pos_black);
+	graph__display(graph, size, pos_white, pos_black);
 
 	for(size_t i=0; i<size; i++)
 	{
@@ -65,11 +65,35 @@ void test__valid_walls()
 	//	=== Initialize graph test ===
 
 	struct moves_valids* moves = valid_walls(p); 
-	TESTCASE("- valid_walls | without putting a wall", moves->number == 8); 
+	TESTCASE("- valid_walls | without putting a wall", moves->number == 18); 
 
 			// Initialize wall
-	struct move_t wall = {.t = WALL, .c = WHITE, .m = 4};
+	struct move_t wall = {.t = WALL, .c = WHITE, .m = 4}; 
+	struct edge_t e1 = {0, 4};
+	struct edge_t e2 = {1, 5}; 
+	wall.e[0] = e1; 
+	wall.e[1] = e2;
 
+	struct move_t wall_illegal = {.t = WALL, .c = WHITE, .m = 4};
+	struct edge_t e1_illegal = {1, 5}; 
+	struct edge_t e2_illegal = {2, 6}; 
+	wall_illegal.e[0] = e1_illegal; 
+	wall_illegal.e[1] = e2_illegal; 
+
+
+	put_wall(p, wall);
+	moves = valid_walls(p);
+	printf("%d\n", moves->number);
+
+	printf("- valid_walls | Adding Wall {%ld-%ld, %ld-%ld} \n", wall.e[0].fr, wall.e[0].to, wall.e[1].fr, wall.e[1].to); 
+	for(int i=0; i<moves->number; i++)
+	{
+		printf("Mur available {%ld-%ld, %ld-%ld}\n", moves->valid[i].e[0].fr, moves->valid[i].e[0].to, moves->valid[i].e[1].fr, moves->valid[i].e[1].to);
+	}
+	TESTCASE("- valid_walls | New wall => -2 walls available", moves->number == 16);
+	TESTCASE("- valid_walls | New wall => Wall {1-5, 2-6} illegal", !wall_in_list(moves->number, moves->valid, wall_illegal));
+
+		/*
 	struct edge_t e1_test1 = {4, 3}; 
 	struct edge_t e2_test1 = {1, 0}; 
 	wall.e[0] = e1_test1;
@@ -96,7 +120,7 @@ void test__valid_walls()
 	moves = valid_walls(p);
 	graph__display(graph, size, pos_white, pos_black);
 	TESTCASE("- valid_walls | put a wall => -2 walls available", moves->number == 2); 
-
+	*/
 	
 
 	//p->finalize();
@@ -106,7 +130,11 @@ void test__put_wall()
 {
 	//	=== Initialize graph test ===
 	size_t size = 3; 
+	size_t pos = 0; 
+	size_t ennemy_pos = 8; 
 	struct graph_t* graph = graph__create_square(size); 
+	struct player* p = initialize_test_player(size, pos, ennemy_pos);
+	p->graph = graph; 
 
 	for(size_t i=0; i<size; i++)
 	{
@@ -126,10 +154,10 @@ void test__put_wall()
 	wall.e[0] = e1; 
 	wall.e[1] = e2; 
 
-	TESTCASE("- put_wall | putting initial wall", put_wall(graph, wall));
+	TESTCASE("- put_wall | putting initial wall", put_wall(p, wall));
 	TESTCASE("- put_wall | edge 1 is destroyed", !graph__edge_exists(graph, n1, n2)); 
 	TESTCASE("- put_wall | edge 2 is destroyed", !graph__edge_exists(graph, n3, n4)); 
-	TESTCASE("- put_wall | put a wall if there is no edge isn't allowed", put_wall(graph, wall) == -1);
+	TESTCASE("- put_wall | put a wall if there is no edge isn't allowed", put_wall(p, wall) == -1);
 }
 
 void test__destroy_wall()
@@ -151,6 +179,8 @@ void test__exist_path_player()
 		graph__add_ownership(graph, i, BLACK);
 		graph__add_ownership(graph, graph->num_vertices - size + i, WHITE);
 	}	
+	struct player* p = initialize_test_player(size, pos_black, pos_white);
+	p->graph = graph; 
 	//	=== Initialize graph test ===
 
 	//graph__display(graph, size, pos_white, pos_black);
@@ -168,7 +198,7 @@ void test__exist_path_player()
 	struct edge_t e2_test1 = {0, 1}; 
 	wall.e[0] = e1_test1;
 	wall.e[1] = e2_test1; 
-	put_wall(graph, wall);
+	put_wall(p, wall);
 
 	//graph__display(graph, size, pos_white, pos_black);
 	TESTCASE("- existPath | 1 central wall, find a path for white player", existPath_Player(graph, size, WHITE, pos_white));
@@ -184,13 +214,13 @@ void test__exist_path_player()
 	struct edge_t e2_test2 = {4, 3}; 
 	wall.e[0] = e1_test2;
 	wall.e[1] = e2_test2;
-	put_wall(graph, wall);
+	put_wall(p, wall);
 
 	struct edge_t e1_test3 = {4, 7};
 	struct edge_t e2_test3 = {5, 8}; 
 	wall.e[0] = e1_test3;
 	wall.e[1] = e2_test3;
-	put_wall(graph, wall);
+	put_wall(p, wall);
 	
 	//graph__display(graph, size, pos_white, pos_black);
 	TESTCASE("- existPath | 3 specific walls, find no path for white player", !existPath_Player(graph, size, WHITE, pos_white));
@@ -204,7 +234,7 @@ void test__exist_path_player()
 	struct edge_t e2_test4 = {6, 3}; 
 	wall.e[0] = e1_test4;
 	wall.e[1] = e2_test4;
-	put_wall(graph, wall);
+	put_wall(p, wall);
 	
 	TESTCASE("- existPath | 4 specific walls, find no path for black player", !existPath_Player(graph, size, BLACK, pos_black));
 
@@ -212,7 +242,7 @@ void test__exist_path_player()
 	*	Putting a wall again
 	*	==> Path is again available
 	*/
-	destroy_wall(graph, wall, 1); 
+	destroy_wall(p, wall, 1); 
 	TESTCASE("- existPath | removing a wall, find a path for black player", existPath_Player(graph, size, BLACK, pos_black));
 }
 
@@ -278,7 +308,7 @@ void test__rushing_path()
 	pos_black = 0; 
 
 
-	put_wall(p2->graph, wall); 
+	put_wall(p2, wall); 
 	moves = valid_positions(p2); 
 	rush = rushing_path(p2->pos, p2->winning_nodes, p2->numb_win, moves);
 	p2->pos = rush;

@@ -589,6 +589,9 @@ int destroy_wall(struct player* p, struct move_t wall, int dir)
    test = graph__add_edge(p->graph, wall.e[1].fr, wall.e[1].to, dir);
    if (test == -1) return -1; 
 
+   size_t left_square = min_node(wall.e[0].fr, wall.e[0].to, wall.e[1].fr, wall.e[1].to);
+   p->wall_installed[position_square(left_square, p->n)] = 0; 
+
    return 0; 
 }
 

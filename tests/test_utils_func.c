@@ -14,7 +14,7 @@ struct player* initialize_test_player(size_t n, size_t pos, size_t ennemy_pos)
    	test_player->graph = graph__create_square(n);
 	test_player->n = n;
 	test_player->naked_graph = graph__copy(test_player->graph, test_player->n);
-	test_player->wall_installed = calloc(test_player->n*test_player->n, sizeof(int)); 
+	test_player->wall_installed = calloc( (test_player->n-1)*(test_player->n-1), sizeof(int)); 
 	return test_player;
 }
 
@@ -86,6 +86,12 @@ void test__valid_walls()
 	printf("%d\n", moves->number);
 
 	printf("- valid_walls | Adding Wall {%ld-%ld, %ld-%ld} \n", wall.e[0].fr, wall.e[0].to, wall.e[1].fr, wall.e[1].to); 
+
+	for(int i=0; i< (p->n-1) * (p->n-1); i++)
+	{
+		printf("wall installed : [%d] : %d \n", i, p->wall_installed[i]);
+	}
+
 	for(int i=0; i<moves->number; i++)
 	{
 		printf("Mur available {%ld-%ld, %ld-%ld}\n", moves->valid[i].e[0].fr, moves->valid[i].e[0].to, moves->valid[i].e[1].fr, moves->valid[i].e[1].to);

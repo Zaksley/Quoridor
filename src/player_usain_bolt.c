@@ -43,7 +43,7 @@ void initialize(enum color_t id, struct graph_t* graph, size_t num_walls)
    self.naked_graph = graph__copy(self.graph, self.n); 
    self.first_move = 1; 
 
-   self.wall_installed = calloc(self.n*self.n, sizeof(int)); 
+   self.wall_installed = calloc( (self.n-1)*(self.n-1), sizeof(int)); 
 
    self.numb_win = graph__count_ownership(self.graph, self.n, self.id); 
    self.winning_nodes = malloc(sizeof(size_t) * self.numb_win);

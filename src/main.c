@@ -29,7 +29,7 @@ int main()
    {
       players[p]->num_walls = NUMB_WALLS; 
       players[p]->n = size_graph; 
-      players[p]->wall_installed = calloc(players[p]->n*players[p]->n, sizeof(int)); 
+      players[p]->wall_installed = calloc( (players[p]->n-1)*(players[p]->n-1), sizeof(int)); 
 
       if (p == random)   
       {

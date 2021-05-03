@@ -1,6 +1,7 @@
 #include "test_graph_struct.h"
 #include "test_graph_fonc.h"
 #include "test_utils_func.h"
+#include "test_strategy_func.h"
 
 #define TESTCASE(msg, test) printf("%-60s : %s\n", msg, test ? "\033[1;92mPassed\033[0m" : "\033[1;91mFailed\033[0m")
 
@@ -76,7 +77,10 @@ int main()
 	test__exist_path_player();
 	printf("\033[1mcheck_path :\033[0m\n");
 	test__check_path();
-	printf("\033[1mrushing_path :\033[0m\n");
+
+
+   printf("\033[1m\n----- Strategy | Functionnal tests -----\033[0m\n");
+   printf("\033[1mrushing_path :\033[0m\n");
    test__rushing_path();
    printf("\033[1mdijkstra_path :\033[0m\n");
    test__dijkstra_path();  

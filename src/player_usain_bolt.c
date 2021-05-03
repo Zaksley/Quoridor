@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include "utils.h"
+#include "strategy.h"
 #include "graph_modif.h"
 
 /* struct data */

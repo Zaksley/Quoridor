@@ -139,7 +139,7 @@ struct move_t play(struct move_t previous_move)
             fprintf(stderr, "Erreur (Client) - Retirer un mur n'a pas fonctionné\n"); 
             exit(2); 
          }
-         //printf("Côté Client : Joueur %d pose mur entre %ld et %ld\n", self.id, move.e[0].fr, move.e[0].to);
+         printf("Côté Client : Joueur %d pose mur {%ld-%ld, %ld-%ld \n", self.id, move.e[0].fr, move.e[0].to, move.e[1].fr, move.e[1].to);
       }
 
       // ===== Free tables

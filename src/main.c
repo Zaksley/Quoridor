@@ -11,7 +11,7 @@ int main()
    // ================== Initializing game ==================
 
       // Get players 
-   struct player* player1 = get_functions("./install/libplayer_move_random.so");
+   struct player* player1 = get_functions("./install/libplayer_random.so");
    struct player* player2 = get_functions("./install/libplayer_usain_bolt.so"); 
    struct player* players[2] = {player1, player2}; 
 
@@ -118,6 +118,7 @@ int main()
          // === Move ===
          if (update_move.t == MOVE)
          {
+               // = Update both players =
             players[p]->pos = update_move.m;
             players[other_player(players[p]->id)]->ennemy_pos = update_move.m;
          }
@@ -131,11 +132,18 @@ int main()
                exit(3); 
             }
             
-            int wall_destroyed = put_wall(players[p], update_move); 
-            //players[other_player(players[p]->id)]->wall_installed
+               // = Update both graphs =
+            int wall_destroyed_1 = put_wall(players[0], update_move); 
+            int wall_destroyed_2 = put_wall(players[1], update_move);
+
+            //printf("Côté Serveur : Joueur %d pose mur {%ld-%ld, %ld-%ld \n", players[p]->id, update_move.e[0].fr, update_move.e[0].to, update_move.e[1].fr, update_move.e[1].to);
 
             players[p]->num_walls -= 1; 
-            if (wall_destroyed == -1)  fprintf(stderr, "Erreur (Server) - Retirer un mur n'a pas fonctionné"); 
+            if (wall_destroyed_1 == -1 || wall_destroyed_2 == -1)  
+            {
+               fprintf(stderr, "Erreur (Server) - Poser un mur n'a pas fonctionné"); 
+               exit(4);
+            }
          }
 
          

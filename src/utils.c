@@ -193,12 +193,19 @@ struct moves_valids* valid_positions(struct player* p)
 */
 size_t rushing_path(size_t pos, size_t* winning_nodes, size_t numb_win, struct moves_valids* moves)
 {
+
+   if (moves->number <= 0) 
+   {
+      fprintf(stderr, "Error : No more moves available");
+      exit(6);
+   }
+
    size_t gap = (size_t) abs( (int) (winning_nodes[0] - pos)); 
-   size_t best = pos; 
+   size_t best = moves->valid[0].m; 
    size_t test_gap; 
    for(int i=0; i<moves->number; i++)
    {
-         // Fiding winning position
+         // Finding winning position
       for(size_t j=0; j<numb_win; j++)
       {
          if (moves->valid[i].m == winning_nodes[j])

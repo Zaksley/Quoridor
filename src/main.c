@@ -114,7 +114,6 @@ int main()
 
 
             // === Update Server ===
-
          // === Move ===
          if (update_move.t == MOVE)
          {

@@ -25,7 +25,7 @@ struct player
    size_t* winning_nodes;
    int numb_win; 
 
-
+      // Functions client
    char* (*get_name)();
    void (*initialize) (enum color_t, struct graph_t*, size_t);
    struct move_t (*player_play) (struct move_t);

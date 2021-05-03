@@ -307,7 +307,7 @@ size_t min_node(size_t node, size_t n_neighboor, size_t n1, size_t n2)
 
    for(int i=0; i<3; i++)
    {
-      if (left_square < nodes[i])   left_square = nodes[i]; 
+      if (left_square > nodes[i])   left_square = nodes[i]; 
    }
 
    return left_square;
@@ -407,7 +407,6 @@ struct moves_valids* valid_walls(struct player* p)
                n2 = graph__get_neighboor(p->naked_graph, p->n, n_neighboor, second_dir);
 
                if (n1 == checkTest || n2 == checkTest) continue;
-               //fprintf(stderr, "n: %ld - n_nei: %ld - n1: %ld - n2:%ld\n", node, n_neighboor, n1, n2);
                
                   // Wall IN the square
                if (already_wall_in_square(p->wall_installed, p->n, min_node(node, n_neighboor, n1, n2)))  continue; 
@@ -434,6 +433,7 @@ struct moves_valids* valid_walls(struct player* p)
             else if (n1 == checkTest)
             {
                n1 = graph__get_neighboor(p->graph, p->n, n2, opposite_dir(dir)); 
+
                   // other one edge is cut
                if (n1 == checkTest) continue; 
                else
@@ -457,12 +457,12 @@ struct moves_valids* valid_walls(struct player* p)
                
                if(!wall_in_list(size, walls, wall))
                {
+                  
                   // Check if we can put the wall
                   int pathOk = checkPath(p, wall, dir);
                   
                   if (pathOk)
                   {
-
                         // Realloc size to Walls 
                      if (size == capacity)
                      {
@@ -596,25 +596,6 @@ int destroy_wall(struct player* p, struct move_t wall, int dir)
 }
 
 
-/* Shifting by the left an array
-*  
-*  @param s the array
-*  @param begin where we start
-*  @param end where we stop
-*/
-void shift_left(size_t s[], int begin, int end)
-{
-   int i=0;
-   
-   printf("valgrind shift_left problem\n");
-
-   while(i <= end-begin )
-   { 
-      s[begin+i-1] = s[begin+i];
-      i++;
-   }  
-}
-
 /* Checking if a vertex isn't already in the vertex list
 *  
 *  @param waiting Waitinglist - size_t array
@@ -730,10 +711,9 @@ int checkPath(struct player* p, struct move_t wall, int dir)
 {
       // Put Fake Wall (for test)
    put_wall(p, wall); 
-   
+
    int check_player1 = existPath_Player(p->graph, p->n, p->id, p->pos);
    int check_player2 = existPath_Player(p->graph, p->n, other_player(p->id), p->ennemy_pos);
-   
 
       // Remove testing Wall
    destroy_wall(p, wall, dir); 

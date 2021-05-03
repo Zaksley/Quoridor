@@ -131,8 +131,9 @@ int main()
                exit(3); 
             }
             
-            fprintf(stderr, "Server N : %ld\n", players[p]->n); 
             int wall_destroyed = put_wall(players[p], update_move); 
+            //players[other_player(players[p]->id)]->wall_installed
+
             players[p]->num_walls -= 1; 
             if (wall_destroyed == -1)  fprintf(stderr, "Erreur (Server) - Retirer un mur n'a pas fonctionné"); 
          }
@@ -163,25 +164,26 @@ int main()
 
    // ================== Free elements ==================
 
-      // ===== Free Graphs
-      /*
-   for(int p=0; p<NUMB_PLAYER; p++)
-   {
-      fprintf(stderr, "ATTENTION TENTATIVE DE FREE LE GRAPH\n");
-      fprintf(stderr, "%p\n", (void*) &(players[p]->graph));
-      fprintf(stderr, "%p\n", (void*) &(players[p]->winning_nodes));
-      players[p]->finalize();
-   }
-      */
-
-   graph__free(server_Graph); 
-
-      // =====
-
       // ===== Free Winning lists
+
    free(players[0]->winning_nodes);
    free(players[1]->winning_nodes);
       // =====
+
+      // ===== Free Graphs
+      
+   // Free server
+   graph__free(players[0]->graph);
+   graph__free(players[1]->graph);
+
+   // Free clients
+   for(int p=0; p<NUMB_PLAYER; p++)
+   {
+      //players[p]->finalize();
+   }  
+      // =====
+
+
 
    // ============================================
 

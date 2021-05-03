@@ -136,14 +136,6 @@ int put_wall(struct player* p, struct move_t wall);
 */
 int destroy_wall(struct player* p, struct move_t wall, int dir); 
 
-/* Shifting by the left an array
-*  
-*  @param s the array
-*  @param begin where we start
-*  @param end where we stop
-*/
-void shift_left(size_t s[], int begin, int end); 
-
 /* Checking if a vertex isn't already in the vertex list
 *  
 *  @param waiting Waitinglist - size_t array

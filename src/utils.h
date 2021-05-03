@@ -3,6 +3,7 @@
 
 #include "player.h"
 
+// ===================  PLAYER =================== 
 
 struct player
 {
@@ -54,22 +55,41 @@ struct player* get_functions(char* lib);
 */
 struct player* initialize_test_player(struct graph_t* graph, size_t n, size_t pos, size_t ennemy_pos); 
 
-/* Return the color of the other player
+/* Return an initialized player
 *
-*  @param color of a player
-*  @return opposite color 
+*  @param self player created in Client
+*  @param id color chosed
+*  @param graph graph from server
+*  @param num_walls number of walls chosed by server
+*  @return player initialized 
+*/
+struct player initialization_player(struct player self, enum color_t id, struct graph_t* graph, size_t num_walls); 
+
+/* Free elements of player
+*
+*  @param self struct player to free
+*/
+void finalization_player(struct player self); 
+
+
+/* Gets opposite color
+*
+*  @param color of player
+*  @return opposite color
 */
 enum color_t other_player(enum color_t player); 
 
-/* Return a player in relation to a specific color 
+/* Gets opposite structure player
 *
-*  @param array of players
-*  @param color we want
-*  @return player with the color specified
+*  @param p array of players (Server)
+*  @param c color of a player
+*  @return opposite player
 */
 struct player* player_color(struct player** p, enum color_t c); 
 
-// =================== Functions with MOVE = 1 (Moving pawn) ===================
+// ===================  PLAYER =================== 
+
+// ===================  MOVE =================== 
 
 /* Return a list of every valid position to move
 *
@@ -83,7 +103,9 @@ struct moves_valids* valid_positions(struct player*);
 */
 void add_position(struct move_t* valid, struct move_t new, int* count_moves); 
 
-// =================== Functions with MOVE = 0 (Posing wall) ===================
+// ===================  MOVE =================== 
+
+// =================== WALL =================== 
 
 size_t position_square(size_t left_square, int n);
 
@@ -160,5 +182,7 @@ int existPath_Player(struct graph_t* graph, size_t n, size_t color, size_t pos);
 *  @return 1 if posing this wall is allowed, 0 otherwise
 */
 int checkPath(struct player* p, struct move_t wall, int dir); 
+
+// =================== WALL =================== 
 
 #endif

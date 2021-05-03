@@ -2,6 +2,8 @@
 #include <dlfcn.h>
 #include "utils.h"
 
+// ===================  PLAYER =================== 
+
 /*
  * Get functions from a special player with a dynamic lib.so and stock it in a new struct
  * 
@@ -46,9 +48,14 @@ struct player* get_functions(char* lib)
 
    return player; 
 }
-/*
+
+/* Create a fake player fast to test functions
 *
-*
+*  @param graph Graph created that we link to our player
+*  @param n size of graph
+*  @param pos position of the player
+*  @param ennemy_pos ennemy position
+*  @return a player
 */
 struct player* initialize_test_player(struct graph_t* graph, size_t n, size_t pos, size_t ennemy_pos)
 {
@@ -62,18 +69,75 @@ struct player* initialize_test_player(struct graph_t* graph, size_t n, size_t po
 	return test_player;
 }
 
+/* Return an initialized player
+*
+*  @param self player created in Client
+*  @param id color chosed
+*  @param graph graph from server
+*  @param num_walls number of walls chosed by server
+*  @return player initialized 
+*/
+struct player initialization_player(struct player self, enum color_t id, struct graph_t* graph, size_t num_walls)
+{
+      // Basic initialization
+   self.id = id;
+   self.num_walls = num_walls;
+   self.n = graph__get_size(graph);
+   self.graph = graph__copy(graph, self.n);
+   self.naked_graph = graph__copy(self.graph, self.n); 
 
+   self.first_move = 1; 
+
+      // Walls placed
+   self.wall_installed = calloc( (self.n-1)*(self.n-1), sizeof(int)); 
+
+      // Winning nodes
+   self.numb_win = graph__count_ownership(self.graph, self.n, self.id); 
+   self.winning_nodes = malloc(sizeof(size_t) * self.numb_win);
+
+   return self; 
+}
+
+/* Free elements of player
+*
+*  @param self struct player to free
+*/
+void finalization_player(struct player self)
+{
+      // Free arrays
+   free(self.wall_installed);
+   free(self.winning_nodes);
+
+      // Free graph
+   graph__free(self.graph);
+}
+
+
+
+/* Gets opposite color
+*
+*  @param color of player
+*  @return opposite color
+*/
 enum color_t other_player(enum color_t player)
 {
    if (player == WHITE) return BLACK; 
    else return WHITE; 
 }
 
+/* Gets opposite structure player
+*
+*  @param p array of players (Server)
+*  @param c color of a player
+*  @return opposite player
+*/
 struct player* player_color(struct player** p, enum color_t c)
 {
    if (p[0]->id == c) return p[0];
    else return p[1]; 
 }
+
+// ===================  PLAYER =================== 
 
 int edge_equal(struct edge_t e1, struct edge_t e2)
 {
@@ -395,72 +459,6 @@ struct moves_valids* valid_walls(struct player* p)
    return global;   
 }
 
-   // ====== Save old way to put walls ====== 
-
-   /*
-   size_t n1, n2; 
-   size_t checkTest = -1; 
-   int d1, d2; 
-   for(size_t node = 0; node < p->graph->num_vertices; node++)
-   {
-      for(int i=0; i<2; i++)
-      {
-            // Neighboors EAST-WEST
-         if (i == 0)
-         {
-            n1 = graph__get_neighboor(p->graph, p->n, node, EAST); 
-            n2 = graph__get_neighboor(p->graph, p->n, node, WEST); 
-            d1 = EAST;
-            d2 = WEST;
-         }
-         
-            // Neighboors NORTH-SOUTH
-         else
-         {
-            n1 = graph__get_neighboor(p->graph,p->n, node, NORTH); 
-            n2 = graph__get_neighboor(p->graph,p->n, node, SOUTH); 
-            d1 = NORTH;
-            d2 = SOUTH;
-         }
-
-         if (n1 != checkTest && n2 != checkTest)
-         {
-            
-            if (graph__edge_exists(p->graph, node, n1) && graph__edge_exists(p->graph, node, n2))
-            {
-               
-                  // Set the struct move_t wall 
-               struct edge_t e1 = {node, n1};
-               struct edge_t e2 = {node, n2}; 
-               wall.m = node;
-               wall.e[0] = e1;
-               wall.e[1] = e2; 
-
-                  // Check if we can put the wall
-               
-               int pathOk = checkPath(p, wall, d1, d2);
-               
-
-               if (pathOk)
-               {
-                     // Realloc size to Walls 
-                  if (size == capacity)
-                  {
-                     capacity *= 2; 
-                     walls = realloc(walls, sizeof(struct move_t) * capacity);
-                  }
-
-                  // Add a wall to the array
-                  walls[size] = wall; 
-                  size++; 
-               }
-            }
-         }
-      }
-      */
-
-     // ====== Save old way to put walls ====== 
-
 
 /* Put a wall on the board meaning destroying 2 edges on the graph
 *
@@ -635,9 +633,6 @@ int checkPath(struct player* p, struct move_t wall, int dir)
 
 }
 
-
-
-
-// -------- WALL
+// =================== WALL =================== 
 
 

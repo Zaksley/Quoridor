@@ -36,18 +36,7 @@ char const* get_player_name()
  */
 void initialize(enum color_t id, struct graph_t* graph, size_t num_walls)
 {
-   self.id = id;
-   self.num_walls = num_walls;
-   self.n = graph__get_size(graph);
-   self.graph = graph__copy(graph, self.n);
-   self.naked_graph = graph__copy(self.graph, self.n); 
-   
-   self.first_move = 1; 
-
-   self.wall_installed = calloc( (self.n-1)*(self.n-1), sizeof(int)); 
-
-   self.numb_win = graph__count_ownership(self.graph, self.n, self.id); 
-   self.winning_nodes = malloc(sizeof(size_t) * self.numb_win);
+   self = initialization_player(self, id, graph, num_walls); 
 }
 
 /* Computes next move
@@ -126,8 +115,6 @@ struct move_t play(struct move_t previous_move)
 void finalize()
 {
    printf("Libération %s ...\n", self.get_name());
-   free(self.winning_nodes);
-   free(self.wall_installed);
-   graph__free(self.graph);
+   finalization_player(self);
    printf("OK !\n");
 }

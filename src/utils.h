@@ -44,6 +44,16 @@ struct moves_valids
  */
 struct player* get_functions(char* lib);
 
+/* Create a fake player fast to test functions
+*
+*  @param graph Graph created that we link to our player
+*  @param n size of graph
+*  @param pos position of the player
+*  @param ennemy_pos ennemy position
+*  @return a player
+*/
+struct player* initialize_test_player(struct graph_t* graph, size_t n, size_t pos, size_t ennemy_pos); 
+
 /* Return the color of the other player
 *
 *  @param color of a player
@@ -72,19 +82,6 @@ struct moves_valids* valid_positions(struct player*);
 *  Add a position new to the array valid 
 */
 void add_position(struct move_t* valid, struct move_t new, int* count_moves); 
-
-/* Return either a winning move reachable (first choice) or the best move to close the gap
-*
-*  @param pos Position of the player
-*  @param winning_nodes List of winning position
-*  @param numb_win Length of the winning list
-*  @param moves List of moves available
-*  @return The best move possible to rush
-*/
-size_t rushing_path(size_t pos, size_t* winning_nodes, size_t numb_win, struct moves_valids* moves); 
-
-size_t path_dijkstra(struct player* p);
-
 
 // =================== Functions with MOVE = 0 (Posing wall) ===================
 

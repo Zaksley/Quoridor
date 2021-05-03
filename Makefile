@@ -15,8 +15,8 @@ all: clean build
 
 build: install test
 
-test: test_graph_fonc.o test_graph_struct.o test_utils_func.o graph_modif.o utils.o
-	${CC} --coverage ${CFLAGS} ${TEST_DIR}/alltests.c graph_modif.o utils.o test_graph_fonc.o test_graph_struct.o test_utils_func.o -o install/alltests  ${LDFLAGS} ${LIBS}
+test: test_graph_fonc.o test_graph_struct.o test_utils_func.o test_strategy_func.o graph_modif.o utils.o strategy.o
+	${CC} --coverage ${CFLAGS} ${TEST_DIR}/alltests.c graph_modif.o utils.o strategy.o test_graph_fonc.o test_graph_struct.o test_utils_func.o test_strategy_func.o -o install/alltests  ${LDFLAGS} ${LIBS}
 
 alltests: test
 	LD_LIBRARY_PATH=${GSL_PATH}/lib ./install/alltests
@@ -30,6 +30,9 @@ install: player_move_random player_random player_usain_bolt
 utils.o : ${DIR}/utils.h ${DIR}/utils.c
 	${CC} -fPIC ${CFLAGS} ${DIR}/utils.c -c
 
+strategy.o : ${DIR}/strategy.h ${DIR}/strategy.c
+	${CC} -fPIC ${CFLAGS} ${DIR}/strategy.c -c
+
 graph_modif.o: ${DIR}/graph_modif.h ${DIR}/graph_modif.c
 	${CC} -fPIC ${CFLAGS} ${DIR}/graph_modif.c -c
 
@@ -42,19 +45,22 @@ test_graph_fonc.o:
 test_utils_func.o: 
 	${CC} ${CFLAGS} ${LDFLAGS} ${LIBS} ${TEST_DIR}/test_utils_func.c -c
 
+test_strategy_func.o: 
+	${CC} ${CFLAGS} ${LDFLAGS} ${LIBS} ${TEST_DIR}/test_strategy_func.c -c
+
 ##################### Players ######################
 
-player_random: graph_modif.o utils.o
+player_random: graph_modif.o utils.o strategy.o
 	${CC} -fPIC -c ${CFLAGS} ${DIR}/player_random.c;
-	${CC} -shared -nostartfiles -o install/libplayer_random.so player_random.o graph_modif.o utils.o;
+	${CC} -shared -nostartfiles -o install/libplayer_random.so player_random.o graph_modif.o utils.o strategy.o;
 
-player_move_random: graph_modif.o utils.o
+player_move_random: graph_modif.o utils.o strategy.o 
 	${CC} -fPIC -c ${CFLAGS} ${DIR}/player_move_random.c;
-	${CC} -shared -nostartfiles -o install/libplayer_move_random.so player_move_random.o graph_modif.o utils.o;
+	${CC} -shared -nostartfiles -o install/libplayer_move_random.so player_move_random.o graph_modif.o utils.o strategy.o;
 
-player_usain_bolt: graph_modif.o utils.o
+player_usain_bolt: graph_modif.o utils.o strategy.o
 	${CC} -fPIC -c ${CFLAGS} ${DIR}/player_usain_bolt.c;
-	${CC} -shared -nostartfiles -o install/libplayer_usain_bolt.so player_usain_bolt.o graph_modif.o utils.o;
+	${CC} -shared -nostartfiles -o install/libplayer_usain_bolt.so player_usain_bolt.o graph_modif.o utils.o strategy.o;
 ###################### Tests #######################
 
 clean:

@@ -252,6 +252,25 @@ int graph__add_ownership(struct graph_t * graph, size_t v, size_t owner)
    return ownership;
 }
 
+/* Check if a node is inaccessible
+*
+*	@param graph a graph
+*	@param n size of graph
+*	@param v node studied
+*	@return 1 if node is inaccessible, 0 otherwhise
+*/
+int graph__node_inaccessible(struct graph_t* graph, size_t n, size_t v)
+{
+	int inaccess = 0;
+	for(size_t i=0; i< n*n; i++)
+	{
+		inaccess = graph__get_dir(graph, v, i);
+		if (inaccess != 0)	return 0; 
+	}
+
+	return 1;
+}
+
 /* Verifies if a vertex is owned by a color
  *
  * @param graph a graph
@@ -271,7 +290,7 @@ int graph__is_owned(struct graph_t * graph, size_t v, size_t c)
  * @param n the size of the graph
  * @param c the player number
  * @param *l a size_t list of size n
- * @return nothing
+ * @return 0 if no winning position added, the number otherwhise
  * @side-effect : l contains max n winning positions
  * @side-effect : if l[0] == n then there is no winning pos
  */
@@ -279,8 +298,11 @@ int graph__list_ownership(struct graph_t * graph, size_t n, size_t c, size_t* l)
 {
 	int num = 0;
 	for (size_t i = 0; i < n*n; i++)
-		if(graph__is_owned(graph, i, c))
+	{
+		if(graph__is_owned(graph, i, c)  && !graph__node_inaccessible(graph, n, i))
 			l[num++] = i;
+	}
+
 	return num;
 }
 
@@ -306,7 +328,7 @@ int graph__count_ownership(struct graph_t * graph, size_t n, size_t c)
 
 	for (size_t i = 0; i < n; i++)
 	{
-		if(graph__is_owned(graph, startpos+i, c))
+		if(graph__is_owned(graph, startpos+i, c) && !graph__node_inaccessible(graph, n, i))
 			if(graph__get_neighboor(graph, n, startpos+i, dir) != -1)
 				num++;
 	}

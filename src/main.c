@@ -11,7 +11,7 @@ int main()
    // ================== Initializing game ==================
 
       // Get players 
-   struct player* player1 = get_functions("./install/libplayer_random.so");
+   struct player* player1 = get_functions("./install/libplayer_move_random.so");
    struct player* player2 = get_functions("./install/libplayer_usain_bolt.so"); 
    struct player* players[2] = {player1, player2}; 
 
@@ -20,7 +20,7 @@ int main()
       // Central Graph - Server 
 
    int size_graph = SIZE_GRAPH; 
-   struct graph_t* server_Graph = graph__create_square(size_graph);
+   struct graph_t* server_Graph = graph__create_torus(size_graph);
    struct graph_t* server_copy = graph__copy(server_Graph, size_graph);
 
       // ===== Initialize players (Server) =====
@@ -63,15 +63,16 @@ int main()
       // ===== Initialize Winning positions 
    int numb_win = graph__count_ownership(server_Graph, size_graph, WHITE);
 
-   size_t* list_p0 = malloc(sizeof(size_t) * size_graph); 
-   size_t* list_p1 = malloc(sizeof(size_t) * size_graph); 
-   graph__list_ownership(server_Graph, size_graph, other_player(players[0]->id), list_p0); 
-   graph__list_ownership(server_Graph, size_graph, other_player(players[1]->id), list_p1);
+   size_t* winning_p0 = malloc(sizeof(size_t) * numb_win); 
+   size_t* owned_p0 = malloc(sizeof(size_t) * numb_win); 
+   graph__list_ownership(server_Graph, size_graph, players[0]->id, owned_p0); 
+   graph__list_ownership(server_Graph, size_graph, other_player(players[0]->id), winning_p0);
 
-   // WARNING size_graph = n => Needs to change
-   players[0]->winning_nodes = list_p0;
+   players[0]->winning_nodes = winning_p0;
+   players[0]->owned_nodes = owned_p0; 
    players[0]->numb_win = numb_win; 
-   players[1]->winning_nodes = list_p1; 
+   players[1]->winning_nodes = owned_p0; 
+   players[1]->owned_nodes = winning_p0; 
    players[1]->numb_win = numb_win;
 
       // ======
@@ -98,7 +99,7 @@ int main()
    struct move_t update_move; 
    while (isPlaying) 
    {
-
+      
       // ===== Players Playing =====
 
       for (int p=0; p<NUMB_PLAYER; p++)
@@ -109,10 +110,10 @@ int main()
             // === OTHERS MOVE ===
          else
          {
+            
             update_move = players[p]->player_play(update_move);
          }
-
-
+         
             // === Update Server ===
          // === Move ===
          if (update_move.t == MOVE)
@@ -144,12 +145,11 @@ int main()
                exit(4);
             }
          }
-
          
             // === Victory ===
          for(int i=0; i<players[p]->numb_win; i++)
          {
-            if (players[p]->pos == players[p]->winning_nodes[i])
+            if (loop != 0 && players[p]->pos == players[p]->winning_nodes[i])
             {
                printf("VICTOIRE DU JOUEUR %s - Nombre de tours : %d & Position gagnante : %ld\n", players[p]->get_name(), loop, players[p]->pos); 
                graph__display(server_Graph, size_graph, player_color(players, WHITE)->pos, player_color(players, BLACK)->pos );
@@ -170,11 +170,11 @@ int main()
    }
 
    // ================== Free elements ==================
-
+   
       // ===== Free Winning lists
 
    free(players[0]->winning_nodes);
-   free(players[1]->winning_nodes);
+   free(players[0]->owned_nodes);
       // =====
 
       // ===== Free Graphs

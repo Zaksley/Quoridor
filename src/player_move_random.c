@@ -75,9 +75,10 @@ struct move_t play(struct move_t previous_move)
    // ==== First move
    if (self.first_move)
    {
-      size_t* list = malloc(sizeof(size_t) * self.n); 
+      size_t* list = malloc(sizeof(size_t) * self.numb_win); 
       graph__list_ownership(self.graph, self.n, self.id, list); 
-      move.m = list[rand() % self.n]; 
+
+      move.m = list[rand() % self.numb_win]; 
       self.pos = move.m;
       self.first_move = 0; 
 

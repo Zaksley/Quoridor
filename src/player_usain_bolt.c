@@ -77,9 +77,9 @@ struct move_t play(struct move_t previous_move)
       move.e[0] = no_wall;
       move.e[1] = no_wall; 
 
-      size_t* list = malloc(sizeof(size_t) * self.n); 
+      size_t* list = malloc(sizeof(size_t) * self.numb_win); 
       graph__list_ownership(self.graph, self.n, self.id, list); 
-      move.m = list[rand() % self.n]; 
+      move.m = list[rand() % self.numb_win]; 
       self.pos = move.m;
       self.first_move = 0; 
 
@@ -130,7 +130,7 @@ struct move_t play(struct move_t previous_move)
             fprintf(stderr, "Erreur (Client) - Retirer un mur n'a pas fonctionné\n"); 
             exit(2); 
          }
-         printf("Côté Client : Joueur %d pose mur {%ld-%ld, %ld-%ld \n", self.id, move.e[0].fr, move.e[0].to, move.e[1].fr, move.e[1].to);
+         printf("Côté Client : Joueur %d pose mur {%ld-%ld, %ld-%ld}\n", self.id, move.e[0].fr, move.e[0].to, move.e[1].fr, move.e[1].to);
       }
 
       // ===== Free tables

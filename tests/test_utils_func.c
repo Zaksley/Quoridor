@@ -44,13 +44,14 @@ void test__valid_walls()
 	size_t pos_white = 5;
 	size_t pos_black = 8; 
 
-	struct player* p = initialize_test_player(graph, size, pos_white, pos_black);
-
 	for(size_t i=0; i<size; i++)
 	{
 		graph__add_ownership(graph, i, BLACK);
 		graph__add_ownership(graph, graph->num_vertices - size + i, WHITE);
 	}	
+
+	struct player* p = initialize_test_player(graph, size, pos_white, pos_black);
+
 	//	=== Initialize graph test ===
 
       // Basic test
@@ -436,8 +437,8 @@ void test__exist_path_player()
 	//	=== Initialize graph test ===
 
 	//graph__display(graph, size, pos_white, pos_black);
-	TESTCASE("- existPath | initially no walls, find a path for white player", existPath_Player(graph, size, WHITE, pos_white));
-	TESTCASE("- existPath | initially no walls, find a path	for black player", existPath_Player(graph, size, BLACK, pos_black)); 
+	TESTCASE("- existPath | initially no walls, find a path for white player", existPath_Player(p, WHITE, pos_white));
+	TESTCASE("- existPath | initially no walls, find a path	for black player", existPath_Player(p, BLACK, pos_black)); 
 	
 	/*
 	*	Put a mur in position 4 direction NORTH and SOUTH
@@ -453,8 +454,8 @@ void test__exist_path_player()
 	put_wall(p, wall);
 
 	//graph__display(graph, size, pos_white, pos_black);
-	TESTCASE("- existPath | 1 central wall, find a path for white player", existPath_Player(graph, size, WHITE, pos_white));
-	TESTCASE("- existPath | 1 central wall, find a path for black player", existPath_Player(graph, size, BLACK, pos_black)); 
+	TESTCASE("- existPath | 1 central wall, find a path for white player", existPath_Player(p, WHITE, pos_white));
+	TESTCASE("- existPath | 1 central wall, find a path for black player", existPath_Player(p, BLACK, pos_black)); 
 
 	/*
 	*	Put a wall in position 7 direction EAST and WEST
@@ -475,8 +476,8 @@ void test__exist_path_player()
 	put_wall(p, wall);
 	
 	//graph__display(graph, size, pos_white, pos_black);
-	TESTCASE("- existPath | 3 specific walls, find no path for white player", !existPath_Player(graph, size, WHITE, pos_white));
-	TESTCASE("- existPath | 3 specific walls, find path for black player", existPath_Player(graph, size, BLACK, pos_black)); 
+	TESTCASE("- existPath | 3 specific walls, find no path for white player", !existPath_Player(p, WHITE, pos_white));
+	TESTCASE("- existPath | 3 specific walls, find path for black player", existPath_Player(p, BLACK, pos_black)); 
 
 	/*
 	*	Put a wall in position 3 direction NORTH and SOUTH
@@ -488,14 +489,14 @@ void test__exist_path_player()
 	wall.e[1] = e2_test4;
 	put_wall(p, wall);
 	
-	TESTCASE("- existPath | 4 specific walls, find no path for black player", !existPath_Player(graph, size, BLACK, pos_black));
+	TESTCASE("- existPath | 4 specific walls, find no path for black player", !existPath_Player(p, BLACK, pos_black));
 
 	/*
 	*	Putting a wall again
 	*	==> Path is again available
 	*/
 	destroy_wall(p, wall, 1); 
-	TESTCASE("- existPath | removing a wall, find a path for black player", existPath_Player(graph, size, BLACK, pos_black));
+	TESTCASE("- existPath | removing a wall, find a path for black player", existPath_Player(p, BLACK, pos_black));
 }
 
 void test__check_path()

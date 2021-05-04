@@ -59,13 +59,32 @@ struct player* get_functions(char* lib)
 */
 struct player* initialize_test_player(struct graph_t* graph, size_t n, size_t pos, size_t ennemy_pos)
 {
+      //Functions 
 	struct player* test_player = get_functions("./install/libplayer_move_random.so");
+
+      // Basic initialization
 	test_player->pos = pos;
 	test_player->ennemy_pos = ennemy_pos; 
-   test_player->graph = graph;
+
+   test_player->num_walls = 20; 
 	test_player->n = n;
-	test_player->naked_graph = graph__copy(test_player->graph, test_player->n);
+   test_player->graph = graph;
+   test_player->naked_graph = graph__copy(test_player->graph, test_player->n);
+
+      // No need
+   test_player->first_move = -1; 
+	
+      // Walls placed
 	test_player->wall_installed = calloc( (test_player->n-1)*(test_player->n-1), sizeof(int)); 
+
+      // Winning & Owning nodes
+   test_player->numb_win = graph__count_ownership(test_player->graph, test_player->n, test_player->id); 
+   test_player->winning_nodes = malloc(sizeof(size_t) * test_player->numb_win);
+   test_player->owned_nodes = malloc(sizeof(size_t) * test_player->numb_win);
+
+   graph__list_ownership(test_player->graph, test_player->n, test_player->id, test_player->owned_nodes);
+   graph__list_ownership(test_player->graph, test_player->n, other_player(test_player->id), test_player->winning_nodes);
+
 	return test_player;
 }
 
@@ -91,9 +110,13 @@ struct player initialization_player(struct player self, enum color_t id, struct 
       // Walls placed
    self.wall_installed = calloc( (self.n-1)*(self.n-1), sizeof(int)); 
 
-      // Winning nodes
+      // Winning & Owning nodes
    self.numb_win = graph__count_ownership(self.graph, self.n, self.id); 
    self.winning_nodes = malloc(sizeof(size_t) * self.numb_win);
+   self.owned_nodes = malloc(sizeof(size_t) * self.numb_win);
+
+   graph__list_ownership(self.graph, self.n, self.id, self.owned_nodes);
+   graph__list_ownership(self.graph, self.n, other_player(self.id), self.winning_nodes);
 
    return self; 
 }
@@ -107,6 +130,7 @@ void finalization_player(struct player self)
       // Free arrays
    free(self.wall_installed);
    free(self.winning_nodes);
+   free(self.owned_nodes); 
 
       // Free graph
    graph__free(self.graph);
@@ -532,12 +556,13 @@ int not_already_inWaitinglist(size_t* waitingList, int size, size_t v)
 *  @param pos position studied
 *  @return 1 if player can still win, 0 instead
 */
-int existPath_Player(struct graph_t* graph, size_t n, size_t color, size_t pos)
+int existPath_Player(struct player* p, enum color_t color, size_t pos)
 {
-   int* marked = calloc(graph->num_vertices, sizeof(int)); 
-   size_t* waitingList = malloc(sizeof(size_t) * graph->num_vertices); 
+   size_t numb_nodes = p->n*p->n; 
+   int* marked = calloc(numb_nodes, sizeof(int)); 
+   size_t* waitingList = malloc(sizeof(size_t) * numb_nodes); 
    
-   for(size_t i = 0; i<graph->num_vertices; i++)
+   for(size_t i = 0; i<numb_nodes; i++)
    {
       waitingList[i] = (size_t) -1; 
    }
@@ -549,23 +574,20 @@ int existPath_Player(struct graph_t* graph, size_t n, size_t color, size_t pos)
    
    
    size_t neighboor = -1; 
-   while (waitingList[to_treat] != (size_t) -1 && (size_t) to_treat < graph->num_vertices )
+   while (waitingList[to_treat] != (size_t) -1 && (size_t) to_treat < numb_nodes )
    {  
       
       current = waitingList[to_treat]; 
       marked[current] = 1; 
       
-      //shift_left(waitingList, 0, size-1); 
       to_treat++; 
       
       for(int dir = NORTH; dir < 5; dir++)
       {
             // If neighboor exist + non treated 
-         
-         neighboor = graph__get_neighboor(graph, n, current, dir);
+         neighboor = graph__get_neighboor(p->graph, p->n, current, dir);
          if ( (neighboor != (size_t) -1))
          {
-            
             if (marked[neighboor] == 0 && not_already_inWaitinglist(waitingList, size, neighboor))
             {
                waitingList[size] = neighboor;
@@ -577,24 +599,28 @@ int existPath_Player(struct graph_t* graph, size_t n, size_t color, size_t pos)
 
    
    // - List winning position
-   size_t* list = malloc(sizeof(size_t) * n); 
+   /*
+   int  numb_win = graph__count_ownership(graph, n, color);
+   size_t* list = malloc(sizeof(size_t) * numb_win); 
    graph__list_ownership(graph, n, other_player(color), list); 
-   
-   
-   for(size_t node = 0; node < graph->num_vertices; node++)
+   */
+
+
+  size_t* list; 
+  if (p->id == color)   list = p->winning_nodes; 
+  else                  list = p->owned_nodes; 
+
+   for(size_t node = 0; node < numb_nodes; node++)
    {
          // Find a winning path 
       if (marked[node])
       {
-         for(size_t i = 0; i<n; i++)
+         for(int i = 0; i< p->numb_win; i++)
          {
             if (node == list[i])
             {
                
                free(marked);
-               
-               free(list); 
-               
                free(waitingList);
                return 1; 
             }
@@ -602,7 +628,6 @@ int existPath_Player(struct graph_t* graph, size_t n, size_t color, size_t pos)
       }
    }
 
-   free(list); 
    free(marked);
    free(waitingList);
    return 0; 
@@ -619,8 +644,8 @@ int checkPath(struct player* p, struct move_t wall, int dir)
       // Put Fake Wall (for test)
    put_wall(p, wall); 
 
-   int check_player1 = existPath_Player(p->graph, p->n, p->id, p->pos);
-   int check_player2 = existPath_Player(p->graph, p->n, other_player(p->id), p->ennemy_pos);
+   int check_player1 = existPath_Player(p, p->id, p->pos);
+   int check_player2 = existPath_Player(p, other_player(p->id), p->ennemy_pos);
 
       // Remove testing Wall
    destroy_wall(p, wall, dir); 

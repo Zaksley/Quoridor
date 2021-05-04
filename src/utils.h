@@ -23,8 +23,10 @@ struct player
    int* wall_installed; 
 
       // Win
-   size_t* winning_nodes;
    int numb_win; 
+   size_t* winning_nodes;
+   size_t* owned_nodes; 
+   
 
       // Functions client
    char* (*get_name)();
@@ -171,7 +173,7 @@ int not_already_inWaitinglist(size_t* waitingList, int size, size_t v);
 *  @param Where the studied player is
 *  @return 1 if player can still win, 0 otherwise
 */
-int existPath_Player(struct graph_t* graph, size_t n, size_t color, size_t pos);
+int existPath_Player(struct player* p, enum color_t color, size_t pos);
 
 /* Check if posing a wall is allowed 
 *

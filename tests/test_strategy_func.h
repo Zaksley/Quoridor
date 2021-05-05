@@ -10,6 +10,13 @@ void test__rushing_path();
 /*
 *
 */
+void test__dijkstra();
+
+
+
+/*
+*
+*/
 void test__dijkstra_path(); 
 
 #endif 

@@ -2,6 +2,9 @@
 #include <dlfcn.h>
 #include "strategy.h"
 
+
+//struct edge_t no_wall = {-1, -1}; 
+
 /* Return either a winning move reachable (first choice) or the best move to close the gap
 *
 *  @param pos Position of the player
@@ -16,7 +19,7 @@ size_t rushing_path(size_t pos, size_t* winning_nodes, size_t numb_win, struct m
    if (moves->number <= 0) 
    {
       fprintf(stderr, "Error : No more moves available");
-      exit(6);
+      exit(2);
    }
 
    size_t gap = (size_t) abs( (int) (winning_nodes[0] - pos)); 
@@ -45,7 +48,117 @@ size_t rushing_path(size_t pos, size_t* winning_nodes, size_t numb_win, struct m
    return best;
 }
 
+//==========================================================
+int vertex_in_nodeList(struct node* nodes, int numb_nodes, size_t v)
+{
+   for(int i=0; i<numb_nodes; i++)
+   {
+      if (nodes[i].v == v)  return 1; 
+   }
 
+   return 0; 
+}
+
+struct moves_valids* get_predecessor(struct node* nodes, struct node end, enum color_t c)
+{
+   int numb = end.dist + 1; 
+   struct moves_valids* path = malloc(sizeof(struct moves_valids));
+   struct move_t* moves = malloc(sizeof(struct move_t) * numb);
+   path->valid = moves; 
+   path->number = numb; 
+
+   struct node current = {.dist = end.dist, .site_predecessor = end.site_predecessor, .v = end.v};
+   struct move_t move = {.c = c, .e = { (struct edge_t) {-1, -1}, (struct edge_t) {-1, -1}}, .t = MOVE};
+
+   int i = numb-1;
+   while(i > -1)
+   {
+      move.m = current.v;
+      path->valid[i] = move; 
+
+      // Actualisation
+      current.v = nodes[current.site_predecessor].v; 
+      current.site_predecessor = nodes[current.site_predecessor].site_predecessor; 
+
+      i -= 1;
+   }
+   
+   return path; 
+}
+
+struct moves_valids* dijkstra(struct graph_t* graph, size_t n, size_t pos, enum color_t c, size_t* winning_nodes, size_t numb_win)
+{
+   
+      // Init first node
+   int length_path = 0; 
+   struct node position = {.dist = length_path, .site_predecessor = 0, .v = pos}; 
+
+      // Waiting list
+   struct node* nodes = malloc(sizeof(struct node) * n * n);
+   nodes[0] = position; 
+   
+   size_t neighboor = -1; 
+   struct node new; 
+   struct node current; 
+
+   
+   size_t to_treat = 0; 
+   size_t number_nodes = 1; 
+
+   while (number_nodes < n*n)
+   {
+      current = nodes[to_treat]; 
+      for(int dir =1; dir < 5; dir++)
+      {
+         neighboor = (size_t) graph__get_neighboor(graph, n, current.v, dir);
+
+            // Not reachable 
+         if (neighboor == (size_t) -1) continue;
+         else
+         {
+            new.dist = current.dist + 1;
+            new.site_predecessor = to_treat; 
+            new.v = neighboor;
+
+               // Winning position discovered
+            if (in_vertexList(winning_nodes, numb_win, neighboor))
+            {
+               struct moves_valids* path = get_predecessor(nodes, new, c); 
+               free(nodes);
+               return path;
+            }
+
+               // Add node to list
+            else if (!vertex_in_nodeList(nodes, to_treat, neighboor))
+            {
+               nodes[number_nodes] = new; 
+               number_nodes++; 
+            }
+         }
+      }
+      to_treat++; 
+   }
+
+   exit(0);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// ==========================
+   /*
 int dijkstra(size_t n, struct graph_t *graph, size_t p0, int numb_win, size_t* win_pos)
 {
    int capacity = 100;
@@ -114,3 +227,4 @@ size_t path_dijkstra(struct player* p)
    }
    return (pos->valid[min]).m;
 }
+   */

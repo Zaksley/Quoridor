@@ -3,6 +3,13 @@
 
 #include "utils.h"
 
+struct node
+{
+    size_t v; 
+    size_t site_predecessor; 
+    int dist; 
+}; 
+
 /* Return either a winning move reachable (first choice) or the best move to close the gap
 *
 *  @param pos Position of the player
@@ -13,6 +20,16 @@
 */
 size_t rushing_path(size_t pos, size_t* winning_nodes, size_t numb_win, struct moves_valids* moves); 
 
+
+int vertex_in_nodeList(struct node* nodes, int numb_nodes, size_t v); 
+
+struct moves_valids* get_predecessor(struct node* nodes, struct node end, enum color_t c); 
+
+struct moves_valids* dijkstra(struct graph_t* graph, size_t n, size_t pos, enum color_t c, size_t* winning_nodes, size_t numb_win);
+
+
+/*
 size_t path_dijkstra(struct player* p);
+*/
 
 #endif

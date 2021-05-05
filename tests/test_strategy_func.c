@@ -20,16 +20,16 @@ void test__rushing_path()
    struct graph_t* graph = graph__create_square(size);
    struct graph_t* graph2 = graph__copy(graph, size);
 
-	struct player* p = initialize_test_player(graph, size, pos_black, pos_white);
-	struct player* p2 = initialize_test_player(graph2, size, pos_white, pos_black);
 	for(size_t i=0; i<size; i++)
 	{
 		graph__add_ownership(graph, i, BLACK);
-		graph__add_ownership(graph, p->graph->num_vertices - size + i, WHITE);
+		graph__add_ownership(graph, graph->num_vertices - size + i, WHITE);
 
 		graph__add_ownership(graph2, i, BLACK);
-		graph__add_ownership(graph2, p->graph->num_vertices - size + i, WHITE);
+		graph__add_ownership(graph2, graph->num_vertices - size + i, WHITE);
 	}	
+   struct player* p = initialize_test_player(graph, size, pos_black, pos_white);
+	struct player* p2 = initialize_test_player(graph2, size, pos_white, pos_black);
 	
 	size_t* list_WIN_BLACK = malloc(sizeof(size_t) * size); 
 	graph__list_ownership(p->graph, size, WHITE, list_WIN_BLACK); 
@@ -105,6 +105,72 @@ void test__rushing_path()
 /*
 *
 */
+void test__dijkstra()
+{
+   		//	=== Initialize graph test ===
+	size_t size = 4; 
+	size_t pos_white = 15;
+	size_t pos_black = 0; 
+   struct graph_t* graph = graph__create_square(size);
+   struct graph_t* graph2 = graph__copy(graph, size);
+
+	for(size_t i=0; i<size; i++)
+	{
+		graph__add_ownership(graph, i, BLACK);
+		graph__add_ownership(graph, graph->num_vertices - size + i, WHITE);
+
+		graph__add_ownership(graph2, i, BLACK);
+		graph__add_ownership(graph2, graph->num_vertices - size + i, WHITE);
+	}	
+   struct player* p = initialize_test_player(graph, size, pos_black, pos_white);
+
+   graph__display(graph, p->n, pos_white, pos_black);
+
+   struct moves_valids* path = dijkstra(p->graph, p->n, p->pos, p->id, p->winning_nodes, p->numb_win);
+
+   TESTCASE("- dijkstra | length path for black player = 3", path->number == 4); 
+   TESTCASE("- dijkstra | move 0 is the position of the black player", path->valid[0].m == pos_black);
+   TESTCASE("- dijkstra | move 1 is the position 4", path->valid[1].m == 4);
+   TESTCASE("- dijkstra | move 2 is the position 8", path->valid[2].m == 8); 
+   TESTCASE("- dijkstra | move 3 is the position 12", path->valid[3].m == 12);
+
+   path = dijkstra(p->graph, p->n, p->ennemy_pos, other_player(p->id), p->owned_nodes, p->numb_win);
+   TESTCASE("- dijkstra | length path = 3", path->number == 4); 
+   TESTCASE("- dijkstra | move 0 is the position of the white player", path->valid[0].m == pos_white);
+   TESTCASE("- dijkstra | move 1 is the position 11", path->valid[1].m == 11);
+   TESTCASE("- dijkstra | move 2 is the position 7", path->valid[2].m == 7); 
+   TESTCASE("- dijkstra | move 3 is the position 3", path->valid[3].m == 3);
+
+
+   free(path->valid);
+   free(path);
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//==========================================
+
+/*
+*
+*/
+/*
 void test__dijkstra_path() 
 {
 	//	=== Initialize graph test ===
@@ -127,3 +193,4 @@ void test__dijkstra_path()
 
 	TESTCASE("- dijkstra path | Square graph at position 0", path_dijkstra(p) == 3);
 }
+*/

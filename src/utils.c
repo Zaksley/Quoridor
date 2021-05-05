@@ -161,8 +161,50 @@ struct player* player_color(struct player** p, enum color_t c)
    else return p[1]; 
 }
 
-// ===================  PLAYER =================== 
+// ======= Usefull functions to check in list =======
 
+/* Check if a wall isn't already in the list
+*
+*  @param size size of array moves
+*  @param moves array stocking the moves
+*  @param wall checking a specific wall
+*  @return booleen 1 if wall is in the list, 0 otherwise 
+*/
+int move_in_list(struct moves_valids* moves, struct move_t move)
+{
+   for(int i=0; i<moves->number; i++)
+   {
+      if (moves->valid[i].m == move.m) return 1; 
+   }
+   return 0; 
+}
+
+/* Checking if a vertex isn't already in a vertex list
+*  
+*  @param waiting Waitinglist - size_t array
+*  @param size Size of the list 
+*  @param v vertex studied
+*  @return Booleen: 1 => V in list / 0 => V not in list
+*/
+int in_vertexList(size_t* list, int size, size_t v)
+{
+   for(int i=0; i<size; i++)
+   {
+      if (list[i] == v)
+      {
+         return 1; 
+      }
+   }
+
+   return 0; 
+}
+
+/* Check if a edge is equal to another
+*
+*  @param e1 edge one
+*  @param e2 edge two
+*  @return Booleen : 1 (True) or 0 (False)
+*/
 int edge_equal(struct edge_t e1, struct edge_t e2)
 {
    if (e1.fr == e2.fr && e1.to == e2.to)  return 1; 
@@ -170,6 +212,29 @@ int edge_equal(struct edge_t e1, struct edge_t e2)
 
    return 0; 
 }
+
+/* Check if a wall isn't already in the list
+*
+*  @param size size of array moves
+*  @param moves array stocking the moves
+*  @param wall checking a specific wall
+*  @return booleen 1 if wall is in the list, 0 otherwise 
+*/
+int wall_in_list(int size, struct move_t* moves, struct move_t wall)
+{
+   for(int i=0; i < size; i++)
+   {
+      if (  edge_equal(wall.e[0], moves[i].e[0]) && edge_equal(wall.e[1], moves[i].e[1])   ) return 1;
+      else if (  edge_equal(wall.e[1], moves[i].e[0]) && edge_equal(wall.e[0], moves[i].e[1])   ) return 1;
+   }
+
+   return 0; 
+}
+
+
+// ======= Usefull functions to check in list =======
+
+// ===================  PLAYER =================== 
 
 int opposite_dir(int dir)
 {
@@ -321,24 +386,6 @@ int already_wall_in_square(int wall_used[], size_t n, size_t left_square)
    return 0;
 }
 
-/* Check if a wall isn't already in the list
-*
-*  @param size size of array moves
-*  @param moves array stocking the moves
-*  @param wall checking a specific wall
-*  @return booleen 1 if wall is in the list, 0 otherwise 
-*/
-int wall_in_list(int size, struct move_t* moves, struct move_t wall)
-{
-   for(int i=0; i < size; i++)
-   {
-      if (  edge_equal(wall.e[0], moves[i].e[0]) && edge_equal(wall.e[1], moves[i].e[1])   ) return 1;
-      else if (  edge_equal(wall.e[1], moves[i].e[0]) && edge_equal(wall.e[0], moves[i].e[1])   ) return 1;
-   }
-
-   return 0; 
-}
-
 
 /* Return every possible wall usable on the board 
 *
@@ -393,17 +440,20 @@ struct moves_valids* valid_walls(struct player* p)
                // targeted edge already cut
             if (n_neighboor == checkTest) continue;
 
+               // Checking n1 & n2 not outside graph
+            n1 = graph__get_neighboor(p->naked_graph, p->n, node, second_dir); 
+            n2 = graph__get_neighboor(p->naked_graph, p->n, n_neighboor, second_dir);
+            if (n1 == checkTest || n2 == checkTest) continue; 
+
+               // Get real n1 & n2 (by edges)
             n1 = graph__get_neighboor(p->graph, p->n, node, second_dir); 
             n2 = graph__get_neighboor(p->graph, p->n, n_neighboor, second_dir);
 
                // * All edges on side are cut
             if (n1 == checkTest && n2 == checkTest) 
             {
-
                n1 = graph__get_neighboor(p->naked_graph, p->n, node, second_dir);
                n2 = graph__get_neighboor(p->naked_graph, p->n, n_neighboor, second_dir);
-
-               if (n1 == checkTest || n2 == checkTest) continue;
                
                   // Wall IN the square
                if (already_wall_in_square(p->wall_installed, p->n, min_node(node, n_neighboor, n1, n2)))  continue; 
@@ -527,27 +577,6 @@ int destroy_wall(struct player* p, struct move_t wall, int dir)
 }
 
 
-/* Checking if a vertex isn't already in the vertex list
-*  
-*  @param waiting Waitinglist - size_t array
-*  @param size Size of the waiting list 
-*  @param v vertex studied
-*  @return Booleen: 0 => In waitingList / 1 => Not in waiting list
-*/
-int not_already_inWaitinglist(size_t* waitingList, int size, size_t v)
-{
-   for(int i=0; i<size; i++)
-   {
-      if (waitingList[i] == v)
-      {
-         return 0; 
-      }
-   }
-
-   return 1; 
-}
-
-
 /* Checking if a player at a specific pos can reach a winning position depending of the color
 *
 *  @param graph graph of the game
@@ -588,7 +617,7 @@ int existPath_Player(struct player* p, enum color_t color, size_t pos)
          neighboor = graph__get_neighboor(p->graph, p->n, current, dir);
          if ( (neighboor != (size_t) -1))
          {
-            if (marked[neighboor] == 0 && not_already_inWaitinglist(waitingList, size, neighboor))
+            if (marked[neighboor] == 0 && !in_vertexList(waitingList, size, neighboor))
             {
                waitingList[size] = neighboor;
                size++;
@@ -599,16 +628,15 @@ int existPath_Player(struct player* p, enum color_t color, size_t pos)
 
    
    // - List winning position
-   /*
+   size_t* list; 
+   if (p->id == color)   list = p->winning_nodes; 
+   else                  list = p->owned_nodes; 
+
+      /*
    int  numb_win = graph__count_ownership(graph, n, color);
    size_t* list = malloc(sizeof(size_t) * numb_win); 
    graph__list_ownership(graph, n, other_player(color), list); 
    */
-
-
-  size_t* list; 
-  if (p->id == color)   list = p->winning_nodes; 
-  else                  list = p->owned_nodes; 
 
    for(size_t node = 0; node < numb_nodes; node++)
    {

@@ -120,7 +120,15 @@ size_t min_node(size_t node, size_t n_neighboor, size_t n1, size_t n2);
 int already_wall_in_square(int wall_used[], size_t n, size_t left_square);
 
 
-      // ======= Usefull functions on walls =======
+// ======= Usefull functions to check in list =======
+
+/* Check if a edge is equal to another
+*
+*  @param e1 edge one
+*  @param e2 edge two
+*  @return Booleen : 1 (True) or 0 (False)
+*/
+int edge_equal(struct edge_t e1, struct edge_t e2); 
 
 /* Check if a wall isn't already in the list
 *
@@ -131,8 +139,25 @@ int already_wall_in_square(int wall_used[], size_t n, size_t left_square);
 */
 int wall_in_list(int size, struct move_t* moves, struct move_t wall);
 
+/* Check if a wall isn't already in the list
+*
+*  @param size size of array moves
+*  @param moves array stocking the moves
+*  @param wall checking a specific wall
+*  @return booleen 1 if wall is in the list, 0 otherwise 
+*/
+int move_in_list(struct moves_valids* moves, struct move_t move);
 
-      // ======= Usefull functions on walls =======
+/* Checking if a vertex isn't already in a vertex list
+*  
+*  @param waiting Waitinglist - size_t array
+*  @param size Size of the list 
+*  @param v vertex studied
+*  @return Booleen: 1 => V in list / 0 => V not in list
+*/
+int in_vertexList(size_t* list, int size, size_t v);
+
+// ======= Usefull functions to check in list =======
 
 /*
 *  @param pointer on the player
@@ -157,14 +182,6 @@ int put_wall(struct player* p, struct move_t wall);
 */
 int destroy_wall(struct player* p, struct move_t wall, int dir); 
 
-/* Checking if a vertex isn't already in the vertex list
-*  
-*  @param waiting Waitinglist - size_t array
-*  @param size Size of the waiting list 
-*  @param v vertex studied
-*  @return Booleen: 0 => In waitingList / 1 => Not in waiting list
-*/
-int not_already_inWaitinglist(size_t* waitingList, int size, size_t v);
 
 /* Checking if a player is still able to move to the victory if we put a specific wall
 *

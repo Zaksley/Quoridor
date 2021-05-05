@@ -21,7 +21,7 @@ int main()
 
    int size_graph = SIZE_GRAPH; 
    struct graph_t* server_Graph = graph__create_torus(size_graph);
-   struct graph_t* server_copy = graph__copy(server_Graph, size_graph);
+   
 
       // ===== Initialize players (Server) =====
 
@@ -55,10 +55,17 @@ int main()
       }    
    }
 
+      // === Copy of graphs ===
+   struct graph_t* server_copy = graph__copy(server_Graph, size_graph);
+   struct graph_t* Naked_graph = graph__copy(server_Graph, players[0]->n);
    players[0]->graph = server_Graph;
    players[1]->graph = server_copy; 
 
-      // ====== 
+   for(int i=0; i<NUMB_PLAYER; i++)
+      players[i]->naked_graph = Naked_graph; 
+
+      // === Copy of graphs ===
+
 
       // ===== Initialize Winning positions 
    int numb_win = graph__count_ownership(server_Graph, size_graph, WHITE);
@@ -76,6 +83,10 @@ int main()
    players[1]->numb_win = numb_win;
 
       // ======
+
+      // ===== Initialize players (Server) =====
+
+
 
       // ===== Initialize players (Client) ===== 
 
@@ -106,45 +117,89 @@ int main()
       {
          
             // === FIRST MOVE ===
-         if (loop == 0 && p == 0)   update_move = players[p]->player_play((struct move_t){.t=NO_TYPE}); 
+         if (loop == 0 && p == 0)   
+         {
+            update_move = players[p]->player_play((struct move_t){.t=NO_TYPE}); 
+         }
             // === OTHERS MOVE ===
          else
          {
-            
             update_move = players[p]->player_play(update_move);
          }
-         
+
+            // = Check cheat first placement =
+         if (loop == 0)
+         {
+            if (!(in_vertexList(players[p]->owned_nodes, players[p]->numb_win, update_move.m)))
+            {
+               
+               fprintf(stderr, "Erreur : Joueur %s a tenté d'apparaître sur une case non disponible au premier tour \n", players[p]->get_name()); 
+               fprintf(stderr, "VICTOIRE DU JOUEUR %s pour cause de tricherie ennemie\n", player_color(players, players[p]->id)->get_name());
+               exit(0); 
+            }
+         }
+
             // === Update Server ===
          // === Move ===
          if (update_move.t == MOVE)
          {
-               // = Update both players =
-            players[p]->pos = update_move.m;
-            players[other_player(players[p]->id)]->ennemy_pos = update_move.m;
+               // = Check cheat =  
+            struct moves_valids* moves = valid_positions(players[p]);
+            if (move_in_list(moves, update_move) || loop == 0)
+            {
+                  // = Update both players =
+               players[p]->pos = update_move.m;
+               players[other_player(players[p]->id)]->ennemy_pos = update_move.m;
+            }
+            else
+            {
+               fprintf(stderr, "Erreur : Joueur %s a tenté de se déplacer sur une case non disponible \n", players[p]->get_name()); 
+               fprintf(stderr, "VICTOIRE DU JOUEUR %s pour cause de tricherie ennemie \n", player_color(players, players[p]->id)->get_name());
+               exit(0); 
+            }
+
+            free(moves->valid);
+            free(moves);
          }
+         // ============
+
          // === Wall ===
          else if (update_move.t == WALL)
          {  
-               // = Tentative de triche = 
+               // = Check cheat = 
             if (players[p]->num_walls <= 0)
             {
                fprintf(stderr, "TRICHE - Tentative de poser un mur alors que plus de mur disponible\n"); 
-               exit(3); 
+               exit(0); 
             }
-            
-               // = Update both graphs =
-            int wall_destroyed_1 = put_wall(players[0], update_move); 
-            int wall_destroyed_2 = put_wall(players[1], update_move);
 
-            //printf("Côté Serveur : Joueur %d pose mur {%ld-%ld, %ld-%ld \n", players[p]->id, update_move.e[0].fr, update_move.e[0].to, update_move.e[1].fr, update_move.e[1].to);
-
-            players[p]->num_walls -= 1; 
-            if (wall_destroyed_1 == -1 || wall_destroyed_2 == -1)  
+            struct moves_valids* walls = valid_walls(players[p]);
+            if (wall_in_list(walls->number, walls->valid, update_move))
             {
-               fprintf(stderr, "Erreur (Server) - Poser un mur n'a pas fonctionné"); 
-               exit(4);
+                  // = Update both graphs =
+               int wall_destroyed_1 = put_wall(players[0], update_move); 
+               int wall_destroyed_2 = put_wall(players[1], update_move);
+
+               //printf("Côté Serveur : Joueur %d pose mur {%ld-%ld, %ld-%ld \n", players[p]->id, update_move.e[0].fr, update_move.e[0].to, update_move.e[1].fr, update_move.e[1].to);
+
+               players[p]->num_walls -= 1; 
+               if (wall_destroyed_1 == -1 || wall_destroyed_2 == -1)  
+               {
+                  fprintf(stderr, "Erreur (Server) - Poser un mur n'a pas fonctionné"); 
+                  exit(1);
+               }
             }
+            else
+            {
+               fprintf(stderr, "Erreur : Joueur %s a tenté de poser un mur non disponible \n", players[p]->get_name()); 
+               fprintf(stderr, "VICTOIRE DU JOUEUR %s pour cause de tricherie ennemie", player_color(players, players[p]->id)->get_name());
+               exit(0); 
+            }
+
+            free(walls->valid);
+            free(walls);
          }
+         // ============
          
             // === Victory ===
          for(int i=0; i<players[p]->numb_win; i++)
@@ -172,7 +227,6 @@ int main()
    // ================== Free elements ==================
    
       // ===== Free Winning lists
-
    free(players[0]->winning_nodes);
    free(players[0]->owned_nodes);
       // =====

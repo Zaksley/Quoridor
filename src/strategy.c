@@ -61,7 +61,7 @@ int vertex_in_nodeList(struct node* nodes, int numb_nodes, size_t v)
 
 struct moves_valids* get_predecessor(struct node* nodes, struct node end, enum color_t c)
 {
-   int numb = end.dist + 1; 
+   int numb = end.dist+1; 
    struct moves_valids* path = malloc(sizeof(struct moves_valids));
    struct move_t* moves = malloc(sizeof(struct move_t) * numb);
    path->valid = moves; 
@@ -101,7 +101,6 @@ struct moves_valids* dijkstra(struct graph_t* graph, size_t n, size_t pos, enum 
    struct node new; 
    struct node current; 
 
-   
    size_t to_treat = 0; 
    size_t number_nodes = 1; 
 
@@ -123,13 +122,14 @@ struct moves_valids* dijkstra(struct graph_t* graph, size_t n, size_t pos, enum 
                // Winning position discovered
             if (in_vertexList(winning_nodes, numb_win, neighboor))
             {
+               
                struct moves_valids* path = get_predecessor(nodes, new, c); 
                free(nodes);
                return path;
             }
 
                // Add node to list
-            else if (!vertex_in_nodeList(nodes, to_treat, neighboor))
+            else if (!vertex_in_nodeList(nodes, number_nodes, neighboor))
             {
                nodes[number_nodes] = new; 
                number_nodes++; 
@@ -142,8 +142,25 @@ struct moves_valids* dijkstra(struct graph_t* graph, size_t n, size_t pos, enum 
    exit(0);
 }
 
+//struct move_t disturb_ennemy(struct player* p)
 
+struct move_t double_dijkstra_strategy(struct player* p)
+{
+   struct moves_valids* player_path = dijkstra(p->graph, p->n, p->pos, p->id, p->winning_nodes, p->numb_win);
+   struct moves_valids* ennemy_path = dijkstra(p->graph, p->n, p->ennemy_pos, other_player(p->id), p->owned_nodes, p->numb_win);
 
+      // Choose to move to the win
+   if (player_path->number <= ennemy_path->number) 
+   {
+      return player_path->valid[1]; 
+   }
+      // Put a wall to disturb ennemy 
+   else
+   {
+         // TODO
+      return ennemy_path->valid[1];
+   }
+}
 
 
 

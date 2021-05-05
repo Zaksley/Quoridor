@@ -82,7 +82,11 @@ int main()
    printf("\033[1m\n----- Strategy | Functionnal tests -----\033[0m\n");
    printf("\033[1mrushing_path :\033[0m\n");
    test__rushing_path();
+   printf("\033[1mdijkstra :\033[0m\n");
+   test__dijkstra();  
+   /*
    printf("\033[1mdijkstra_path :\033[0m\n");
    test__dijkstra_path();  
 	printf("\n");
+   */
 }

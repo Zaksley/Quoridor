@@ -25,7 +25,7 @@ int vertex_in_nodeList(struct node* nodes, int numb_nodes, size_t v);
 
 struct moves_valids* get_predecessor(struct node* nodes, struct node end, enum color_t c); 
 
-struct moves_valids* dijkstra(struct graph_t* graph, size_t n, size_t pos, enum color_t c, size_t* winning_nodes, size_t numb_win);
+struct moves_valids* dijkstra(struct graph_t* graph, size_t n, size_t pos, size_t ennemy_pos, enum color_t c, size_t* winning_nodes, size_t numb_win);
 
 
 /*

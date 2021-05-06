@@ -124,14 +124,14 @@ void test__dijkstra()
 	}	
    struct player* p = initialize_test_player(graph, size, pos_black, pos_white);
 
-   struct moves_valids* path = dijkstra(p->graph, p->n, p->pos, p->id, p->winning_nodes, p->numb_win);
+   struct moves_valids* path = dijkstra(p->graph, p->n, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
    TESTCASE("- dijkstra | length path for black player = 3", path->number == 4); 
    TESTCASE("- dijkstra | move 0 is the position of the black player", path->valid[0].m == pos_black);
    TESTCASE("- dijkstra | move 1 is the position 4", path->valid[1].m == 4);
    TESTCASE("- dijkstra | move 2 is the position 8", path->valid[2].m == 8); 
    TESTCASE("- dijkstra | move 3 is the position 12", path->valid[3].m == 12);
 
-   path = dijkstra(p->graph, p->n, p->ennemy_pos, other_player(p->id), p->owned_nodes, p->numb_win);
+   path = dijkstra(p->graph, p->n, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win);
    TESTCASE("- dijkstra | length path = 3", path->number == 4); 
    TESTCASE("- dijkstra | move 0 is the position of the white player", path->valid[0].m == pos_white);
    TESTCASE("- dijkstra | move 1 is the position 11", path->valid[1].m == 11);
@@ -149,7 +149,7 @@ void test__dijkstra()
 	put_wall(p, wall);
 
    printf("\033[2mAdding Wall {%ld-%ld, %ld-%ld} \033[0m\n", wall.e[0].fr, wall.e[0].to, wall.e[1].fr, wall.e[1].to); 
-	path = dijkstra(p->graph, p->n, p->pos, p->id, p->winning_nodes, p->numb_win);
+	path = dijkstra(p->graph, p->n, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
 	TESTCASE("- dijkstra | length path for black player = 5", path->number == 6); 
    TESTCASE("- dijkstra | move 0 is the position of the black player", path->valid[0].m == pos_black);
    TESTCASE("- dijkstra | move 1 is the position 1", path->valid[1].m == 1);
@@ -166,7 +166,7 @@ void test__dijkstra()
 	put_wall(p, wall);
 
    printf("\033[2mAdding Wall {%ld-%ld, %ld-%ld} \033[0m\n", wall.e[0].fr, wall.e[0].to, wall.e[1].fr, wall.e[1].to); 
-	path = dijkstra(p->graph, p->n, p->pos, p->id, p->winning_nodes, p->numb_win);
+	path = dijkstra(p->graph, p->n, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
 	TESTCASE("- dijkstra | length path for black player = 6", path->number == 7); 
    TESTCASE("- dijkstra | move 0 is the position of the black player", path->valid[0].m == pos_black);
    TESTCASE("- dijkstra | move 1 is the position 1", path->valid[1].m == 1);
@@ -176,8 +176,7 @@ void test__dijkstra()
    TESTCASE("- dijkstra | move 5 is the position 5", path->valid[5].m == 9); 
    TESTCASE("- dijkstra | move 6 is the position 14", path->valid[6].m == 13);
 
-   path = dijkstra(p->graph, p->n, p->ennemy_pos, other_player(p->id), p->owned_nodes, p->numb_win);
-
+   path = dijkstra(p->graph, p->n, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win);
    TESTCASE("- dijkstra | length path for white player = 6", path->number == 7); 
    TESTCASE("- dijkstra | move 0 is the position of the white player", path->valid[0].m == pos_white);
    TESTCASE("- dijkstra | move 1 is the position 14 or 11", path->valid[1].m == 14 || path->valid[1].m == 11);
@@ -187,13 +186,31 @@ void test__dijkstra()
    TESTCASE("- dijkstra | move 5 is the position 6", path->valid[5].m == 6); 
    TESTCASE("- dijkstra | move 6 is the position 2", path->valid[6].m == 2);
 
-   graph__display(graph, p->n, pos_white, pos_black);
+   printf("\033[2mPlayer black - 8 / Player white - 12 [Double jump] \033[0m\n"); 
+   p->pos = 8; 
+   p->ennemy_pos = 12; 
 
+   path = dijkstra(p->graph, p->n, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win); 
+   TESTCASE("- dijkstra | length path for white player = 4", path->number == 5);
+   TESTCASE("- dijkstra | white player jumps from 12 to 4 (double jump)", path->valid[1].m == 4);
+   TESTCASE("- dijkstra | move 2 is the position 5", path->valid[2].m == 5);
+   TESTCASE("- dijkstra | move 3 is the position 6", path->valid[3].m == 6);
+   TESTCASE("- dijkstra | move 4 is the position 2", path->valid[4].m == 2);
+
+   printf("\033[2mPlayer black - 4 / Player white - 8 [Jump on side] \033[0m\n"); 
+   p->pos = 4; 
+   p->ennemy_pos = 8; 
+
+   path = dijkstra(p->graph, p->n, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win); 
+   TESTCASE("- dijkstra | length path for white player = 3", path->number == 4);
+   TESTCASE("- dijkstra | white player jumps from 8 to 5 (double jump)", path->valid[1].m == 5);
+   TESTCASE("- dijkstra | move 2 is the position 5", path->valid[2].m == 6);
+   TESTCASE("- dijkstra | move 3 is the position 6", path->valid[3].m == 2);
+
+   //graph__display(graph, p->n, p->ennemy_pos, p->pos);
    
-
    free(path->valid);
    free(path);
-
 }
 
 

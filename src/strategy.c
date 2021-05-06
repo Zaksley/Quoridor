@@ -49,6 +49,14 @@ size_t rushing_path(size_t pos, size_t* winning_nodes, size_t numb_win, struct m
 }
 
 //==========================================================
+
+/*  Check if a vertex is in a list of nodes
+*
+*   @param nodes array of nodes
+*   @param numb_nodes length of nodes array
+*   @param v vretex studied
+*   @return booleen : 1 (True) / 0 (False)
+*/
 int vertex_in_nodeList(struct node* nodes, int numb_nodes, size_t v)
 {
    for(int i=0; i<numb_nodes; i++)
@@ -71,6 +79,13 @@ int add_vertex(struct node* nodes, int number_nodes, struct node new)
    return number_nodes;
 }
 
+/* Gets the path by reaching predecessors
+*
+*   @param nodes list of nodes
+*   @param end last node (final move)
+*   @param c color to construct moves
+*   @return dijkstra path (move[0] = actual pos, move[numb_nodes-1] = winning pos)
+*/
 struct moves_valids* get_predecessor(struct node* nodes, struct node end, enum color_t c)
 {
    int numb = end.dist+1; 
@@ -98,6 +113,17 @@ struct moves_valids* get_predecessor(struct node* nodes, struct node end, enum c
    return path; 
 }
 
+/* Calculate path by Dijkstra algorithm
+*
+*   @param graph a graph
+*   @param n size of graph
+*   @param pos position 0 
+*   @param ennemy_pos position of the ennemy
+*   @param c color of player studied
+*   @param winning_nodes array of winning nodes (to search last node)
+*   @param numb_win length of winning nodes array
+*   @return dijsktra path (move[0] = actual pos, move[numb_nodes-1] = winning pos)
+*/
 struct moves_valids* dijkstra(struct graph_t* graph, size_t n, size_t pos, size_t ennemy_pos, enum color_t c, size_t* winning_nodes, size_t numb_win)
 {
    
@@ -200,7 +226,40 @@ struct moves_valids* dijkstra(struct graph_t* graph, size_t n, size_t pos, size_
    exit(0);
 }
 
-//struct move_t disturb_ennemy(struct player* p)
+/*
+int wall_from_edge(struct moves_valids* walls, struct edge_t e)
+{
+   for(int i=0; i<walls->number; i++)
+   {
+      if ( edge_equal(walls->valid[i].e[0], e) || edge_equal(walls->valid[i].e[1], e) )
+      {
+         return i;
+      }
+   }
+
+   return -1;
+}
+
+
+struct move_t disturb_ennemy(struct player* p, struct moves_valids* ennemy_path)
+{
+      // Initialization
+   struct move_t wall = {.c = p->id, .t = WALL, .m = (size_t) -1}; 
+   struct edge_t e1 = {-1, -1};
+   struct edge_t e2 = {-1, -1}; 
+
+      // Get all viable walls
+   struct moves_valids* walls = valid_walls(p);
+
+   for(int i = ennemy_path->number - 1; i > 0; i--)
+   {
+      e1.fr = ennemy_path->valid[i].m;
+      e1.to = ennemy_path->valid[i-1].m;
+
+   }
+
+}
+*/
 
 struct move_t double_dijkstra_strategy(struct player* p)
 {

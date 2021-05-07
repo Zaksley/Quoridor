@@ -53,9 +53,10 @@ struct player* get_functions(char* lib);
 *  @param n size of graph
 *  @param pos position of the player
 *  @param ennemy_pos ennemy position
+*  @param id player id/color
 *  @return a player
 */
-struct player* initialize_test_player(struct graph_t* graph, size_t n, size_t pos, size_t ennemy_pos); 
+struct player* initialize_test_player(struct graph_t* graph, size_t n, size_t pos, size_t ennemy_pos, enum color_t id); 
 
 /* Return an initialized player
 *

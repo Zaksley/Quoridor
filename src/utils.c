@@ -57,12 +57,13 @@ struct player* get_functions(char* lib)
 *  @param ennemy_pos ennemy position
 *  @return a player
 */
-struct player* initialize_test_player(struct graph_t* graph, size_t n, size_t pos, size_t ennemy_pos)
+struct player* initialize_test_player(struct graph_t* graph, size_t n, size_t pos, size_t ennemy_pos, enum color_t id)
 {
       //Functions 
 	struct player* test_player = get_functions("./install/libplayer_move_random.so");
 
       // Basic initialization
+   test_player->id = id;
 	test_player->pos = pos;
 	test_player->ennemy_pos = ennemy_pos; 
 

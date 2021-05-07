@@ -18,7 +18,8 @@ int is_in(size_t e, size_t n, size_t *t)
 void test__valid_positions()
 {
    struct graph_t* graph = graph__create_square(5);
-	struct player *player = initialize_test_player(graph, 5, 0, 24);
+	graph__display(graph, 5, -1, -1);
+	struct player *player = initialize_test_player(graph, 5, 0, 24, WHITE);
 	struct moves_valids* moves = valid_positions(player);
 	TESTCASE("Only 2 positions found in a corner", moves->number == 2);
 	player->pos = 12;
@@ -50,7 +51,7 @@ void test__valid_walls()
 		graph__add_ownership(graph, graph->num_vertices - size + i, WHITE);
 	}	
 
-	struct player* p = initialize_test_player(graph, size, pos_white, pos_black);
+	struct player* p = initialize_test_player(graph, size, pos_white, pos_black, WHITE);
 
 	//	=== Initialize graph test ===
 
@@ -387,7 +388,7 @@ void test__put_wall()
 	size_t pos = 0; 
 	size_t ennemy_pos = 8; 
 	struct graph_t* graph = graph__create_square(size); 
-	struct player* p = initialize_test_player(graph, size, pos, ennemy_pos);
+	struct player* p = initialize_test_player(graph, size, pos, ennemy_pos, BLACK);
 	p->graph = graph; 
 
 	for(size_t i=0; i<size; i++)
@@ -433,7 +434,7 @@ void test__exist_path_player()
 		graph__add_ownership(graph, i, BLACK);
 		graph__add_ownership(graph, graph->num_vertices - size + i, WHITE);
 	}	
-	struct player* p = initialize_test_player(graph, size, pos_black, pos_white);
+	struct player* p = initialize_test_player(graph, size, pos_black, pos_white, BLACK);
 	//	=== Initialize graph test ===
 
 	//graph__display(graph, size, pos_white, pos_black);

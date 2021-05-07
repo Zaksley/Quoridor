@@ -28,8 +28,8 @@ void test__rushing_path()
 		graph__add_ownership(graph2, i, BLACK);
 		graph__add_ownership(graph2, graph->num_vertices - size + i, WHITE);
 	}	
-   struct player* p = initialize_test_player(graph, size, pos_black, pos_white);
-	struct player* p2 = initialize_test_player(graph2, size, pos_white, pos_black);
+   struct player* p = initialize_test_player(graph, size, pos_black, pos_white, BLACK);
+	struct player* p2 = initialize_test_player(graph2, size, pos_white, pos_black, WHITE);
 	
 	size_t* list_WIN_BLACK = malloc(sizeof(size_t) * size); 
 	graph__list_ownership(p->graph, size, WHITE, list_WIN_BLACK); 
@@ -122,7 +122,7 @@ void test__dijkstra()
 		graph__add_ownership(graph2, i, BLACK);
 		graph__add_ownership(graph2, graph->num_vertices - size + i, WHITE);
 	}	
-   struct player* p = initialize_test_player(graph, size, pos_black, pos_white);
+   struct player* p = initialize_test_player(graph, size, pos_black, pos_white, BLACK);
 
    struct moves_valids* path = dijkstra(p->graph, p->n, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
    TESTCASE("- dijkstra | length path for black player = 3", path->number == 4); 

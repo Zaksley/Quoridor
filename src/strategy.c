@@ -225,7 +225,8 @@ struct moves_valids* dijkstra(struct graph_t* graph, size_t n, size_t pos, size_
    exit(0);
 }
 
-
+/* 
+* NOT USED
 int wall_from_edge(struct moves_valids* walls, struct edge_t e)
 {
    for(int i=0; i<walls->number; i++)
@@ -238,13 +239,32 @@ int wall_from_edge(struct moves_valids* walls, struct edge_t e)
 
    return -1;
 }
+*/
 
-/*
+/* Create an edge from another edge and a direction
+*
+*  @param p player
+*  @param e1 edge to create by
+*  @param second_dir direction to get nodes
+*  @return edge created
+*/
 struct edge_t get_edge_by_dir(struct player* p, struct edge_t e1, int second_dir)
 {
-
+      // Get edge from one dir
+   size_t n1 = graph__get_neighboor(p->naked_graph, p->n, e1.fr, second_dir);
+   size_t n2 = graph__get_neighboor(p->naked_graph, p->n, e1.to, second_dir);
+   
+   struct edge_t e2 = {.fr = n1, .to = n2};
+   return e2; 
 }
 
+/* Return a wall that cut the ennemy path without cutting the own path of the player
+*
+*  @param p player
+*  @param path path to victory for the player
+*  @param ennemy_path path to victory for the opponent
+*  @return a wall that cut ennemy's path OR a move if there is no wall to put
+*/
 struct move_t cut_ennemy_path(struct player* p, struct moves_valids* path, struct moves_valids* ennemy_path)
 {
       // Initialization
@@ -252,8 +272,8 @@ struct move_t cut_ennemy_path(struct player* p, struct moves_valids* path, struc
    struct edge_t e1 = {-1, -1};
    struct edge_t e2 = {-1, -1}; 
 
-   size_t n1 = -1; 
-   size_t n2 = -1; 
+   int dir = 0;
+   int second_dir = 0;
 
       // Get all viable walls
    struct moves_valids* walls = valid_walls(p);
@@ -265,47 +285,64 @@ struct move_t cut_ennemy_path(struct player* p, struct moves_valids* path, struc
 
          // Cutting my own
       if (move_in_list(path, ennemy_path->valid[i]) || move_in_list(path, ennemy_path->valid[i-1]))   continue;
+      wall.e[0] = e1;
 
-      int pos_wall = wall_from_edge(walls, e1); 
-      if (pos_wall != -1)
-      {  
-         int dir = graph__get_dir(p->graph, e1.fr, e1.to);
-         int second_dir = get_second_dir(dir); 
+      dir = graph__get_dir(p->graph, e1.fr, e1.to);
+      second_dir = get_second_dir(dir);
 
-            // Get edge from one dir
-         n1 = graph__get_neighboor(p->naked_graph, p->n, e1.fr, second_dir);
-         n2 = graph__get_neighboor(p->naked_graph, p->n, e1.to, second_dir);
-         if (n1 == -1 || n2 == -1)  continue; 
+      // === First side
+      e2 = get_edge_by_dir(p, e1, second_dir); 
+      wall.e[1] = e2; 
+         // Wall valid + don't cut my own path
+      if (wall_in_list(walls->number, walls->valid, wall))  
+      {
+         free(walls);
+         return wall;
+      }
 
-         e2.fr = n1;
-         e2.to = n2;
-         wall.e[0] = e1;
-         wall.e[1] = e2; 
-
-         if ()
-
+      // === Second side
+      e2 = get_edge_by_dir(p, e1, second_dir+1); 
+      wall.e[1] = e2;
+         // Wall valid + don't cut my own path
+      if (wall_in_list(walls->number, walls->valid, wall))  
+      {
+         free(walls);
+         return wall;
       }
    }
+
+   free(walls);
+   // === NO WALL FOUND 
+   struct move_t move = {.c = p->id, .t = MOVE, .m = path->valid[1].m,.e = { (struct edge_t) {-1, -1}, (struct edge_t) {-1, -1} }}; 
+   return move;
 }
 
+
+/* Strategy of a player 
+*
+*  @param p player
+*  @return move_t to play
 */
-
-
 struct move_t double_dijkstra_strategy(struct player* p)
 {
    struct moves_valids* player_path = dijkstra(p->graph, p->n, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
    struct moves_valids* ennemy_path = dijkstra(p->graph, p->n, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win);
 
       // Choose to move to the win
-   if (player_path->number <= ennemy_path->number) 
+   if (p->num_walls <= 0 ||player_path->number <= ennemy_path->number) 
    {
-      return player_path->valid[1]; 
+      struct move_t move = player_path->valid[1]; 
+      free(player_path);
+      free(ennemy_path);
+      return move;
    }
       // Put a wall to disturb ennemy 
    else
    {
-         // TODO
-      return ennemy_path->valid[1];
+      struct move_t wall = cut_ennemy_path(p, player_path, ennemy_path); 
+      free(player_path);
+      free(ennemy_path);
+      return wall; 
    }
 }
 

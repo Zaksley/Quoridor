@@ -1,6 +1,14 @@
 #include <stdlib.h>
 #include "utils.h"
+#include "strategy.h"
 #include "graph_modif.h"
+
+/* struct data */
+/* { */
+/*    enum color_t id; */
+/*    struct graph_t *graph; */
+/*    size_t num_walls; */
+/* }; */
 
 struct player self; 
 struct edge_t no_wall = {-1, -1}; 
@@ -11,6 +19,7 @@ struct edge_t no_wall = {-1, -1};
  */
 char const* get_player_name()
 {
+	// White Mage player, "Benediction"
    return "Benediction"; 
 }
 
@@ -29,14 +38,7 @@ char const* get_player_name()
  */
 void initialize(enum color_t id, struct graph_t* graph, size_t num_walls)
 {
-   self.id = id;
-   self.num_walls = num_walls;
-   self.n = graph__get_size(graph);
-   self.graph = graph__copy(graph, self.n);
-   self.first_move = 1; 
-
-   self.numb_win = graph__count_ownership(self.graph, self.n, self.id); 
-   self.winning_nodes = malloc(sizeof(size_t) * self.numb_win);
+   self = initialization_player(self, id, graph, num_walls); 
 }
 
 /* Computes next move
@@ -182,7 +184,12 @@ int _turn_count = 0;
 int _ennemy_last_dir = ERROR_DIRECTION;
 int _forward = ERROR_DIRECTION;
 int _backward = ERROR_DIRECTION;
-int _trap_setup = 0;
+
+int _trap_status = 0;
+int _trap_phase = 0;
+enum direction _trap_side = ERROR_DIRECTION;
+enum direction _exit_side = ERROR_DIRECTION;
+
 /*------*/
 struct move_t play(struct move_t previous_move)
 {
@@ -198,8 +205,8 @@ struct move_t play(struct move_t previous_move)
    // ENNEMY HAS PUT A WALL
    else if (previous_move.t == WALL)
    {
-      int wall_destroyed = put_wall(self.graph, previous_move); 
-      if (wall_destroyed == -1)  fprintf(stderr, "Erreur (Client) - Retirer un mur n'a pas fonctionné\n"); 
+      int wall_destroyed = put_wall(&self, previous_move); 
+      if (wall_destroyed == -1)  fprintf(stderr, "Client error : could not destroy wall\n"); 
       else _prev_move_is_wall = 1;
    }
 
@@ -241,74 +248,109 @@ struct move_t play(struct move_t previous_move)
    // ------------------------------------------------------------
 
 
-   // ===== Other moves =====
+   // ===== Strategy =====
    else 
    {
       _turn_count++; 
       struct moves_valids* moves = valid_walls(&self);
 
-      // FIRST MOVE FORWARD OF THE ENNEMY
-      if(_ennemy_last_dir == _backward && _trap_setup == 0){
+      // Checks the closest and farest sides from the opposite player
+      enum direction close_side = find_closest_side(self.graph, self.n, self.ennemy_pos);
+      //enum direction far_side = opposite_dir(close_side);
 
-         _trap_setup = 1;
-         
-         // Finds the right wall for the trap
-         int nearest = SOUTH;
+      // ---------------------------------------
+      if(_trap_status == 0)
+      // The trap is not yet setup
+      {
 
+      	// Find the "black wall" position
+      	struct move_t black_wall = find_black_wall(self.graph, self.n, close_side, other_player(self.id), self.ennemy_pos);
 
-         if(self.id == WHITE){ // The other player is upside
-            // Finds the nearest side of the graph
+      	if(_ennemy_last_dir == _backward)
+      	// The ennemy made his first move forward
+      	{
+      		int black_wall_placeable = put_wall(&self, black_wall);
 
-         }else{
-            // The other player is downside
-         }
+      		if(black_wall_placeable == 0)
+      		// The black wall can be placed
+      		{
+      			// Open the trap
+      			_trap_status = 1;
+      			// Send move "place black wall"
+      			generate_wall_move(&move, &self, black_wall);
+      		}
+      		else
+      		{
+      			size_t black_vertex = black_wall.e->fr; // Unsure about that (need to verify the orientation)
 
-         // Is the wall possible ?
-         if(prev_move_is_wall == 1)
-         {
-            ;;
-         }
+      			if(graph__wall_exists(self.graph, black_vertex, _backward, close_side)) // not sure for close_side
+      			// Black wall already placed (case 1)
+      			{
+      				// Open the trap
+      				_trap_status = 1;
+      			}
+      			else if(graph__wall_exists(self.graph, graph__get_neighboor(self.graph, self.n, black_vertex, _backward), _backward, close_side))
+      			// Farther wall placed (case 4)
+      			{
+      				(void)0;
+      			}
+      			else
+      			// Unkown error
+      			{
+      				(void)0;
+      			}
+      		}
+      	}
+      	else
+      	{
+      		(void)0;
+      	}
 
-         // Places the wall
       }
+      // ---------------------------------------
+      else if(_trap_status == 1)
+      // The trap is open
+      {
 
-      // // === Chosed to move === 
-      // if (random == 0 || self.num_walls <= 0 || moves->number <= 0 )
-      // {
-      //    move.t = MOVE; 
-      //    move.e[0] = no_wall;
-      //    move.e[1] = no_wall; 
+      	(void)0;
 
-      //    moves = valid_positions(&self);
-      //    if (moves->number > 0)
-      //    {
-      //       move.m = rushing_path(self.pos, self.winning_nodes, self.numb_win, moves);
-      //       self.pos = move.m;
-      //    }
-      //    else
-      //    {
-      //       fprintf(stderr, "0 move trouvé - BUG");
-      //       exit(1);
-      //    }
-      // }
-      // // === Chosed to put a wall ===
-      // else
-      // {
-      //    move.t = WALL; 
-      //    struct move_t chosen_wall = moves->valid[rand() % moves->number]; 
-      //    move.e[0] = chosen_wall.e[0]; 
-      //    move.e[1] = chosen_wall.e[1];
-      //    move.m = chosen_wall.m; 
-         
-      //    int wall_destroyed = put_wall(self.graph, chosen_wall); 
-      //    self.num_walls -= 1; 
-      //    if (wall_destroyed == -1) 
-      //    {
-      //       fprintf(stderr, "Erreur (Client) - Retirer un mur n'a pas fonctionné\n"); 
-      //       exit(2); 
-      //    }
-      //    //printf("Côté Client : Joueur %d pose mur entre %ld et %ld\n", self.id, move.e[0].fr, move.e[0].to);
-      // }
+      }
+      // ---------------------------------------
+      else if(_trap_status == 2)
+      // The trap will not be activable
+      {
+
+      	(void)0;
+
+      }
+      // ---------------------------------------
+      else if(_trap_status == 3)
+      // The trap is closed
+      {
+
+      	(void)0;
+
+      }
+      // ---------------------------------------
+      else
+      // Specific cases
+      {
+      	if(_trap_status == 4)
+      	// An exit has to be closed
+      	{
+      		(void)0;
+      	}
+      	else if(_trap_status == 5)
+      	// Abort strategy, just run towards a winning pos
+      	{
+      		(void)0;
+      	}
+      	else
+      	// Unknown case
+      	{
+      		(void)0;
+      	}
+      }
 
       // ===== Free tables
       free(moves->valid);

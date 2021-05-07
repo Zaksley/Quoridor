@@ -84,9 +84,6 @@ int main()
    test__rushing_path();
    printf("\033[1mdijkstra :\033[0m\n");
    test__dijkstra();  
-   /*
-   printf("\033[1mdijkstra_path :\033[0m\n");
-   test__dijkstra_path();  
-	printf("\n");
-   */
+   printf("\033[1mcut_ennemy_path :\033[0m\n");
+   test__cut_ennemy_path();   
 }

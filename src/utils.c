@@ -210,6 +210,19 @@ int in_vertexList(size_t* list, int size, size_t v)
    return 0; 
 }
 
+int vertex_in_movesValids(struct moves_valids* moves, size_t v)
+{
+   for(int i=0; i < moves->number; i++)
+   {
+      if (moves->valid[i].m == v)
+      {
+         return 1;
+      }
+   }
+
+   return 0; 
+}
+
 /* Check if a edge is equal to another
 *
 *  @param e1 edge one
@@ -224,6 +237,14 @@ int edge_equal(struct edge_t e1, struct edge_t e2)
    return 0; 
 }
 
+int compare_walls(struct move_t w1, struct move_t w2)
+{
+   if (  edge_equal(w1.e[0], w2.e[0]) && edge_equal(w1.e[1], w2.e[1])) return 1;
+   else if ( edge_equal(w1.e[1], w2.e[0]) && edge_equal(w1.e[0], w2.e[1])   ) return 1;
+
+   return 0;
+}
+
 /* Check if a wall isn't already in the list
 *
 *  @param size size of array moves
@@ -235,8 +256,7 @@ int wall_in_list(int size, struct move_t* moves, struct move_t wall)
 {
    for(int i=0; i < size; i++)
    {
-      if (  edge_equal(wall.e[0], moves[i].e[0]) && edge_equal(wall.e[1], moves[i].e[1])   ) return 1;
-      else if (  edge_equal(wall.e[1], moves[i].e[0]) && edge_equal(wall.e[0], moves[i].e[1])   ) return 1;
+      if(compare_walls(moves[i], wall))  return 1; 
    }
 
    return 0; 

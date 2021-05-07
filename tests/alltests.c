@@ -68,8 +68,8 @@ int main()
 
 
    printf("\033[1m----- Graph_modif | Shape tests -----\033[0m\n");
-   TESTCASE("- graph__torus | all existing vertex exist in the square graph (size 3)", test__torus_existing_vertex(3));
-   TESTCASE("- graph__torus | all existing vertex exist in the square graph (size 6)", test__torus_existing_vertex(6));
+   //TESTCASE("- graph__torus | all existing vertex exist in the square graph (size 3)", test__torus_existing_vertex(3));
+   //TESTCASE("- graph__torus | all existing vertex exist in the square graph (size 6)", test__torus_existing_vertex(6));
 
 
    printf("\033[1m----- Utils | Functionnal tests -----\033[0m\n");
@@ -92,4 +92,6 @@ int main()
    test__dijkstra();  
    printf("\033[1mcut_ennemy_path :\033[0m\n");
    test__cut_ennemy_path();   
+   printf("\033[1mdouble_dijkstra_strategy :\033[0m\n");
+   test__double_dijkstra();  
 }

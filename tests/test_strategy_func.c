@@ -237,6 +237,7 @@ void test__cut_ennemy_path()
 		graph__add_ownership(graph2, graph->num_vertices - size + i, WHITE);
 	}	
    struct player* p = initialize_test_player(graph, size, pos_black, pos_white, BLACK);
+   
 
    // Wall {3-8, 4-9}
       // Calculs
@@ -308,9 +309,102 @@ void test__cut_ennemy_path()
    TESTCASE("- cut ennemy path | wall chosed is {7-8, 12-13}", compare_walls(wall, wall_test));
    put_wall(p, wall);
 
-   graph__display(p->graph, p->n, pos_white, pos_black);
-
    free_moves_valids(player_path);
    free_moves_valids(ennemy_path);
    finalization_player(*p);
+}
+
+/*
+*
+*/
+void test__double_dijkstra()
+{
+      //	=== Initialize graph test ===
+	size_t size = 5; 
+	size_t pos_white = 23;
+	size_t pos_black = 2; 
+   struct graph_t* graph = graph__create_square(size);
+
+      // Wall test
+   struct move_t wall_test = {.c = BLACK, .t = WALL, .m = -1}; 
+
+	for(size_t i=0; i<size; i++)
+	{
+		graph__add_ownership(graph, i, BLACK);
+		graph__add_ownership(graph, graph->num_vertices - size + i, WHITE);
+	}	
+   struct player* p = initialize_test_player(graph, size, pos_black, pos_white, BLACK);
+
+   // === Test 1
+   struct moves_valids* player_path = dijkstra(p->graph, p->n, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
+   struct moves_valids* ennemy_path = dijkstra(p->graph, p->n, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win);
+   struct move_t chosed = double_dijkstra_strategy(p);
+
+   TESTCASE("- double_dijkstra | same distance => chosed to move", chosed.t == MOVE);
+   TESTCASE("- double_dijkstra | move to positon 7", chosed.m == 7);
+   pos_black = chosed.m; 
+   p->pos = pos_black;
+   // === 
+
+   // === Test 2
+   printf("\033[2mPlayer white teleported to positon 14 \033[0m\n"); 
+   pos_white = 14; 
+   p->ennemy_pos = pos_white;
+
+   player_path = dijkstra(p->graph, p->n, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
+   ennemy_path = dijkstra(p->graph, p->n, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win);
+   chosed = double_dijkstra_strategy(p);
+   wall_test.e[0] = (struct edge_t) {3, 8};
+   wall_test.e[1] = (struct edge_t) {4, 9};
+   put_wall(p, chosed);
+
+   
+
+   TESTCASE("- double_dijkstra | white player closer => chosed to put a wall", chosed.t == WALL);
+   TESTCASE("- double_dijkstra | put wall {3-8, 4-9}", compare_walls(wall_test, chosed));
+   // ===
+
+   // === Test 3
+   player_path = dijkstra(p->graph, p->n, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
+   ennemy_path = dijkstra(p->graph, p->n, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win);
+   chosed = double_dijkstra_strategy(p);
+
+   TESTCASE("- double_dijkstra | same distance => chosed to move", chosed.t == MOVE);
+   TESTCASE("- double_dijkstra | move to positon 7", chosed.m == 12);
+   pos_black = chosed.m; 
+   p->pos = pos_black;
+   // ===
+
+   // === Test 4
+   printf("\033[2mPlayer white teleported to positon 7\033[0m\n"); 
+   pos_white = 7; 
+   p->ennemy_pos = pos_white;
+
+   player_path = dijkstra(p->graph, p->n, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
+   ennemy_path = dijkstra(p->graph, p->n, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win);
+   chosed = double_dijkstra_strategy(p);
+
+   wall_test.e[0] = (struct edge_t) {1, 6};
+   wall_test.e[1] = (struct edge_t) {2, 7};
+   put_wall(p, chosed);
+
+   TESTCASE("- double_dijkstra | white player closer => chosed to put a wall", chosed.t == WALL);
+   TESTCASE("- double_dijkstra | put wall {1-6, 2-7}", compare_walls(wall_test, chosed));
+   // ===
+
+   printf("\033[2mPlayer white teleported to positon 5\033[0m\n"); 
+   pos_white = 5; 
+   p->ennemy_pos = pos_white;
+
+   player_path = dijkstra(p->graph, p->n, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
+   ennemy_path = dijkstra(p->graph, p->n, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win);
+   chosed = double_dijkstra_strategy(p);
+
+   TESTCASE("- double_dijkstra | desesperate situation => chosed to still move", chosed.t == MOVE);
+   TESTCASE("- double_dijkstra | move to position 17", chosed.m == 17);
+   pos_black = chosed.m; 
+   p->pos = pos_black;
+
+   //graph__display(p->graph, p->n, pos_white, pos_black);
+
 }

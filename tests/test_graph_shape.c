@@ -9,6 +9,7 @@
  * @param s the length of t
  * @return 1 if true, 0 else
  */
+/*
 int is_in(size_t n, size_t *t, size_t s) 
 {
    for (size_t i = 0; i < s; i++)
@@ -16,6 +17,7 @@ int is_in(size_t n, size_t *t, size_t s)
 	 return 1;
    return 0;
 }
+*/
 
 /* Print a graph
  *
@@ -25,6 +27,7 @@ int is_in(size_t n, size_t *t, size_t s)
  * @param s size of t, number of vertex excluded
  * @return nothing
  */
+/*
 void print_graph(const struct graph_t *graph, size_t n, size_t *t, size_t s) 
 {
    struct graph_t *square = graph__create_square(n);
@@ -65,7 +68,9 @@ void print_graph(const struct graph_t *graph, size_t n, size_t *t, size_t s)
       printf("|%ld\n", i);
    }
 }
+*/
 
+/* Blocking project
 int main()
 {
    size_t n = 3;
@@ -74,3 +79,4 @@ int main()
    print_graph(g, n, t, 0);
    return 0;
 }
+*/

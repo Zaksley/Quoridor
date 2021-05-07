@@ -31,6 +31,8 @@ size_t rushing_path(size_t pos, size_t* winning_nodes, size_t numb_win, struct m
 */
 int vertex_in_nodeList(struct node* nodes, int numb_nodes, size_t v); 
 
+// ============ Double dijkstra =============
+
 /* Gets the path by reaching predecessors
 *
 *   @param nodes list of nodes
@@ -52,6 +54,30 @@ struct moves_valids* get_predecessor(struct node* nodes, struct node end, enum c
 *   @return dijsktra path (move[0] = actual pos, move[numb_nodes-1] = winning pos)
 */
 struct moves_valids* dijkstra(struct graph_t* graph, size_t n, size_t pos, size_t ennemy_pos, enum color_t c, size_t* winning_nodes, size_t numb_win);
+
+/* Return a wall that cut the ennemy path without cutting the own path of the player
+*
+*  @param p player
+*  @param path path to victory for the player
+*  @param ennemy_path path to victory for the opponent
+*  @return a wall that cut ennemy's path OR a move if there is no wall to put
+*/
+struct move_t cut_ennemy_path(struct player* p, struct moves_valids* path, struct moves_valids* ennemy_path); 
+
+/*
+*   
+*
+*
+*/
+int is_cutting_path(struct moves_valids* path, size_t v1, size_t v2);
+
+
+/* Strategy of a player 
+*
+*  @param p player
+*  @return move_t to play
+*/
+struct move_t double_dijkstra_strategy(struct player* p); 
 
 
 // ============ White Mage =============

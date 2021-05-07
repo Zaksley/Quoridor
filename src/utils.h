@@ -147,6 +147,14 @@ int generate_wall_move(struct move_t * move, struct player * player, struct move
 */
 int edge_equal(struct edge_t e1, struct edge_t e2); 
 
+/* Compare 2 walls
+*
+*  @param w1 wall one
+*  @param w2 wall two
+*  @return booleen : 1 (w1 = w2), 0 (w1 != w2)
+*/
+int compare_walls(struct move_t w1, struct move_t w2); 
+
 /* Check if a wall isn't already in a wall list
 *
 *  @param size size of array moves
@@ -173,6 +181,8 @@ int move_in_list(struct moves_valids* moves, struct move_t move);
 *  @return Booleen: 1 => V in list / 0 => V not in list
 */
 int in_vertexList(size_t* list, int size, size_t v);
+
+int vertex_in_movesValids(struct moves_valids* moves, size_t v); 
 
 // ======= Usefull functions to check in list =======
 

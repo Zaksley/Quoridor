@@ -248,14 +248,25 @@ int wall_from_edge(struct moves_valids* walls, struct edge_t e)
 *  @param second_dir direction to get nodes
 *  @return edge created
 */
-struct edge_t get_edge_by_dir(struct player* p, struct edge_t e1, int second_dir)
+struct edge_t get_edge_by_dir(struct player* p, struct edge_t e1, int dir)
 {
       // Get edge from one dir
-   size_t n1 = graph__get_neighboor(p->naked_graph, p->n, e1.fr, second_dir);
-   size_t n2 = graph__get_neighboor(p->naked_graph, p->n, e1.to, second_dir);
+   size_t n1 = graph__get_neighboor(p->naked_graph, p->n, e1.fr, dir);
+   size_t n2 = graph__get_neighboor(p->naked_graph, p->n, e1.to, dir);
    
    struct edge_t e2 = {.fr = n1, .to = n2};
    return e2; 
+}
+
+int is_cutting_path(struct moves_valids* path, size_t v1, size_t v2)
+{
+    for(int i=0; i<path->number-1; i++)
+    {
+        if (path->valid[i].m == v1 && path->valid[i+1].m == v2) return 1; 
+        else if (path->valid[i].m == v2 && path->valid[i+1].m == v1) return 1; 
+    }
+
+    return 0; 
 }
 
 /* Return a wall that cut the ennemy path without cutting the own path of the player
@@ -280,11 +291,12 @@ struct move_t cut_ennemy_path(struct player* p, struct moves_valids* path, struc
 
    for(int i = ennemy_path->number - 1; i > 0; i--)
    {
+      printf("i:%d, move[i]=%ld\n", i, ennemy_path->valid[i].m); 
       e1.fr = ennemy_path->valid[i].m;
       e1.to = ennemy_path->valid[i-1].m;
 
          // Cutting my own
-      if (move_in_list(path, ennemy_path->valid[i]) || move_in_list(path, ennemy_path->valid[i-1]))   continue;
+      if (is_cutting_path(path, e1.fr, e1.to))   continue;
       wall.e[0] = e1;
 
       dir = graph__get_dir(p->graph, e1.fr, e1.to);
@@ -293,21 +305,29 @@ struct move_t cut_ennemy_path(struct player* p, struct moves_valids* path, struc
       // === First side
       e2 = get_edge_by_dir(p, e1, second_dir); 
       wall.e[1] = e2; 
-         // Wall valid + don't cut my own path
-      if (wall_in_list(walls->number, walls->valid, wall))  
-      {
-         free(walls);
-         return wall;
-      }
 
+         // Wall valid + don't cut my own path
+      if (!is_cutting_path(path, e2.fr, e2.to))
+      {
+         if (wall_in_list(walls->number, walls->valid, wall))  
+         {
+            free(walls);
+            return wall;
+         }
+      }
+      
       // === Second side
       e2 = get_edge_by_dir(p, e1, second_dir+1); 
       wall.e[1] = e2;
+
          // Wall valid + don't cut my own path
-      if (wall_in_list(walls->number, walls->valid, wall))  
+      if (!is_cutting_path(path, e2.fr, e2.to))
       {
-         free(walls);
-         return wall;
+         if (wall_in_list(walls->number, walls->valid, wall))  
+         {
+            free(walls);
+            return wall;
+         }
       }
    }
 

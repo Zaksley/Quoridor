@@ -4,7 +4,7 @@
 #include "../src/utils.h"
 #include "test_utils_func.h"
 
-#define TESTCASE(msg, test) printf("%-60s : %s\n", msg, test ? "\033[1;92mPassed\033[0m" : "\033[1;91mFailed\033[0m")
+#define TESTCASE(msg, test) printf("%-100s : %s\n", msg, test ? "\033[1;92mPassed\033[0m" : "\033[1;91mFailed\033[0m")
 
 
 int is_in(size_t e, size_t n, size_t *t) 

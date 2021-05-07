@@ -137,7 +137,20 @@ void finalization_player(struct player self)
    graph__free(self.graph);
 }
 
+struct moves_valids* init_moves_valids(int size)
+{
+   struct moves_valids* new = malloc(sizeof(struct moves_valids));
+   struct move_t* moves = malloc(sizeof(struct move_t) * size);
+   new->valid = moves;
+   new->number = size;
+   return new;
+}
 
+void free_moves_valids(struct moves_valids* a)
+{
+   free(a->valid);
+   free(a);
+}
 
 /* Gets opposite color
 *

@@ -4,7 +4,7 @@
 #include "../src/strategy.h"
 #include "test_strategy_func.h"
 
-#define TESTCASE(msg, test) printf("%-60s : %s\n", msg, test ? "\033[1;92mPassed\033[0m" : "\033[1;91mFailed\033[0m")
+#define TESTCASE(msg, test) printf("%-100s : %s\n", msg, test ? "\033[1;92mPassed\033[0m" : "\033[1;91mFailed\033[0m")
 
 
 /*
@@ -220,7 +220,7 @@ void test__cut_ennemy_path()
 {
       //	=== Initialize graph test ===
 	size_t size = 5; 
-	size_t pos_white = 11;
+	size_t pos_white = 13;
 	size_t pos_black = 0; 
    struct graph_t* graph = graph__create_square(size);
    struct graph_t* graph2 = graph__copy(graph, size);
@@ -238,36 +238,79 @@ void test__cut_ennemy_path()
 	}	
    struct player* p = initialize_test_player(graph, size, pos_black, pos_white, BLACK);
 
+   // Wall {3-8, 4-9}
+      // Calculs
    struct moves_valids* player_path = dijkstra(p->graph, p->n, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
    struct moves_valids* ennemy_path = dijkstra(p->graph, p->n, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win);
-
    struct move_t wall = cut_ennemy_path(p, player_path, ennemy_path);
+   wall_test.e[0] = (struct edge_t) {3, 8};
+   wall_test.e[1] = (struct edge_t) {4, 9};
+
+      // Tests
+   printf("\033[2mAdd wall to cut path \033[0m\n"); 
+   TESTCASE("- cut ennemy path | move is a wall", wall.t == WALL);
+   TESTCASE("- cut ennemy path | wall chosed is {3-8, 4-9}", compare_walls(wall, wall_test));
+   put_wall(p, wall);
+
+   // Wall {1-6, 2-7}
+      // Calculs
+   player_path = dijkstra(p->graph, p->n, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
+   ennemy_path = dijkstra(p->graph, p->n, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win);
+   wall = cut_ennemy_path(p, player_path, ennemy_path);  
    wall_test.e[0] = (struct edge_t) {1, 6};
    wall_test.e[1] = (struct edge_t) {2, 7};
 
-   printf("\033[2mAdd wall to cut path \033[0m\n"); 
-   TESTCASE("- cut ennemy path | move is a wall", wall.t == WALL);
-   TESTCASE("- cut ennemy path | wall chosed is {1-2, 2-7}", compare_walls(wall, wall_test));
-   put_wall(p, wall);
-   player_path = dijkstra(p->graph, p->n, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
-   ennemy_path = dijkstra(p->graph, p->n, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win);
-
-   for(int i=ennemy_path->number-1; i>-1; i--)
-   {
-      printf("move[i]=%ld \n", ennemy_path->valid[i].m);
-   }
-
-   wall = cut_ennemy_path(p, player_path, ennemy_path);  
-   wall_test.e[0] = (struct edge_t) {5, 6};
-   wall_test.e[1] = (struct edge_t) {10, 11};
-   put_wall(p, wall);
+      //Tests
    printf("\033[2mAdd wall to cut path \033[0m\n"); 
    TESTCASE("- cut ennemy path | move is a wall", wall.t == WALL);
    TESTCASE("- cut ennemy path | wall chosed is {5-6, 10-11}", compare_walls(wall, wall_test));
+   put_wall(p, wall);
+
+   // Wall {5-6, 10-11}
+      // Calculs
+   player_path = dijkstra(p->graph, p->n, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
+   ennemy_path = dijkstra(p->graph, p->n, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win);
+   wall = cut_ennemy_path(p, player_path, ennemy_path);  
+   wall_test.e[0] = (struct edge_t) {5, 6};
+   wall_test.e[1] = (struct edge_t) {10, 11};
+
+      // Tests
+   printf("\033[2mAdd wall to cut path \033[0m\n"); 
+   TESTCASE("- cut ennemy path | move is a wall", wall.t == WALL);
+   TESTCASE("- cut ennemy path | wall chosed is {5-6, 10-11}", compare_walls(wall, wall_test));
+   put_wall(p, wall);
+
+   // Wall {11-12, 16-17}
+      // Calculs
+   player_path = dijkstra(p->graph, p->n, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
+   ennemy_path = dijkstra(p->graph, p->n, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win);
+   wall = cut_ennemy_path(p, player_path, ennemy_path);  
+   wall_test.e[0] = (struct edge_t) {11, 12};
+   wall_test.e[1] = (struct edge_t) {16, 17};
+
+      // Tests
+   printf("\033[2mAdd wall to cut path \033[0m\n"); 
+   TESTCASE("- cut ennemy path | move is a wall", wall.t == WALL);
+   TESTCASE("- cut ennemy path | wall chosed is {11-12, 16-17}", compare_walls(wall, wall_test));
+   put_wall(p, wall);
+
+      // Wall {7-8, 12-13}
+      // Calculs
+   player_path = dijkstra(p->graph, p->n, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
+   ennemy_path = dijkstra(p->graph, p->n, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win);
+   wall = cut_ennemy_path(p, player_path, ennemy_path);  
+   wall_test.e[0] = (struct edge_t) {7, 8};
+   wall_test.e[1] = (struct edge_t) {12, 13};
+
+      // Tests
+   printf("\033[2mAdd wall to cut path \033[0m\n"); 
+   TESTCASE("- cut ennemy path | move is a wall", wall.t == WALL);
+   TESTCASE("- cut ennemy path | wall chosed is {7-8, 12-13}", compare_walls(wall, wall_test));
+   put_wall(p, wall);
 
    graph__display(p->graph, p->n, pos_white, pos_black);
 
-   free(player_path);
-   free(ennemy_path);
+   free_moves_valids(player_path);
+   free_moves_valids(ennemy_path);
    finalization_player(*p);
 }

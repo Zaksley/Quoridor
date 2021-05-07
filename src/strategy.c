@@ -318,7 +318,11 @@ struct move_t cut_ennemy_path(struct player* p, struct moves_valids* path, struc
 }
 
 
-
+/* Strategy of a player 
+*
+*  @param p player
+*  @return move_t to play
+*/
 struct move_t double_dijkstra_strategy(struct player* p)
 {
    struct moves_valids* player_path = dijkstra(p->graph, p->n, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);

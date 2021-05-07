@@ -89,6 +89,12 @@ enum color_t other_player(enum color_t player);
 */
 struct player* player_color(struct player** p, enum color_t c); 
 
+/* Gets opposite dir
+*
+*
+*/
+int get_second_dir(int dir); 
+
 // ===================  PLAYER =================== 
 
 // ===================  MOVE =================== 

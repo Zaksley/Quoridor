@@ -163,9 +163,8 @@ struct moves_valids* dijkstra(struct graph_t* graph, size_t n, size_t pos, size_
                size_t double_jump = (size_t) graph__get_neighboor(graph, n, neighboor, dir);
                new.v = double_jump; 
 
-               int second_dir = 0;
-               if (dir == 1 || dir == 2)  second_dir = 3;
-               else second_dir = 1; 
+               int second_dir = get_second_dir(dir);
+
 
                   // Go on side
                if (double_jump == (size_t) -1)
@@ -226,7 +225,7 @@ struct moves_valids* dijkstra(struct graph_t* graph, size_t n, size_t pos, size_
    exit(0);
 }
 
-/*
+
 int wall_from_edge(struct moves_valids* walls, struct edge_t e)
 {
    for(int i=0; i<walls->number; i++)
@@ -240,13 +239,21 @@ int wall_from_edge(struct moves_valids* walls, struct edge_t e)
    return -1;
 }
 
+/*
+struct edge_t get_edge_by_dir(struct player* p, struct edge_t e1, int second_dir)
+{
 
-struct move_t disturb_ennemy(struct player* p, struct moves_valids* ennemy_path)
+}
+
+struct move_t cut_ennemy_path(struct player* p, struct moves_valids* path, struct moves_valids* ennemy_path)
 {
       // Initialization
    struct move_t wall = {.c = p->id, .t = WALL, .m = (size_t) -1}; 
    struct edge_t e1 = {-1, -1};
    struct edge_t e2 = {-1, -1}; 
+
+   size_t n1 = -1; 
+   size_t n2 = -1; 
 
       // Get all viable walls
    struct moves_valids* walls = valid_walls(p);
@@ -256,10 +263,33 @@ struct move_t disturb_ennemy(struct player* p, struct moves_valids* ennemy_path)
       e1.fr = ennemy_path->valid[i].m;
       e1.to = ennemy_path->valid[i-1].m;
 
-   }
+         // Cutting my own
+      if (move_in_list(path, ennemy_path->valid[i]) || move_in_list(path, ennemy_path->valid[i-1]))   continue;
 
+      int pos_wall = wall_from_edge(walls, e1); 
+      if (pos_wall != -1)
+      {  
+         int dir = graph__get_dir(p->graph, e1.fr, e1.to);
+         int second_dir = get_second_dir(dir); 
+
+            // Get edge from one dir
+         n1 = graph__get_neighboor(p->naked_graph, p->n, e1.fr, second_dir);
+         n2 = graph__get_neighboor(p->naked_graph, p->n, e1.to, second_dir);
+         if (n1 == -1 || n2 == -1)  continue; 
+
+         e2.fr = n1;
+         e2.to = n2;
+         wall.e[0] = e1;
+         wall.e[1] = e2; 
+
+         if ()
+
+      }
+   }
 }
+
 */
+
 
 struct move_t double_dijkstra_strategy(struct player* p)
 {

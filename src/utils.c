@@ -161,6 +161,16 @@ struct player* player_color(struct player** p, enum color_t c)
    else return p[1]; 
 }
 
+/* Gets opposite dir
+*
+*
+*/
+int get_second_dir(int dir)
+{
+   if (dir == 1 || dir == 2)  return 3;
+   else return 1; 
+}
+
 // ======= Usefull functions to check in list =======
 
 /* Check if a wall isn't already in the list

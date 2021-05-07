@@ -2,6 +2,7 @@
 #include "test_graph_fonc.h"
 #include "test_utils_func.h"
 #include "test_strategy_func.h"
+#include "test_graph_shape.h"
 
 #define TESTCASE(msg, test) printf("%-100s : %s\n", msg, test ? "\033[1;92mPassed\033[0m" : "\033[1;91mFailed\033[0m")
 
@@ -64,6 +65,11 @@ int main()
    TESTCASE("- remove_edge | removing twice the same edge return error", test__twice__remove_edge());
    TESTCASE("- remove_edge | removed edge can be added again", test__add__remove_edge());
    printf("\n");
+
+
+   printf("\033[1m----- Graph_modif | Shape tests -----\033[0m\n");
+   TESTCASE("- graph__torus | all existing vertex exist in the square graph (size 3)", test__torus_existing_vertex(3));
+   TESTCASE("- graph__torus | all existing vertex exist in the square graph (size 6)", test__torus_existing_vertex(6));
 
 
    printf("\033[1m----- Utils | Functionnal tests -----\033[0m\n");

@@ -18,7 +18,6 @@ int is_in(size_t e, size_t n, size_t *t)
 void test__valid_positions()
 {
    struct graph_t* graph = graph__create_square(5);
-	graph__display(graph, 5, -1, -1);
 	struct player *player = initialize_test_player(graph, 5, 0, 24, WHITE);
 	struct moves_valids* moves = valid_positions(player);
 	TESTCASE("Only 2 positions found in a corner", moves->number == 2);
@@ -96,7 +95,7 @@ void test__valid_walls()
 
    walls_possible -= 3; 
    TESTCASE("- valid_walls | New wall => -3 walls available", moves->number == walls_possible);
-   TESTCASE("- valid_walls | New wall => Wall {1-5, 2-6} illegal", !wall_in_list(moves->number, moves->valid, wall_illegal));
+   TESTCASE("- valid_walls | New wall => Wall {0-1, 5-6} illegal", !wall_in_list(moves->number, moves->valid, wall_illegal));
 
    // same wall illegal
 	e1_illegal.fr = 0;
@@ -246,7 +245,7 @@ void test__valid_walls()
    e2_illegal.to = 19;
 	wall_illegal.e[0] = e1_illegal; 
 	wall_illegal.e[1] = e2_illegal; 
-   TESTCASE("- valid_walls | New wall => Wall {8-13, 9-14} illegal", !wall_in_list(moves->number, moves->valid, wall_illegal));
+   TESTCASE("- valid_walls | New wall => Wall {13-14, 18-19} illegal", !wall_in_list(moves->number, moves->valid, wall_illegal));
    
        // Adding wall { (13,18) - (14,19) }
    e1.fr = 13;
@@ -259,9 +258,9 @@ void test__valid_walls()
    put_wall(p, wall);
 	moves = valid_walls(p);
    printf("\033[2mAdding Wall {%ld-%ld, %ld-%ld} \033[0m\n", wall.e[0].fr, wall.e[0].to, wall.e[1].fr, wall.e[1].to); 
-   walls_possible -= 3; 
-   TESTCASE("- valid_walls | New wall => -3 walls available", moves->number == walls_possible);
-
+   walls_possible -= 4; 
+   TESTCASE("- valid_walls | New wall => -4 walls available", moves->number == walls_possible);
+	
    // same wall illegal
    e1_illegal.fr = 13;
    e1_illegal.to = 18;
@@ -288,6 +287,15 @@ void test__valid_walls()
 	wall_illegal.e[0] = e1_illegal; 
 	wall_illegal.e[1] = e2_illegal; 
    TESTCASE("- valid_walls | New wall => Wall {2-7, 3-8} illegal (no more path)", !wall_in_list(moves->number, moves->valid, wall_illegal));
+
+	 // wall => no more path illegal (white player)
+   e1_illegal.fr = 2;
+   e1_illegal.to = 3;
+   e2_illegal.fr = 7;
+   e2_illegal.to = 8;
+	wall_illegal.e[0] = e1_illegal; 
+	wall_illegal.e[1] = e2_illegal; 
+   TESTCASE("- valid_walls | New wall => Wall {2-3, 7-8} illegal (no more path)", !wall_in_list(moves->number, moves->valid, wall_illegal));
 
    // Adding wall { (18,19) - (23,24) }
    e1.fr = 18;
@@ -323,8 +331,8 @@ void test__valid_walls()
    put_wall(p, wall);
 	moves = valid_walls(p);
    printf("\033[2mAdding Wall {%ld-%ld, %ld-%ld} \033[0m\n", wall.e[0].fr, wall.e[0].to, wall.e[1].fr, wall.e[1].to); 
-   walls_possible -= 6; 
-   TESTCASE("- valid_walls | New wall => -1 walls available", moves->number == walls_possible);
+   walls_possible -= 9; 
+   TESTCASE("- valid_walls | New wall => -9 walls available", moves->number == walls_possible);
 
    // same wall illegal
    e1_illegal.fr = 6;
@@ -370,12 +378,39 @@ void test__valid_walls()
 
    // wall => no more path illegal (White player)
    e1_illegal.fr = 10;
-   e1_illegal.to = 11;
+   e1_illegal.to = 15;
    e2_illegal.fr = 11;
    e2_illegal.to = 16;
 	wall_illegal.e[0] = e1_illegal; 
 	wall_illegal.e[1] = e2_illegal; 
-   TESTCASE("- valid_walls | New wall => Wall {10-11, 11-16} illegal (no more path)", !wall_in_list(moves->number, moves->valid, wall_illegal));
+   TESTCASE("- valid_walls | New wall => Wall {10-15, 11-16} illegal (no more path)", !wall_in_list(moves->number, moves->valid, wall_illegal));
+
+	// wall => no more path illegal (Both player)
+   e1_illegal.fr = 7;
+   e1_illegal.to = 12;
+   e2_illegal.fr = 8;
+   e2_illegal.to = 13;
+	wall_illegal.e[0] = e1_illegal; 
+	wall_illegal.e[1] = e2_illegal; 
+   TESTCASE("- valid_walls | New wall => Wall {7-12, 8-13} illegal (no more path)", !wall_in_list(moves->number, moves->valid, wall_illegal));
+
+	// wall => no more path illegal (Both player)
+   e1_illegal.fr = 11;
+   e1_illegal.to = 16;
+   e2_illegal.fr = 12;
+   e2_illegal.to = 17;
+	wall_illegal.e[0] = e1_illegal; 
+	wall_illegal.e[1] = e2_illegal; 
+   TESTCASE("- valid_walls | New wall => Wall {11-16, 12-17} illegal (no more path)", !wall_in_list(moves->number, moves->valid, wall_illegal));
+
+	// wall => no more path illegal (Both player)
+   e1_illegal.fr = 16;
+   e1_illegal.to = 17;
+   e2_illegal.fr = 21;
+   e2_illegal.to = 22;
+	wall_illegal.e[0] = e1_illegal; 
+	wall_illegal.e[1] = e2_illegal; 
+   TESTCASE("- valid_walls | New wall => Wall {16-17, 21-22} illegal (no more path)", !wall_in_list(moves->number, moves->valid, wall_illegal));
 
 	//graph__display(graph, size, pos_white, pos_black);
 

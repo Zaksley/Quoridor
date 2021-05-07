@@ -173,11 +173,11 @@ int get_second_dir(int dir)
 
 // ======= Usefull functions to check in list =======
 
-/* Check if a wall isn't already in the list
+/* Check if a move isn't already in a moves list
 *
 *  @param size size of array moves
 *  @param moves array stocking the moves
-*  @param wall checking a specific wall
+*  @param move checking a specific move
 *  @return booleen 1 if wall is in the list, 0 otherwise 
 */
 int move_in_list(struct moves_valids* moves, struct move_t move)

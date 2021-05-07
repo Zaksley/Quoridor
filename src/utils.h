@@ -120,6 +120,16 @@ size_t min_node(size_t node, size_t n_neighboor, size_t n1, size_t n2);
 int already_wall_in_square(int wall_used[], size_t n, size_t left_square);
 
 
+/* Generates a "player places a wall" move
+ *
+ * @param move Move package to be updated
+ * @param wall Placed wall
+ * @param player Player placing the wall
+ * @return 0 if it succeed, -1 if it failed
+ */
+int generate_wall_move(struct move_t * move, struct player * player, struct move_t wall);
+
+
 // ======= Usefull functions to check in list =======
 
 /* Check if a edge is equal to another

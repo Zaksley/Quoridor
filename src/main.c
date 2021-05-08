@@ -5,14 +5,14 @@
 
 #define NUMB_PLAYER 2
 #define NUMB_WALLS 20
-#define SIZE_GRAPH 6
+#define SIZE_GRAPH 10
 int main()
 {
    // ================== Initializing game ==================
 
       // Get players 
    struct player* player1 = get_functions("./install/libplayer_move_random.so");
-   struct player* player2 = get_functions("./install/libplayer_usain_bolt.so"); 
+   struct player* player2 = get_functions("./install/libplayer_rick_scientist.so"); 
    struct player* players[2] = {player1, player2}; 
 
    int random = rand() % 2; 
@@ -20,7 +20,7 @@ int main()
       // Central Graph - Server 
 
    int size_graph = SIZE_GRAPH; 
-   struct graph_t* server_Graph = graph__create_torus(size_graph);
+   struct graph_t* server_Graph = graph__create_square(size_graph);
    
 
       // ===== Initialize players (Server) =====
@@ -30,6 +30,8 @@ int main()
       players[p]->num_walls = NUMB_WALLS; 
       players[p]->n = size_graph; 
       players[p]->wall_installed = calloc( (players[p]->n-1)*(players[p]->n-1), sizeof(int)); 
+      players[p]->pos = size_graph*size_graph/2; 
+      players[p]->ennemy_pos = size_graph*size_graph/2;
 
       if (p == random)   
       {
@@ -110,7 +112,7 @@ int main()
    struct move_t update_move; 
    while (isPlaying) 
    {
-      
+
       // ===== Players Playing =====
 
       for (int p=0; p<NUMB_PLAYER; p++)

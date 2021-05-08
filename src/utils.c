@@ -244,6 +244,7 @@ int vertex_in_movesValids(struct moves_valids* moves, size_t v)
 */
 int edge_equal(struct edge_t e1, struct edge_t e2)
 {
+   //fprintf(stderr, "e1: %ld-%ld, e2: %ld-%ld\n", e1.fr, e1.to, e2.fr, e2.to);
    if (e1.fr == e2.fr && e1.to == e2.to)  return 1; 
    else if (e1.fr == e2.to && e1.to == e2.fr)   return 1; 
 
@@ -647,9 +648,10 @@ int existPath_Player(struct player* p, enum color_t color, size_t pos)
    
    
    size_t neighboor = -1; 
-   while (waitingList[to_treat] != (size_t) -1 && (size_t) to_treat < numb_nodes )
+   
+   while ((size_t) to_treat < numb_nodes && waitingList[to_treat] != (size_t) -1)
    {  
-      
+      //fprintf(stderr, "current:%ld\n", waitingList[to_treat]);
       current = waitingList[to_treat]; 
       marked[current] = 1; 
       
@@ -675,12 +677,6 @@ int existPath_Player(struct player* p, enum color_t color, size_t pos)
    size_t* list; 
    if (p->id == color)   list = p->winning_nodes; 
    else                  list = p->owned_nodes; 
-
-      /*
-   int  numb_win = graph__count_ownership(graph, n, color);
-   size_t* list = malloc(sizeof(size_t) * numb_win); 
-   graph__list_ownership(graph, n, other_player(color), list); 
-   */
 
    for(size_t node = 0; node < numb_nodes; node++)
    {
@@ -715,6 +711,7 @@ int checkPath(struct player* p, struct move_t wall, int dir)
 {
       // Put Fake Wall (for test)
    put_wall(p, wall); 
+
 
    int check_player1 = existPath_Player(p, p->id, p->pos);
    int check_player2 = existPath_Player(p, other_player(p->id), p->ennemy_pos);

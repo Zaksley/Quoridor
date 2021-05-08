@@ -11,7 +11,7 @@ int main()
    // ================== Initializing game ==================
 
       // Get players 
-   struct player* player1 = get_functions("./install/libplayer_move_random.so");
+   struct player* player1 = get_functions("./install/libplayer_usain_bolt.so");
    struct player* player2 = get_functions("./install/libplayer_rick_scientist.so"); 
    struct player* players[2] = {player1, player2}; 
 
@@ -236,8 +236,15 @@ int main()
       // ===== Free Graphs
       
    // Free server
+   free(players[0]->wall_installed);
+   free(players[1]->wall_installed);
    graph__free(players[0]->graph);
    graph__free(players[1]->graph);
+   graph__free(players[0]->naked_graph);
+
+   //free(players[0]);
+   //free(players[1]); 
+
 
    // Free clients
    for(int p=0; p<NUMB_PLAYER; p++)

@@ -275,7 +275,7 @@ int study_wall(struct player* p, struct moves_valids* path, struct moves_valids*
    ennemy_path = dijkstra(p->graph, p->n, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win);
    destroy_wall(p, w, dir);
    int length = ennemy_path->number;
-   free(ennemy_path);
+   free_moves_valids(ennemy_path);
    return length;
 }
 
@@ -331,18 +331,18 @@ struct move_t cut_ennemy_path(struct player* p, struct moves_valids* path, struc
       {
          if (test_side1 > test_side2)
          {
-            free(walls);
+            free_moves_valids(walls);
             return wall;
          }
          else
          {
-            free(walls);
+            free_moves_valids(walls);
             return wall_side; 
          }
       }
    }
 
-   free(walls);
+   free_moves_valids(walls);
    // === NO WALL FOUND 
    struct move_t move = {.c = p->id, .t = MOVE, .m = path->valid[1].m,.e = { (struct edge_t) {-1, -1}, (struct edge_t) {-1, -1} }}; 
    return move;
@@ -372,8 +372,8 @@ struct move_t double_dijkstra_strategy(struct player* p)
    {
       struct move_t wall = {.t = WALL, .c = p->id, .m = -1, .e = {(struct edge_t) {-1, -1}, (struct edge_t) {-1, -1}}}; 
       wall = cut_ennemy_path(p, player_path, ennemy_path); 
-      free(player_path);
-      free(ennemy_path);
+      free_moves_valids(player_path);
+      free_moves_valids(ennemy_path);
       return wall; 
    }
 }

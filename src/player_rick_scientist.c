@@ -69,15 +69,11 @@ struct move_t play(struct move_t previous_move)
       move.e[0] = no_wall;
       move.e[1] = no_wall; 
 
-      size_t* list = malloc(sizeof(size_t) * self.numb_win); 
-      graph__list_ownership(self.graph, self.n, self.id, list); 
-      move.m = list[self.numb_win/2]; 
+      move.m = self.owned_nodes[self.numb_win/2]; 
       self.pos = move.m;
       self.first_move = 0; 
 
-      // ===== Free tables
-      free(list);
-      // =====
+
 
    }
    // ===== Other moves =====

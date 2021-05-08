@@ -129,9 +129,9 @@ struct player initialization_player(struct player self, enum color_t id, struct 
 void finalization_player(struct player self)
 {
       // Free arrays
-   free(self.wall_installed);
-   free(self.winning_nodes);
-   free(self.owned_nodes); 
+   if (self.wall_installed != NULL) free(self.wall_installed);
+   if (self.winning_nodes != NULL) free(self.winning_nodes);
+   if (self.owned_nodes != NULL) free(self.owned_nodes); 
 
       // Free graph
    graph__free(self.graph);

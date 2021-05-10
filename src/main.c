@@ -5,14 +5,15 @@
 
 #define NUMB_PLAYER 2
 #define NUMB_WALLS 20
-#define SIZE_GRAPH 10
+#define SIZE_GRAPH 6
+
 int main()
 {
    // ================== Initializing game ==================
 
       // Get players 
-   struct player* player1 = get_functions("./install/libplayer_usain_bolt.so");
-   struct player* player2 = get_functions("./install/libplayer_rick_scientist.so"); 
+   struct player* player1 = get_functions("./install/libplayer_move_random.so");
+   struct player* player2 = get_functions("./install/libplayer_random.so"); 
    struct player* players[2] = {player1, player2}; 
 
    int random = rand() % 2; 
@@ -242,16 +243,15 @@ int main()
    graph__free(players[1]->graph);
    graph__free(players[0]->naked_graph);
 
-   //free(players[0]);
-   //free(players[1]); 
-
-
    // Free clients
    for(int p=0; p<NUMB_PLAYER; p++)
    {
-      //players[p]->finalize();
+      players[p]->finalize();
    }  
       // =====
+
+   free(players[0]);
+   free(players[1]); 
 
 
 

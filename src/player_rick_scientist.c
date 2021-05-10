@@ -115,11 +115,7 @@ struct move_t play(struct move_t previous_move)
  */
 void finalize()
 {
-   printf("Libération %s ...\n", self.get_name());
+   printf("Libération de Rick...\n");
    finalization_player(self);
-   /*
-   free(self.winning_nodes);
-   graph__free(self.graph);
-   */
    printf("OK !\n");
 }

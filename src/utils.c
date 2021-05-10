@@ -103,7 +103,7 @@ struct player initialization_player(struct player self, enum color_t id, struct 
    self.id = id;
    self.num_walls = num_walls;
    self.n = graph__get_size(graph);
-   self.graph = graph__copy(graph, self.n);
+   self.graph = graph; 
    self.naked_graph = graph__copy(self.graph, self.n); 
 
    self.first_move = 1; 
@@ -129,9 +129,9 @@ struct player initialization_player(struct player self, enum color_t id, struct 
 void finalization_player(struct player self)
 {
       // Free arrays
-   if (self.wall_installed != NULL) free(self.wall_installed);
-   if (self.winning_nodes != NULL) free(self.winning_nodes);
-   if (self.owned_nodes != NULL) free(self.owned_nodes); 
+   free(self.wall_installed);
+   free(self.winning_nodes);
+   free(self.owned_nodes); 
 
       // Free graph
    graph__free(self.graph);

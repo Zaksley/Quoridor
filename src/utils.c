@@ -11,7 +11,7 @@
  * @precond lib is a valid path to a dynamic library
  * @returns a player with initialized functions
  */
-struct player* get_functions(char* lib)
+struct player* get_functions(void* handle)
 {
    // Initialization 
    struct player* player = malloc(sizeof(struct player)); 
@@ -21,10 +21,6 @@ struct player* get_functions(char* lib)
    void (*initialize) (enum color_t, struct graph_t*, size_t);
    struct move_t (*player_play) (struct move_t); 
    void (*finalize) (); 
-
-   // Open the lib 
-   void * handle;
-   handle = dlopen(lib, RTLD_LAZY);
 
    if (!handle) {
       fprintf(stderr, "%s\n", dlerror());
@@ -49,6 +45,14 @@ struct player* get_functions(char* lib)
    return player; 
 }
 
+
+void free_functions(struct player* p)
+{
+   fprintf(stderr, "%p", p->get_name());
+   //free(p->get_name());
+}
+
+
 /* Create a fake player fast to test functions
 *
 *  @param graph Graph created that we link to our player
@@ -60,8 +64,9 @@ struct player* get_functions(char* lib)
 struct player* initialize_test_player(struct graph_t* graph, size_t n, size_t pos, size_t ennemy_pos, enum color_t id)
 {
       //Functions 
-	struct player* test_player = get_functions("./install/libplayer_move_random.so");
+	//struct player* test_player = get_functions("./install/libplayer_move_random.so");
 
+   struct player* test_player = malloc(sizeof(struct player));
       // Basic initialization
    test_player->id = id;
 	test_player->pos = pos;
@@ -135,6 +140,7 @@ void finalization_player(struct player self)
 
       // Free graph
    graph__free(self.graph);
+   graph__free(self.naked_graph);
 }
 
 struct moves_valids* init_moves_valids(int size)

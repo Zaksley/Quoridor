@@ -12,8 +12,12 @@ int main()
    // ================== Initializing game ==================
 
       // Get players 
-   struct player* player1 = get_functions("./install/libplayer_move_random.so");
-   struct player* player2 = get_functions("./install/libplayer_random.so"); 
+   void* handle_p1; 
+   void* handle_p2; 
+   handle_p1 = dlopen("./install/libplayer_rick_scientist.so", RTLD_LAZY);
+   handle_p2 = dlopen("./install/libplayer_usain_bolt.so", RTLD_LAZY);
+   struct player* player1 = get_functions(handle_p1);
+   struct player* player2 = get_functions(handle_p2); 
    struct player* players[2] = {player1, player2}; 
 
    int random = rand() % 2; 
@@ -229,31 +233,39 @@ int main()
 
    // ================== Free elements ==================
    
-      // ===== Free Winning lists
+
+      // ======= Free Clients ======= 
+   for(int p=0; p<NUMB_PLAYER; p++)
+   {
+      players[p]->finalize();
+   }  
+      // ======= Free Clients ======= 
+
+
+      // ======= Free Server ======= 
+
+   // ==== Free Winning lists
    free(players[0]->winning_nodes);
    free(players[0]->owned_nodes);
-      // =====
+   // ====
 
-      // ===== Free Graphs
-      
-   // Free server
+   // ==== Free Graphs
    free(players[0]->wall_installed);
    free(players[1]->wall_installed);
    graph__free(players[0]->graph);
    graph__free(players[1]->graph);
    graph__free(players[0]->naked_graph);
-
-   // Free clients
-   for(int p=0; p<NUMB_PLAYER; p++)
-   {
-      players[p]->finalize();
-   }  
-      // =====
+   // ====
 
    free(players[0]);
    free(players[1]); 
 
+   // ==== Close libs
+   dlclose(handle_p1);
+   dlclose(handle_p2);
+   // ====
 
+      // ======= Free Server ======= 
 
    // ============================================
 

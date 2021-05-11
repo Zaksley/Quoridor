@@ -45,7 +45,12 @@ struct moves_valids
 /*
  *   Contains every special function of a player
  */
-struct player* get_functions(char* lib);
+struct player* get_functions(void* handle);
+
+
+void free_functions(struct player* p);
+
+
 
 /* Create a fake player fast to test functions
 *

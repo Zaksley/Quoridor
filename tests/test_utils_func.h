@@ -1,13 +1,16 @@
 #ifndef _TEST_UTILS_FUNC_H_
 #define _TEST_UTILS_FUNC_H_
 
-/*
- * Only 2 positions found in a corner
- * 4 positions found in the middle of the board
- * Found positions are neighboors
- * Position with enemy on it is not found
- * Positions accessible with leaps are found
- */
+/* Tests made for function valid_positions()
+*
+* Player in a corner
+* Player in the center
+* Player in the center in front of the ennemy player
+* Player in the center in front of the ennemy player and wall in front
+* Player in the center in front of the ennemy player and wall in front + wall on right side
+* Player in the center in front of the ennemy player and wall in front + walls on sides
+*
+*/
 void test__valid_positions(int v);
 
 /*

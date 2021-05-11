@@ -15,29 +15,141 @@ int is_in(size_t e, size_t n, size_t *t)
 	return 0;
 }
 
+/* Tests made for function valid_positions()
+*
+* Player in a corner
+* Player in the center
+* Player in the center in front of the ennemy player
+* Player in the center in front of the ennemy player and wall in front
+* Player in the center in front of the ennemy player and wall in front + wall on right side
+* Player in the center in front of the ennemy player and wall in front + walls on sides
+*
+*/
 void test__valid_positions(int v)
 {
-   struct graph_t* graph = graph__create_square(5);
-	struct player *player = initialize_test_player(graph, 5, 0, 24, WHITE);
-	struct moves_valids* moves = valid_positions(player);
-	TESTCASE("Only 2 positions found in a corner", moves->number == 2);
-	player->pos = 12;
+   	//	=== Initialize graph test ===
+	size_t size = 5; 
+	struct graph_t* graph = graph__create_square(size); 
+	size_t pos_white = 0;
+	size_t pos_black = 12; 
 
-	free_moves_valids(moves);
-	moves = valid_positions(player);
-	if (v) TESTCASE("4 positions found in the middle of the board", moves->number== 4);
-	size_t neighboors[4] = {7, 11, 13, 17};
-	int test = 1;
-	if (moves->number < 4)
-		test = 0;
-	for(int i = 0; test && i < 4; i++)  
-		if (!is_in(moves->valid[i].m, 4, neighboors))
-			test = 0;
-	if (v) TESTCASE("Found positions are neighboors", test);
+	for(size_t i=0; i<size; i++)
+	{
+		graph__add_ownership(graph, i, BLACK);
+		graph__add_ownership(graph, graph->num_vertices - size + i, WHITE);
+	}	
+
+	struct player* p = initialize_test_player(graph, size, pos_white, pos_black, WHITE);
+   struct moves_valids* moves = valid_positions(p);
+	   //	=== Initialize graph test ===
+
+
+      // Player in a corner
+   printf("\033[2mPlayer in a corner \033[0m\n"); 
+   if (v)
+   {
+      TESTCASE("Only 2 positions found in a corner", moves->number == 2);
+      TESTCASE("Position 1 in valids moves", moves->valid[0].m == 1 || moves->valid[1].m == 1);
+      TESTCASE("Position 5 in valids moves", moves->valid[0].m == 5 || moves->valid[1].m == 5);
+   }
+	
+      // Player on a border
+   printf("\033[2mPlayer on a border\033[0m\n"); 
+   pos_white = 10; 
+   p->pos = pos_white;
+   free_moves_valids(moves);
+	moves = valid_positions(p);
+   if (v)
+   {
+      TESTCASE("Only 3 positions found on a border", moves->number == 3);
+      TESTCASE("Position 5 in valids moves", moves->valid[0].m == 5 || moves->valid[1].m == 5 || moves->valid[2].m == 5);
+      TESTCASE("Position 11 in valids moves", moves->valid[0].m == 11 || moves->valid[1].m == 11 || moves->valid[2].m == 11);
+      TESTCASE("Position 15 in valids moves", moves->valid[0].m == 15 || moves->valid[1].m == 15 || moves->valid[2].m == 15);
+   }
+
+      // Player in the center
+   pos_white = 12; 
+   p->pos = pos_white;
+   free_moves_valids(moves);
+	moves = valid_positions(p);
+   printf("\033[2mPlayer in the center\033[0m\n"); 
+   if (v)
+   {
+      TESTCASE("4 positions found on a border", moves->number == 4);
+      TESTCASE("Position 7 in valids moves", moves->valid[0].m == 7 || moves->valid[1].m == 7 || moves->valid[2].m == 7 || moves->valid[3].m == 7);
+      TESTCASE("Position 11 in valids moves", moves->valid[0].m == 11 || moves->valid[1].m == 11 || moves->valid[2].m == 11 || moves->valid[3].m == 11);
+      TESTCASE("Position 13 in valids moves", moves->valid[0].m == 13 || moves->valid[1].m == 13 || moves->valid[2].m == 13 || moves->valid[3].m == 13);
+      TESTCASE("Position 17 in valids moves", moves->valid[0].m == 17 || moves->valid[1].m == 17 || moves->valid[2].m == 17 || moves->valid[3].m == 17);
+   }
+
+      // Player in the center in front of the ennemy player
+   pos_white = 12; 
+   pos_black = 17;
+   p->pos = pos_white;
+   p->ennemy_pos = pos_black; 
+   free_moves_valids(moves);
+	moves = valid_positions(p);
+   printf("\033[2mPlayer in the center in front of the ennemy player\033[0m\n"); 
+   if (v)
+   {
+      TESTCASE("4 positions found on a border", moves->number == 4);
+      TESTCASE("Position 7 in valids moves", moves->valid[0].m == 7 || moves->valid[1].m == 7 || moves->valid[2].m == 7 || moves->valid[3].m == 7);
+      TESTCASE("Position 11 in valids moves", moves->valid[0].m == 11 || moves->valid[1].m == 11 || moves->valid[2].m == 11 || moves->valid[3].m == 11);
+      TESTCASE("Position 13 in valids moves", moves->valid[0].m == 13 || moves->valid[1].m == 13 || moves->valid[2].m == 13 || moves->valid[3].m == 13);
+      TESTCASE("Position 22 in valids moves", moves->valid[0].m == 22 || moves->valid[1].m == 22 || moves->valid[2].m == 22 || moves->valid[3].m == 22);
+   }
+
+      // Player in the center in front of the ennemy player and wall in front
+   struct move_t wall = {.t = WALL, .m = (size_t) -1, .c = WHITE, .e = {(struct edge_t) {17, 22}, (struct edge_t) {18, 23}} };
+   put_wall(p, wall);
+   free_moves_valids(moves);
+	moves = valid_positions(p);
+   printf("\033[2mPlayer in the center in front of the ennemy player and wall in front \033[0m\n"); 
+   if (v)
+   {
+      TESTCASE("5 positions found on a border", moves->number == 5);
+      TESTCASE("Position 7 in valids moves", moves->valid[0].m == 7 || moves->valid[1].m == 7 || moves->valid[2].m == 7 || moves->valid[3].m == 7 || moves->valid[4].m == 7);
+      TESTCASE("Position 11 in valids moves", moves->valid[0].m == 11 || moves->valid[1].m == 11 || moves->valid[2].m == 11 || moves->valid[3].m == 11 || moves->valid[4].m == 11);
+      TESTCASE("Position 13 in valids moves", moves->valid[0].m == 13 || moves->valid[1].m == 13 || moves->valid[2].m == 13 || moves->valid[3].m == 13 || moves->valid[4].m == 13);
+      TESTCASE("Position 16 in valids moves", moves->valid[0].m == 16 || moves->valid[1].m == 16 || moves->valid[2].m == 16 || moves->valid[3].m == 16 || moves->valid[4].m == 16);
+      TESTCASE("Position 18 in valids moves", moves->valid[0].m == 18 || moves->valid[1].m == 18 || moves->valid[2].m == 18 || moves->valid[3].m == 18 || moves->valid[4].m == 18);
+   }
+
+      // Player in the center in front of the ennemy player and wall in front + wall on right side
+   wall.e[0] = (struct edge_t) {12, 13};
+   wall.e[1] = (struct edge_t) {17, 18};
+   put_wall(p, wall);
+   free_moves_valids(moves);
+	moves = valid_positions(p);
+   printf("\033[2mPlayer in the center in front of the ennemy player and wall in front + wall on right side \033[0m\n"); 
+   if (v)
+   {
+      TESTCASE("3 positions found", moves->number == 3);
+      TESTCASE("Position 7 in valids moves", moves->valid[0].m == 7 || moves->valid[1].m == 7 || moves->valid[2].m == 7);
+      TESTCASE("Position 11 in valids moves", moves->valid[0].m == 11 || moves->valid[1].m == 11 || moves->valid[2].m == 11);
+      TESTCASE("Position 16 in valids moves", moves->valid[0].m == 16 || moves->valid[1].m == 16 || moves->valid[2].m == 16);
+   }
+
+      // Player in the center in front of the ennemy player and wall in front + walls on sides
+   wall.e[0] = (struct edge_t) {11, 12};
+   wall.e[1] = (struct edge_t) {16, 17};
+
+
+   put_wall(p, wall);
+   free_moves_valids(moves);
+	moves = valid_positions(p);
+   printf("\033[2mPlayer in the center in front of the ennemy player and wall in front + walls on sides \033[0m\n"); 
+   if (v)
+   {
+      TESTCASE("Only 1 position found", moves->number == 1);
+      TESTCASE("Position 7 in valids moves", moves->valid[0].m == 7);
+   }
+
+   //graph__display(graph, size, pos_white, pos_black);
 
 	// === Free tests
-	finalization_player(*player);
-	free(player);
+	finalization_player(*p);
+	free(p);
 	free_moves_valids(moves);
 	// ===
 }

@@ -14,7 +14,7 @@ static int v = 0;
 // Currently available options are :
 // -v <gverbose> : explicit tests
 
-void parse_opts(int argc, char* argv[])
+void parse_opts_tests(int argc, char* argv[])
 {
   int opt;
   while ((opt = getopt(argc, argv, "v::")) != -1)
@@ -38,7 +38,7 @@ void parse_opts(int argc, char* argv[])
 
 int main(int argc, char* argv[])
 {  
-   parse_opts(argc, argv); 
+   parse_opts_tests(argc, argv); 
 
    printf("\033[1m----- Graph_modif | Structural tests -----\033[0m\n");
    printf("\033[1mgraph__initialize :\033[0m\n");

@@ -10,7 +10,7 @@
 /*
 *
 */
-void test__rushing_path()
+void test__rushing_path(int v)
 {
 	
 		//	=== Initialize graph test ===
@@ -39,14 +39,14 @@ void test__rushing_path()
 	struct moves_valids* moves = valid_positions(p); 
 	
 	size_t rush = rushing_path(pos_black, p->winning_nodes, p->numb_win, moves); 
-	TESTCASE("- rushingPath | Black player rushing straight down (1)", rush == (size_t) 3); 
+	if (v) TESTCASE("- rushingPath | Black player rushing straight down (1)", rush == (size_t) 3); 
 
 	pos_black = rush; 
 	p->pos = rush; 
    free_moves_valids(moves);
 	moves = valid_positions(p);
 	rush = rushing_path(pos_black, p->winning_nodes, p->numb_win, moves);
-	TESTCASE("- rushingPath | Black player rushing straight down (2)", rush == (size_t) 6); 
+	if (v) TESTCASE("- rushingPath | Black player rushing straight down (2)", rush == (size_t) 6); 
 	pos_black = rush; 
 	p->pos = rush; 
 		// === Test Black player rushing down
@@ -66,25 +66,25 @@ void test__rushing_path()
 	moves = valid_positions(p2); 
 	rush = rushing_path(p2->pos, p2->winning_nodes, p2->numb_win, moves);
 	p2->pos = rush;
-	TESTCASE("- rushingPath | White player goes around wall (1)", rush == (size_t) 7);
+	if (v) TESTCASE("- rushingPath | White player goes around wall (1)", rush == (size_t) 7);
 
    free_moves_valids(moves);
 	moves = valid_positions(p2); 
 	rush = rushing_path(p2->pos, p2->winning_nodes, p2->numb_win, moves);
 	p2->pos = rush;
-	TESTCASE("- rushingPath | White player goes around wall (2)", rush == (size_t) 6);
+	if (v) TESTCASE("- rushingPath | White player goes around wall (2)", rush == (size_t) 6);
 
    free_moves_valids(moves);
 	moves = valid_positions(p2); 
 	rush = rushing_path(p2->pos, p2->winning_nodes, p2->numb_win, moves);
 	p2->pos = rush;
-	TESTCASE("- rushingPath | White player rushing up", rush == (size_t) 3);
+	if (v) TESTCASE("- rushingPath | White player rushing up", rush == (size_t) 3);
 
    free_moves_valids(moves);
 	moves = valid_positions(p2); 
 	rush = rushing_path(p2->pos, p2->winning_nodes, p2->numb_win, moves);
 	p2->pos = rush;
-	TESTCASE("- rushingPath | White player jump onto black player to reach winning", rush == (size_t) 1);
+	if (v) TESTCASE("- rushingPath | White player jump onto black player to reach winning", rush == (size_t) 1);
 
 	//graph__display(p2->graph, size, p2->pos, pos_black);
 
@@ -100,7 +100,7 @@ void test__rushing_path()
 /*
 *
 */
-void test__dijkstra()
+void test__dijkstra(int v)
 {
    		//	=== Initialize graph test ===
 	size_t size = 4; 
@@ -116,19 +116,25 @@ void test__dijkstra()
    struct player* p = initialize_test_player(graph, size, pos_black, pos_white, BLACK);
 
    struct moves_valids* path = dijkstra(p->graph, p->n, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
-   TESTCASE("- dijkstra | length path for black player = 3", path->number == 4); 
-   TESTCASE("- dijkstra | move 0 is the position of the black player", path->valid[0].m == pos_black);
-   TESTCASE("- dijkstra | move 1 is the position 4", path->valid[1].m == 4);
-   TESTCASE("- dijkstra | move 2 is the position 8", path->valid[2].m == 8); 
-   TESTCASE("- dijkstra | move 3 is the position 12", path->valid[3].m == 12);
+   if (v)
+   {
+      TESTCASE("- dijkstra | length path for black player = 3", path->number == 4); 
+      TESTCASE("- dijkstra | move 0 is the position of the black player", path->valid[0].m == pos_black);
+      TESTCASE("- dijkstra | move 1 is the position 4", path->valid[1].m == 4);
+      TESTCASE("- dijkstra | move 2 is the position 8", path->valid[2].m == 8); 
+      TESTCASE("- dijkstra | move 3 is the position 12", path->valid[3].m == 12);
+   }
 
    free_moves_valids(path);
    path = dijkstra(p->graph, p->n, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win);
-   TESTCASE("- dijkstra | length path = 3", path->number == 4); 
-   TESTCASE("- dijkstra | move 0 is the position of the white player", path->valid[0].m == pos_white);
-   TESTCASE("- dijkstra | move 1 is the position 11", path->valid[1].m == 11);
-   TESTCASE("- dijkstra | move 2 is the position 7", path->valid[2].m == 7); 
-   TESTCASE("- dijkstra | move 3 is the position 3", path->valid[3].m == 3);
+   if (v)
+   {
+      TESTCASE("- dijkstra | length path = 3", path->number == 4); 
+      TESTCASE("- dijkstra | move 0 is the position of the white player", path->valid[0].m == pos_white);
+      TESTCASE("- dijkstra | move 1 is the position 11", path->valid[1].m == 11);
+      TESTCASE("- dijkstra | move 2 is the position 7", path->valid[2].m == 7); 
+      TESTCASE("- dijkstra | move 3 is the position 3", path->valid[3].m == 3);
+   }
 
    
 		// Initialize wall
@@ -143,13 +149,16 @@ void test__dijkstra()
    printf("\033[2mAdding Wall {%ld-%ld, %ld-%ld} \033[0m\n", wall.e[0].fr, wall.e[0].to, wall.e[1].fr, wall.e[1].to); 
    free_moves_valids(path);
 	path = dijkstra(p->graph, p->n, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
-	TESTCASE("- dijkstra | length path for black player = 5", path->number == 6); 
-   TESTCASE("- dijkstra | move 0 is the position of the black player", path->valid[0].m == pos_black);
-   TESTCASE("- dijkstra | move 1 is the position 1", path->valid[1].m == 1);
-   TESTCASE("- dijkstra | move 2 is the position 2", path->valid[2].m == 2); 
-   TESTCASE("- dijkstra | move 3 is the position 6", path->valid[3].m == 6);
-   TESTCASE("- dijkstra | move 4 is the position 10", path->valid[4].m == 10); 
-   TESTCASE("- dijkstra | move 5 is the position 14", path->valid[5].m == 14);
+   if (v)
+   {
+      TESTCASE("- dijkstra | length path for black player = 5", path->number == 6); 
+      TESTCASE("- dijkstra | move 0 is the position of the black player", path->valid[0].m == pos_black);
+      TESTCASE("- dijkstra | move 1 is the position 1", path->valid[1].m == 1);
+      TESTCASE("- dijkstra | move 2 is the position 2", path->valid[2].m == 2); 
+      TESTCASE("- dijkstra | move 3 is the position 6", path->valid[3].m == 6);
+      TESTCASE("- dijkstra | move 4 is the position 10", path->valid[4].m == 10); 
+      TESTCASE("- dijkstra | move 5 is the position 14", path->valid[5].m == 14);
+   }
 
    struct edge_t e1_t2 = {6, 10};
 	struct edge_t e2_t2 = {7, 11}; 
@@ -161,25 +170,31 @@ void test__dijkstra()
    printf("\033[2mAdding Wall {%ld-%ld, %ld-%ld} \033[0m\n", wall.e[0].fr, wall.e[0].to, wall.e[1].fr, wall.e[1].to); 
    free_moves_valids(path);
 	path = dijkstra(p->graph, p->n, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
-	TESTCASE("- dijkstra | length path for black player = 6", path->number == 7); 
-   TESTCASE("- dijkstra | move 0 is the position of the black player", path->valid[0].m == pos_black);
-   TESTCASE("- dijkstra | move 1 is the position 1", path->valid[1].m == 1);
-   TESTCASE("- dijkstra | move 2 is the position 2", path->valid[2].m == 2); 
-   TESTCASE("- dijkstra | move 3 is the position 6", path->valid[3].m == 6);
-   TESTCASE("- dijkstra | move 4 is the position 5", path->valid[4].m == 5); 
-   TESTCASE("- dijkstra | move 5 is the position 5", path->valid[5].m == 9); 
-   TESTCASE("- dijkstra | move 6 is the position 14", path->valid[6].m == 13);
+   if (v)
+   {
+      TESTCASE("- dijkstra | length path for black player = 6", path->number == 7); 
+      TESTCASE("- dijkstra | move 0 is the position of the black player", path->valid[0].m == pos_black);
+      TESTCASE("- dijkstra | move 1 is the position 1", path->valid[1].m == 1);
+      TESTCASE("- dijkstra | move 2 is the position 2", path->valid[2].m == 2); 
+      TESTCASE("- dijkstra | move 3 is the position 6", path->valid[3].m == 6);
+      TESTCASE("- dijkstra | move 4 is the position 5", path->valid[4].m == 5); 
+      TESTCASE("- dijkstra | move 5 is the position 5", path->valid[5].m == 9); 
+      TESTCASE("- dijkstra | move 6 is the position 14", path->valid[6].m == 13);
+   }
 
    free_moves_valids(path);
    path = dijkstra(p->graph, p->n, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win);
-   TESTCASE("- dijkstra | length path for white player = 6", path->number == 7); 
-   TESTCASE("- dijkstra | move 0 is the position of the white player", path->valid[0].m == pos_white);
-   TESTCASE("- dijkstra | move 1 is the position 14 or 11", path->valid[1].m == 14 || path->valid[1].m == 11);
-   TESTCASE("- dijkstra | move 2 is the position 13 or 10", path->valid[2].m == 13 || path->valid[2].m == 10); 
-   TESTCASE("- dijkstra | move 3 is the position 9", path->valid[3].m == 9);
-   TESTCASE("- dijkstra | move 4 is the position 5", path->valid[4].m == 5); 
-   TESTCASE("- dijkstra | move 5 is the position 6", path->valid[5].m == 6); 
-   TESTCASE("- dijkstra | move 6 is the position 2", path->valid[6].m == 2);
+   if (v)
+   {
+      TESTCASE("- dijkstra | length path for white player = 6", path->number == 7); 
+      TESTCASE("- dijkstra | move 0 is the position of the white player", path->valid[0].m == pos_white);
+      TESTCASE("- dijkstra | move 1 is the position 14 or 11", path->valid[1].m == 14 || path->valid[1].m == 11);
+      TESTCASE("- dijkstra | move 2 is the position 13 or 10", path->valid[2].m == 13 || path->valid[2].m == 10); 
+      TESTCASE("- dijkstra | move 3 is the position 9", path->valid[3].m == 9);
+      TESTCASE("- dijkstra | move 4 is the position 5", path->valid[4].m == 5); 
+      TESTCASE("- dijkstra | move 5 is the position 6", path->valid[5].m == 6); 
+      TESTCASE("- dijkstra | move 6 is the position 2", path->valid[6].m == 2);
+   }
 
    printf("\033[2mPlayer black - 8 / Player white - 12 [Double jump] \033[0m\n"); 
    p->pos = 8; 
@@ -187,11 +202,14 @@ void test__dijkstra()
 
    free_moves_valids(path);
    path = dijkstra(p->graph, p->n, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win); 
-   TESTCASE("- dijkstra | length path for white player = 4", path->number == 5);
-   TESTCASE("- dijkstra | white player jumps from 12 to 4 (double jump)", path->valid[1].m == 4);
-   TESTCASE("- dijkstra | move 2 is the position 5", path->valid[2].m == 5);
-   TESTCASE("- dijkstra | move 3 is the position 6", path->valid[3].m == 6);
-   TESTCASE("- dijkstra | move 4 is the position 2", path->valid[4].m == 2);
+   if (v)
+   {
+      TESTCASE("- dijkstra | length path for white player = 4", path->number == 5);
+      TESTCASE("- dijkstra | white player jumps from 12 to 4 (double jump)", path->valid[1].m == 4);
+      TESTCASE("- dijkstra | move 2 is the position 5", path->valid[2].m == 5);
+      TESTCASE("- dijkstra | move 3 is the position 6", path->valid[3].m == 6);
+      TESTCASE("- dijkstra | move 4 is the position 2", path->valid[4].m == 2);
+   }
 
    printf("\033[2mPlayer black - 4 / Player white - 8 [Jump on side] \033[0m\n"); 
    p->pos = 4; 
@@ -199,10 +217,13 @@ void test__dijkstra()
 
    free_moves_valids(path);
    path = dijkstra(p->graph, p->n, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win); 
-   TESTCASE("- dijkstra | length path for white player = 3", path->number == 4);
-   TESTCASE("- dijkstra | white player jumps from 8 to 5 (double jump)", path->valid[1].m == 5);
-   TESTCASE("- dijkstra | move 2 is the position 5", path->valid[2].m == 6);
-   TESTCASE("- dijkstra | move 3 is the position 6", path->valid[3].m == 2);
+   if (v)
+   {
+      TESTCASE("- dijkstra | length path for white player = 3", path->number == 4);
+      TESTCASE("- dijkstra | white player jumps from 8 to 5 (double jump)", path->valid[1].m == 5);
+      TESTCASE("- dijkstra | move 2 is the position 5", path->valid[2].m == 6);
+      TESTCASE("- dijkstra | move 3 is the position 6", path->valid[3].m == 2);
+   }
 
    //graph__display(graph, p->n, p->ennemy_pos, p->pos);
    
@@ -217,7 +238,7 @@ void test__dijkstra()
 /*
 *
 */
-void test__cut_ennemy_path()
+void test__cut_ennemy_path(int v)
 {
       //	=== Initialize graph test ===
 	size_t size = 5; 
@@ -246,8 +267,8 @@ void test__cut_ennemy_path()
 
       // Tests
    printf("\033[2mAdd wall to cut path \033[0m\n"); 
-   TESTCASE("- cut ennemy path | move is a wall", wall.t == WALL);
-   TESTCASE("- cut ennemy path | wall chosed is {3-8, 4-9}", compare_walls(wall, wall_test));
+   if (v) TESTCASE("- cut ennemy path | move is a wall", wall.t == WALL);
+   if (v) TESTCASE("- cut ennemy path | wall chosed is {3-8, 4-9}", compare_walls(wall, wall_test));
    put_wall(p, wall);
 
    // Wall {1-6, 2-7}
@@ -262,8 +283,8 @@ void test__cut_ennemy_path()
 
       //Tests
    printf("\033[2mAdd wall to cut path \033[0m\n"); 
-   TESTCASE("- cut ennemy path | move is a wall", wall.t == WALL);
-   TESTCASE("- cut ennemy path | wall chosed is {5-6, 10-11}", compare_walls(wall, wall_test));
+   if (v) TESTCASE("- cut ennemy path | move is a wall", wall.t == WALL);
+   if (v) TESTCASE("- cut ennemy path | wall chosed is {5-6, 10-11}", compare_walls(wall, wall_test));
    put_wall(p, wall);
 
    // Wall {5-6, 10-11}
@@ -278,8 +299,8 @@ void test__cut_ennemy_path()
 
       // Tests
    printf("\033[2mAdd wall to cut path \033[0m\n"); 
-   TESTCASE("- cut ennemy path | move is a wall", wall.t == WALL);
-   TESTCASE("- cut ennemy path | wall chosed is {5-6, 10-11}", compare_walls(wall, wall_test));
+   if (v) TESTCASE("- cut ennemy path | move is a wall", wall.t == WALL);
+   if (v) TESTCASE("- cut ennemy path | wall chosed is {5-6, 10-11}", compare_walls(wall, wall_test));
    put_wall(p, wall);
 
    // Wall {11-12, 16-17}
@@ -294,8 +315,8 @@ void test__cut_ennemy_path()
 
       // Tests
    printf("\033[2mAdd wall to cut path \033[0m\n"); 
-   TESTCASE("- cut ennemy path | move is a wall", wall.t == WALL);
-   TESTCASE("- cut ennemy path | wall chosed is {11-12, 16-17}", compare_walls(wall, wall_test));
+   if (v) TESTCASE("- cut ennemy path | move is a wall", wall.t == WALL);
+   if (v) TESTCASE("- cut ennemy path | wall chosed is {11-12, 16-17}", compare_walls(wall, wall_test));
    put_wall(p, wall);
 
       // Wall {7-8, 12-13}
@@ -310,8 +331,8 @@ void test__cut_ennemy_path()
 
       // Tests
    printf("\033[2mAdd wall to cut path \033[0m\n"); 
-   TESTCASE("- cut ennemy path | move is a wall", wall.t == WALL);
-   TESTCASE("- cut ennemy path | wall chosed is {7-8, 12-13}", compare_walls(wall, wall_test));
+   if (v) TESTCASE("- cut ennemy path | move is a wall", wall.t == WALL);
+   if (v) TESTCASE("- cut ennemy path | wall chosed is {7-8, 12-13}", compare_walls(wall, wall_test));
    put_wall(p, wall);
 
    free_moves_valids(player_path);
@@ -324,7 +345,7 @@ void test__cut_ennemy_path()
 /*
 *
 */
-void test__double_dijkstra()
+void test__double_dijkstra(int v)
 {
       //	=== Initialize graph test ===
 	size_t size = 5; 
@@ -347,8 +368,8 @@ void test__double_dijkstra()
    struct moves_valids* ennemy_path = dijkstra(p->graph, p->n, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win);
    struct move_t chosed = double_dijkstra_strategy(p);
 
-   TESTCASE("- double_dijkstra | same distance => chosed to move", chosed.t == MOVE);
-   TESTCASE("- double_dijkstra | move to positon 7", chosed.m == 7);
+   if (v) TESTCASE("- double_dijkstra | same distance => chosed to move", chosed.t == MOVE);
+   if (v) TESTCASE("- double_dijkstra | move to positon 7", chosed.m == 7);
    pos_black = chosed.m; 
    p->pos = pos_black;
    // === 
@@ -368,9 +389,8 @@ void test__double_dijkstra()
    put_wall(p, chosed);
 
    
-
-   TESTCASE("- double_dijkstra | white player closer => chosed to put a wall", chosed.t == WALL);
-   TESTCASE("- double_dijkstra | put wall {3-8, 4-9}", compare_walls(wall_test, chosed));
+   if (v) TESTCASE("- double_dijkstra | white player closer => chosed to put a wall", chosed.t == WALL);
+   if (v) TESTCASE("- double_dijkstra | put wall {3-8, 4-9}", compare_walls(wall_test, chosed));
    // ===
 
    // === Test 3
@@ -380,8 +400,8 @@ void test__double_dijkstra()
    ennemy_path = dijkstra(p->graph, p->n, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win);
    chosed = double_dijkstra_strategy(p);
 
-   TESTCASE("- double_dijkstra | same distance => chosed to move", chosed.t == MOVE);
-   TESTCASE("- double_dijkstra | move to positon 7", chosed.m == 12);
+   if (v) TESTCASE("- double_dijkstra | same distance => chosed to move", chosed.t == MOVE);
+   if (v) TESTCASE("- double_dijkstra | move to positon 7", chosed.m == 12);
    pos_black = chosed.m; 
    p->pos = pos_black;
    // ===
@@ -401,8 +421,8 @@ void test__double_dijkstra()
    wall_test.e[1] = (struct edge_t) {2, 7};
    put_wall(p, chosed);
 
-   TESTCASE("- double_dijkstra | white player closer => chosed to put a wall", chosed.t == WALL);
-   TESTCASE("- double_dijkstra | put wall {1-6, 2-7}", compare_walls(wall_test, chosed));
+   if (v) TESTCASE("- double_dijkstra | white player closer => chosed to put a wall", chosed.t == WALL);
+   if (v) TESTCASE("- double_dijkstra | put wall {1-6, 2-7}", compare_walls(wall_test, chosed));
    // ===
 
    printf("\033[2mPlayer white teleported to positon 5\033[0m\n"); 
@@ -415,8 +435,8 @@ void test__double_dijkstra()
    ennemy_path = dijkstra(p->graph, p->n, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win);
    chosed = double_dijkstra_strategy(p);
 
-   TESTCASE("- double_dijkstra | desesperate situation => chosed to still move", chosed.t == MOVE);
-   TESTCASE("- double_dijkstra | move to position 17", chosed.m == 17);
+   if (v) TESTCASE("- double_dijkstra | desesperate situation => chosed to still move", chosed.t == MOVE);
+   if (v) TESTCASE("- double_dijkstra | move to position 17", chosed.m == 17);
    pos_black = chosed.m; 
    p->pos = pos_black;
 

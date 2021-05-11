@@ -8,7 +8,7 @@
  * Position with enemy on it is not found
  * Positions accessible with leaps are found
  */
-void test__valid_positions();
+void test__valid_positions(int v);
 
 /*
  * Wall over an edge is not found
@@ -18,7 +18,7 @@ void test__valid_positions();
  * Wall blocking a player is not found
  * Valid walls are found
  */
-void test__valid_walls();
+void test__valid_walls(int v);
 
 /*
  * Valid wall is added
@@ -26,19 +26,19 @@ void test__valid_walls();
  * Wall with missing second edge is not added 
  * Can't add the same wall
  */
-void test__put_wall();
+void test__put_wall(int v);
 
-void test__destroy_wall(); 
-
-/*
- * 
- */
-void test__exist_path_player();
+void test__destroy_wall(int v); 
 
 /*
  * 
  */
-void test__check_path();
+void test__exist_path_player(int v);
+
+/*
+ * 
+ */
+void test__check_path(int v);
 
 
 

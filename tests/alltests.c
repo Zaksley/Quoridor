@@ -1,13 +1,45 @@
+#include <getopt.h>
 #include "test_graph_struct.h"
 #include "test_graph_fonc.h"
 #include "test_utils_func.h"
 #include "test_strategy_func.h"
 #include "test_graph_shape.h"
 
+static int v = 0; 
+
 #define TESTCASE(msg, test) printf("%-100s : %s\n", msg, test ? "\033[1;92mPassed\033[0m" : "\033[1;91mFailed\033[0m")
 
-int main()
+////////////////////////////////////////////////////////////////
+// Function for parsing the options of the program
+// Currently available options are :
+// -v <gverbose> : explicit tests
+
+void parse_opts(int argc, char* argv[])
 {
+  int opt;
+  while ((opt = getopt(argc, argv, "v::")) != -1)
+   {
+      switch (opt)
+	   {
+         case 'v':
+               v = 1; 
+            break;
+
+         default: /* '?' */
+            fprintf(stderr, "Usage: %s [-v verbose for tests] \n", argv[0]);
+            exit(EXIT_FAILURE);
+         break; 
+      }
+   }
+}
+
+////////////////////////////////////////////////////////////////
+
+
+int main(int argc, char* argv[])
+{  
+   parse_opts(argc, argv); 
+
    printf("\033[1m----- Graph_modif | Structural tests -----\033[0m\n");
    printf("\033[1mgraph__initialize :\033[0m\n");
    test__graph_initialize();
@@ -74,24 +106,24 @@ int main()
 
    printf("\033[1m----- Utils | Functionnal tests -----\033[0m\n");
 	printf("\033[1mvalid_positions :\033[0m\n");
-	test__valid_positions();
+	test__valid_positions(v);
 	printf("\033[1mvalid_walls :\033[0m\n");
-	test__valid_walls();
+	test__valid_walls(v);
 	printf("\033[1mput_wall :\033[0m\n");
-	test__put_wall();
+	test__put_wall(v);
 	printf("\033[1mexist_path_player :\033[0m\n");
-	test__exist_path_player();
+	test__exist_path_player(v);
 	printf("\033[1mcheck_path :\033[0m\n");
-	test__check_path();
+	test__check_path(v);
 
 
    printf("\033[1m\n----- Strategy | Functionnal tests -----\033[0m\n");
    printf("\033[1mrushing_path :\033[0m\n");
-   test__rushing_path();
+   test__rushing_path(v);
    printf("\033[1mdijkstra :\033[0m\n");
-   test__dijkstra();  
+   test__dijkstra(v);  
    printf("\033[1mcut_ennemy_path :\033[0m\n");
-   test__cut_ennemy_path();   
+   test__cut_ennemy_path(v);   
    printf("\033[1mdouble_dijkstra_strategy :\033[0m\n");
-   test__double_dijkstra();  
+   test__double_dijkstra(v);  
 }

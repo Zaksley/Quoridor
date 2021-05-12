@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <getopt.h>
 #include <dlfcn.h>
 #include "utils.h"
@@ -8,23 +9,29 @@
 #define NUMB_WALLS 20
 
 #define MAX_SIZE_GRAPH 15
-#define DEFAULT_SIZE_GRAPH 6
 
+#define DEFAULT_SIZE_GRAPH 6
 #define DEFAULT_TYPE_GRAPH 'c'
+#define DEFAULT_PLAYER1 "./install/libplayer_usain_bolt.so"
+#define DEFAULT_PLAYER2 "./install/libplayer_rick_scientist.so"
 
 static int size_graph = DEFAULT_SIZE_GRAPH; 
 static char type_graph = DEFAULT_TYPE_GRAPH; 
+static char* player_one = DEFAULT_PLAYER1;
+static char* player_two = DEFAULT_PLAYER2; 
 
 ////////////////////////////////////////////////////////////////
 // Function for parsing the options of the program
 // Currently available options are :
 // -m <graph size> : sets the size n of graph
 // -t <graph type> : sets the type of graph
+// player1 : Decide the lib for the first player
+// player2 : Decide the lib for the second player
 
 void parse_opts(int argc, char* argv[])
 {
-  int opt;
-  while ((opt = getopt(argc, argv, "m:t:")) != -1)
+   int opt;
+   while ((opt = getopt(argc, argv, "m:t:")) != -1)
    {
       switch (opt)
 	   {
@@ -42,14 +49,39 @@ void parse_opts(int argc, char* argv[])
                type_graph = optarg[0]; 
             }
             break; 
-
-         default: /* '?' */
+         
+         default:
             fprintf(stderr, "Usage: %s [-m graph size] \n", argv[0]);
             fprintf(stderr, "Usage: %s [-t graph type] \n", argv[0]);
+            fprintf(stderr, "Usage: %s string: player_name", argv[0]); 
             exit(EXIT_FAILURE);
-         break; 
       }
    }
+
+         // Player 1
+   if (optind < argc)
+   {
+      if(   !strcmp(argv[optind], "./install/libplayer_usain_bolt.so")
+         || !strcmp(argv[optind], "./install/libplayer_rick_scientist.so")
+         || !strcmp(argv[optind], "./install/libplayer_move_random.so")
+         || !strcmp(argv[optind], "./install/libplayer_random.so"))
+      {
+         player_one = argv[optind];
+      }
+   }
+            // Player 2
+   if (optind+1 < argc)
+   {
+      if(   !strcmp(argv[optind+1], "./install/libplayer_usain_bolt.so")
+         || !strcmp(argv[optind+1], "./install/libplayer_rick_scientist.so")
+         || !strcmp(argv[optind+1], "./install/libplayer_move_random.so")
+         || !strcmp(argv[optind+1], "./install/libplayer_random.so")
+         )
+      {
+         player_two = argv[optind+1];
+      }
+   }
+
 }
 
 ////////////////////////////////////////////////////////////////
@@ -65,8 +97,8 @@ int main(int argc, char* argv[])
       // Get players 
    void* handle_p1; 
    void* handle_p2; 
-   handle_p1 = dlopen("./install/libplayer_rick_scientist.so", RTLD_LAZY);
-   handle_p2 = dlopen("./install/libplayer_usain_bolt.so", RTLD_LAZY);
+   handle_p1 = dlopen(player_one, RTLD_LAZY);
+   handle_p2 = dlopen(player_two, RTLD_LAZY);
    struct player* player1 = get_functions(handle_p1);
    struct player* player2 = get_functions(handle_p2); 
    struct player* players[NUMB_PLAYER] = {player1, player2}; 
@@ -93,8 +125,6 @@ int main(int argc, char* argv[])
          server_Graph = graph__create_square(size_graph);
          break; 
    }
-   
-   graph__display(server_Graph, size_graph, 0, 5);
    
 
       // ===== Initialize players (Server) =====
@@ -292,8 +322,8 @@ int main(int argc, char* argv[])
             // === Debug ===
          if (isPlaying)
          {
-            printf("Côté Serveur: Joueur %d (position = %ld / position ennemie = %ld) \n", players[p]->id, players[p]->pos, players[p]->ennemy_pos);
-            graph__display(server_Graph, size_graph, player_color(players, WHITE)->pos, player_color(players, BLACK)->pos );
+            //printf("Côté Serveur: Joueur %d (position = %ld / position ennemie = %ld) \n", players[p]->id, players[p]->pos, players[p]->ennemy_pos);
+            //graph__display(server_Graph, size_graph, player_color(players, WHITE)->pos, player_color(players, BLACK)->pos );
          }
 
       }

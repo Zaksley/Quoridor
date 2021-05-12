@@ -106,6 +106,9 @@ int main(int argc, char* argv[])
    printf("\033[1mgraph__create_chopped :\033[0m\n");
    TESTCASE("- graph__chopped | chopped graph has the right shape (size 3)", test__chopped_3());
    TESTCASE("- graph__chopped | chopped graph has the right shape (size 6)", test__chopped_6());
+   printf("\033[1mgraph__create_snake :\033[0m\n");
+   TESTCASE("- graph__snake | snake graph has the right shape (size 5)", test__snake_5());
+   TESTCASE("- graph__snake | snake graph has the right shape (size 10)", test__snake_10());
 
 
    printf("\033[1m----- Utils | Functionnal tests -----\033[0m\n");

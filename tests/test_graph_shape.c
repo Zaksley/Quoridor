@@ -148,3 +148,25 @@ int test__chopped_6()
    
    return test;
 }
+
+int test__snake_5()
+{
+   struct graph_t* snake = graph__create_snake(5);
+   size_t empty_vertices[12] = {1, 2, 3, 4, 10, 11, 12, 13, 21, 22, 23, 24};
+   int test = test__shape(snake, 5, empty_vertices, 12);
+   graph__free(snake);
+   
+   return test;
+}
+
+int test__snake_10()
+{
+   struct graph_t* snake = graph__create_snake(10);
+   size_t empty_vertices[48] = {2, 3, 4, 5, 6, 7, 8, 9, 12, 13, 14, 15, 16, 17, 18, 19,
+                              40, 41, 42, 43, 44, 45, 46, 47, 50, 51, 52, 53, 54, 55, 56, 57,
+                              82, 83, 84, 85, 86, 87, 88, 89, 92, 93, 94, 95, 96, 97, 98, 99};
+   int test = test__shape(snake, 10, empty_vertices, 48);
+   graph__free(snake);
+   
+   return test;
+}

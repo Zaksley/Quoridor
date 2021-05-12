@@ -3,8 +3,8 @@
 
 #include "../src/graph_modif.h"
 
-void test__shape();
+int test__torus_3();
 
-int test__torus_existing_vertex(size_t n);
+int test__torus_6();
 
 #endif //_TEST_GRAPH_SHAPE_H_

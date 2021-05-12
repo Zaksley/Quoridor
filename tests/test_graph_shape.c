@@ -75,32 +75,56 @@ void print_graph(const struct graph_t *graph, size_t n, size_t *t, size_t s)
 }
 */
 
-int test__torus_existing_vertex(size_t n) 
+int test__shape(const struct graph_t *graph, size_t n, size_t *t, size_t s)
 {
-   struct graph_t *graph_ref = graph__create_square(n);
-   struct graph_t *torus = graph__create_torus(n);
+   struct graph_t *square = graph__create_square(n);
+   size_t N = n * n;
 
-   size_t N = n*n;
    int num, ref;
    for (size_t i = 0; i < N; i++)
    {
       for (size_t j = 0; j < N; j++)
       {
-         num = gsl_spmatrix_uint_get(torus->t, i, j);
-         ref = gsl_spmatrix_uint_get(graph_ref->t, i, j);
+         num = gsl_spmatrix_uint_get(graph->t, i, j);
+         ref = gsl_spmatrix_uint_get(square->t, i, j);
          if (num != 0)
          {
-            if (num != ref) 
+            if (in_array(i, t, s) || in_array(j, t, s) || ref != num)
             {
-               graph__free(graph_ref);
-               graph__free(torus);
+               graph__free(square);
                return 0;
-            }              
+            }
+         }
+         else if (ref != 0)
+         {
+            if (!(in_array(i, t, s) || in_array(j, t, s)))
+            {
+               graph__free(square);
+               return 0;
+            } 
          }
       }
    }
-
-   graph__free(graph_ref);
-   graph__free(torus);
+   graph__free(square);
    return 1;
+}
+
+int test__torus_3() 
+{
+   struct graph_t* torus = graph__create_torus(3);
+   size_t empty_vertices[1] = {4};
+   int test = test__shape(torus, 3, empty_vertex, 1);
+   graph__free(torus);
+   
+   return test;
+}
+
+int test__torus_6() 
+{
+   struct graph_t* torus = graph__create_torus(6);
+   size_t empty_vertices[4] = {8, 9, 14, 15};
+   int test = test__shape(torus, 6, empty_vertex, 4);
+   graph__free(torus);
+   
+   return test;
 }

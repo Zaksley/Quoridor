@@ -100,8 +100,8 @@ int main(int argc, char* argv[])
 
 
    printf("\033[1m----- Graph_modif | Shape tests -----\033[0m\n");
-   //TESTCASE("- graph__torus | all existing vertex exist in the square graph (size 3)", test__torus_existing_vertex(3));
-   //TESTCASE("- graph__torus | all existing vertex exist in the square graph (size 6)", test__torus_existing_vertex(6));
+   TESTCASE("- graph__torus | torus graph has the right shape (size 3)", test__torus_3());
+   TESTCASE("- graph__torus | torus graph has the right shape (size 6)", test__torus_6());
 
 
    printf("\033[1m----- Utils | Functionnal tests -----\033[0m\n");

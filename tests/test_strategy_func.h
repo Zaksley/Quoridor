@@ -5,23 +5,22 @@
 /*
  * 
  */
-void test__rushing_path(); 
+void test__rushing_path(int v); 
 
 /*
 *
 */
-void test__dijkstra();
-
+void test__dijkstra(int v);
 
 
 /*
 *
 */
-void test__dijkstra_path(); 
+void test__cut_ennemy_path(int v);
 
 /*
 *
 */
-void test__cut_ennemy_path();
+void test__double_dijkstra(int v); 
 
 #endif 

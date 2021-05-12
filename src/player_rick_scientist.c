@@ -3,13 +3,6 @@
 #include "strategy.h"
 #include "graph_modif.h"
 
-/* struct data */
-/* { */
-/*    enum color_t id; */
-/*    struct graph_t *graph; */
-/*    size_t num_walls; */
-/* }; */
-
 struct player self; 
 struct edge_t no_wall = {-1, -1}; 
 
@@ -19,7 +12,7 @@ struct edge_t no_wall = {-1, -1};
  */
 char const* get_player_name()
 {
-   return "Smart Usain Bolt"; 
+   return "Rick"; 
 }
 
 /* Player initialization
@@ -50,8 +43,8 @@ struct move_t play(struct move_t previous_move)
 {
 
    /*
-   *  Player Usain Bolt smart: Rush mid (if possible) 
-   *  Probas to put walls IN FRONT of player
+   *  Player Rick: Dijkstra
+   *  Put walls if the opponent is closer
    */
 
    if (previous_move.t == MOVE) 
@@ -67,9 +60,8 @@ struct move_t play(struct move_t previous_move)
    }
 
    // Creation of the new move 
-   struct move_t move; 
-   move.c = self.id; 
-
+   struct move_t move = {.c = self.id, .t = MOVE, .e = {(struct edge_t) {-1, -1}, (struct edge_t) {-1, -1}}, .m = -1 }; 
+   
    // ==== First move
    if (self.first_move)
    {
@@ -77,67 +69,40 @@ struct move_t play(struct move_t previous_move)
       move.e[0] = no_wall;
       move.e[1] = no_wall; 
 
-      size_t* list = malloc(sizeof(size_t) * self.numb_win); 
-      graph__list_ownership(self.graph, self.n, self.id, list); 
-      move.m = list[rand() % self.numb_win]; 
+      move.m = self.owned_nodes[self.numb_win/2]; 
       self.pos = move.m;
       self.first_move = 0; 
 
-      // ===== Free tables
-      free(list);
-      // =====
+
 
    }
    // ===== Other moves =====
    else
    {
-      int random = rand() % 2; 
-      struct moves_valids* walls = valid_walls(&self);
+      
+      move = double_dijkstra_strategy(&self);
 
-      // === Chosed to move === 
-      if (random == 0 || self.num_walls <= 0 || walls->number <= 0 )
+         // === Chosed to move === 
+      if (move.t == MOVE)
       {
-         move.t = MOVE; 
-         move.e[0] = no_wall;
-         move.e[1] = no_wall; 
-
-         struct moves_valids* moves = valid_positions(&self);
-         if (moves->number > 0)
-         {
-            move.m = rushing_path(self.pos, self.winning_nodes, self.numb_win, moves);
-            self.pos = move.m;
-            free_moves_valids(moves);
-            free_moves_valids(walls);
-         }
-         else
-         {
-            fprintf(stderr, "0 move trouvé - BUG");
-            exit(1);
-         }
+         self.pos = move.m;
       }
-      // === Chosed to put a wall ===
-      else
+
+         // === Chosed to put a wall ===
+      else if (move.t == WALL)
       {
-         move.t = WALL; 
-         struct move_t chosen_wall = walls->valid[rand() % walls->number]; 
-         move.e[0] = chosen_wall.e[0]; 
-         move.e[1] = chosen_wall.e[1];
-         move.m = chosen_wall.m; 
-         
-         int wall_destroyed = put_wall(&self, chosen_wall); 
-         self.num_walls -= 1; 
-         free_moves_valids(walls);
+         int wall_destroyed = put_wall(&self, move);
 
          if (wall_destroyed == -1) 
          {
             fprintf(stderr, "Erreur (Client) - Retirer un mur n'a pas fonctionné\n"); 
             exit(2); 
          }
-         printf("Côté Client : Joueur %d pose mur {%ld-%ld, %ld-%ld}\n", self.id, move.e[0].fr, move.e[0].to, move.e[1].fr, move.e[1].to);
+
+         self.num_walls -= 1;
+         //printf("Côté Client : Joueur %d pose mur {%ld-%ld, %ld-%ld}\n", self.id, move.e[0].fr, move.e[0].to, move.e[1].fr, move.e[1].to);
       }
    }
-
-   //printf("Côté Client : Joueur %d (position = %ld, position ennemie = %ld) \n", self.id, self.pos, self.ennemy_pos);
 
    return move;  
 }
@@ -150,7 +115,7 @@ struct move_t play(struct move_t previous_move)
  */
 void finalize()
 {
-   printf("Libération de Usain bolt...\n");
+   printf("Libération de Rick...\n");
    finalization_player(self);
    printf("OK !\n");
 }

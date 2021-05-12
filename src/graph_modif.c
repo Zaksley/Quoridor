@@ -34,7 +34,7 @@ struct graph_t * graph__initialize(size_t n)
 void graph__free(struct graph_t * graph)
 {
    gsl_spmatrix_uint_free(graph->t);
-   //gsl_spmatrix_uint_free(graph->o);
+   gsl_spmatrix_uint_free(graph->o);
    free(graph);
 }
 

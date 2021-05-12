@@ -45,7 +45,12 @@ struct moves_valids
 /*
  *   Contains every special function of a player
  */
-struct player* get_functions(char* lib);
+struct player* get_functions(void* handle);
+
+
+void free_functions(struct player* p);
+
+
 
 /* Create a fake player fast to test functions
 *
@@ -74,6 +79,18 @@ struct player initialization_player(struct player self, enum color_t id, struct 
 */
 void finalization_player(struct player self); 
 
+/* malloc struct moves_valids
+*
+*  @param size size of array move_t
+*  @return struct allocated
+*/
+struct moves_valids* init_moves_valids(int size); 
+
+/* free a struct moves_valids
+*
+*  @param struct to free
+*/
+void free_moves_valids(struct moves_valids* a); 
 
 /* Gets opposite color
 *

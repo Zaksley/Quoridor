@@ -1,26 +1,100 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <getopt.h>
 #include <dlfcn.h>
 #include "utils.h"
 
 #define NUMB_PLAYER 2
 #define NUMB_WALLS 20
-#define SIZE_GRAPH 6
-int main()
+
+#define MAX_SIZE_GRAPH 15
+#define DEFAULT_SIZE_GRAPH 6
+
+#define DEFAULT_TYPE_GRAPH 'c'
+
+static int size_graph = DEFAULT_SIZE_GRAPH; 
+static char type_graph = DEFAULT_TYPE_GRAPH; 
+
+////////////////////////////////////////////////////////////////
+// Function for parsing the options of the program
+// Currently available options are :
+// -m <graph size> : sets the size n of graph
+// -t <graph type> : sets the type of graph
+
+void parse_opts(int argc, char* argv[])
 {
+  int opt;
+  while ((opt = getopt(argc, argv, "m:t:")) != -1)
+   {
+      switch (opt)
+	   {
+         case 'm':
+            if (atoi(optarg) > 0 && atoi(optarg) < 15)
+            {
+               size_graph = atoi(optarg);
+            }
+            else  size_graph = DEFAULT_SIZE_GRAPH; 
+            break;
+
+         case 't':
+            if (optarg[0] == 'c' || optarg[0] == 't' || optarg[0] == 'h' || optarg[0] == 's')   
+            {
+               type_graph = optarg[0]; 
+            }
+            break; 
+
+         default: /* '?' */
+            fprintf(stderr, "Usage: %s [-m graph size] \n", argv[0]);
+            fprintf(stderr, "Usage: %s [-t graph type] \n", argv[0]);
+            exit(EXIT_FAILURE);
+         break; 
+      }
+   }
+}
+
+////////////////////////////////////////////////////////////////
+
+
+int main(int argc, char* argv[])
+{
+
+   parse_opts(argc, argv); 
+
    // ================== Initializing game ==================
 
       // Get players 
-   struct player* player1 = get_functions("./install/libplayer_move_random.so");
-   struct player* player2 = get_functions("./install/libplayer_usain_bolt.so"); 
-   struct player* players[2] = {player1, player2}; 
+   void* handle_p1; 
+   void* handle_p2; 
+   handle_p1 = dlopen("./install/libplayer_rick_scientist.so", RTLD_LAZY);
+   handle_p2 = dlopen("./install/libplayer_usain_bolt.so", RTLD_LAZY);
+   struct player* player1 = get_functions(handle_p1);
+   struct player* player2 = get_functions(handle_p2); 
+   struct player* players[NUMB_PLAYER] = {player1, player2}; 
 
    int random = rand() % 2; 
 
       // Central Graph - Server 
-
-   int size_graph = SIZE_GRAPH; 
-   struct graph_t* server_Graph = graph__create_torus(size_graph);
+   struct graph_t* server_Graph;
+   switch(type_graph)
+   {
+      case 'c':
+         server_Graph = graph__create_square(size_graph);
+         break; 
+      case 't':
+         server_Graph = graph__create_torus(size_graph);
+         break; 
+      case 'h':
+         server_Graph = graph__create_chopped(size_graph);
+         break;
+      case 's':
+         server_Graph = graph__create_snake(size_graph);
+         break; 
+      default:
+         server_Graph = graph__create_square(size_graph);
+         break; 
+   }
+   
+   graph__display(server_Graph, size_graph, 0, 5);
    
 
       // ===== Initialize players (Server) =====
@@ -30,6 +104,8 @@ int main()
       players[p]->num_walls = NUMB_WALLS; 
       players[p]->n = size_graph; 
       players[p]->wall_installed = calloc( (players[p]->n-1)*(players[p]->n-1), sizeof(int)); 
+      players[p]->pos = size_graph*size_graph/2; 
+      players[p]->ennemy_pos = size_graph*size_graph/2;
 
       if (p == random)   
       {
@@ -110,7 +186,7 @@ int main()
    struct move_t update_move; 
    while (isPlaying) 
    {
-      
+
       // ===== Players Playing =====
 
       for (int p=0; p<NUMB_PLAYER; p++)
@@ -226,27 +302,41 @@ int main()
 
    // ================== Free elements ==================
    
-      // ===== Free Winning lists
-   free(players[0]->winning_nodes);
-   free(players[0]->owned_nodes);
-      // =====
 
-      // ===== Free Graphs
-      
-   // Free server
-   graph__free(players[0]->graph);
-   graph__free(players[1]->graph);
-
-   // Free clients
+      // ======= Free Clients ======= 
    for(int p=0; p<NUMB_PLAYER; p++)
    {
-      //players[p]->finalize();
+      players[p]->finalize();
    }  
-      // =====
+      // ======= Free Clients ======= 
 
 
+      // ======= Free Server ======= 
+
+   // ==== Free Winning lists
+   free(players[0]->winning_nodes);
+   free(players[0]->owned_nodes);
+   // ====
+
+   // ==== Free Graphs
+   free(players[0]->wall_installed);
+   free(players[1]->wall_installed);
+   graph__free(players[0]->graph);
+   graph__free(players[1]->graph);
+   graph__free(players[0]->naked_graph);
+   // ====
+
+   free(players[0]);
+   free(players[1]); 
+
+   // ==== Close libs
+   dlclose(handle_p1);
+   dlclose(handle_p2);
+   // ====
+
+      // ======= Free Server ======= 
 
    // ============================================
 
-   return 1; 
+   return EXIT_SUCCESS; 
 }

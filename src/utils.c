@@ -11,7 +11,7 @@
  * @precond lib is a valid path to a dynamic library
  * @returns a player with initialized functions
  */
-struct player* get_functions(char* lib)
+struct player* get_functions(void* handle)
 {
    // Initialization 
    struct player* player = malloc(sizeof(struct player)); 
@@ -21,10 +21,6 @@ struct player* get_functions(char* lib)
    void (*initialize) (enum color_t, struct graph_t*, size_t);
    struct move_t (*player_play) (struct move_t); 
    void (*finalize) (); 
-
-   // Open the lib 
-   void * handle;
-   handle = dlopen(lib, RTLD_LAZY);
 
    if (!handle) {
       fprintf(stderr, "%s\n", dlerror());
@@ -49,6 +45,14 @@ struct player* get_functions(char* lib)
    return player; 
 }
 
+
+void free_functions(struct player* p)
+{
+   fprintf(stderr, "%p", p->get_name());
+   //free(p->get_name());
+}
+
+
 /* Create a fake player fast to test functions
 *
 *  @param graph Graph created that we link to our player
@@ -60,8 +64,9 @@ struct player* get_functions(char* lib)
 struct player* initialize_test_player(struct graph_t* graph, size_t n, size_t pos, size_t ennemy_pos, enum color_t id)
 {
       //Functions 
-	struct player* test_player = get_functions("./install/libplayer_move_random.so");
+	//struct player* test_player = get_functions("./install/libplayer_move_random.so");
 
+   struct player* test_player = malloc(sizeof(struct player));
       // Basic initialization
    test_player->id = id;
 	test_player->pos = pos;
@@ -103,7 +108,7 @@ struct player initialization_player(struct player self, enum color_t id, struct 
    self.id = id;
    self.num_walls = num_walls;
    self.n = graph__get_size(graph);
-   self.graph = graph__copy(graph, self.n);
+   self.graph = graph; 
    self.naked_graph = graph__copy(self.graph, self.n); 
 
    self.first_move = 1; 
@@ -135,9 +140,23 @@ void finalization_player(struct player self)
 
       // Free graph
    graph__free(self.graph);
+   graph__free(self.naked_graph);
 }
 
+struct moves_valids* init_moves_valids(int size)
+{
+   struct moves_valids* new = malloc(sizeof(struct moves_valids));
+   struct move_t* moves = malloc(sizeof(struct move_t) * size);
+   new->valid = moves;
+   new->number = size;
+   return new;
+}
 
+void free_moves_valids(struct moves_valids* a)
+{
+   free(a->valid);
+   free(a);
+}
 
 /* Gets opposite color
 *
@@ -231,6 +250,7 @@ int vertex_in_movesValids(struct moves_valids* moves, size_t v)
 */
 int edge_equal(struct edge_t e1, struct edge_t e2)
 {
+   //fprintf(stderr, "e1: %ld-%ld, e2: %ld-%ld\n", e1.fr, e1.to, e2.fr, e2.to);
    if (e1.fr == e2.fr && e1.to == e2.to)  return 1; 
    else if (e1.fr == e2.to && e1.to == e2.fr)   return 1; 
 
@@ -634,9 +654,10 @@ int existPath_Player(struct player* p, enum color_t color, size_t pos)
    
    
    size_t neighboor = -1; 
-   while (waitingList[to_treat] != (size_t) -1 && (size_t) to_treat < numb_nodes )
+   
+   while ((size_t) to_treat < numb_nodes && waitingList[to_treat] != (size_t) -1)
    {  
-      
+      //fprintf(stderr, "current:%ld\n", waitingList[to_treat]);
       current = waitingList[to_treat]; 
       marked[current] = 1; 
       
@@ -662,12 +683,6 @@ int existPath_Player(struct player* p, enum color_t color, size_t pos)
    size_t* list; 
    if (p->id == color)   list = p->winning_nodes; 
    else                  list = p->owned_nodes; 
-
-      /*
-   int  numb_win = graph__count_ownership(graph, n, color);
-   size_t* list = malloc(sizeof(size_t) * numb_win); 
-   graph__list_ownership(graph, n, other_player(color), list); 
-   */
 
    for(size_t node = 0; node < numb_nodes; node++)
    {
@@ -702,6 +717,7 @@ int checkPath(struct player* p, struct move_t wall, int dir)
 {
       // Put Fake Wall (for test)
    put_wall(p, wall); 
+
 
    int check_player1 = existPath_Player(p, p->id, p->pos);
    int check_player2 = existPath_Player(p, other_player(p->id), p->ennemy_pos);

@@ -89,20 +89,22 @@ struct move_t play(struct move_t previous_move)
    else
    {
       int random = rand() % 2; 
-      struct moves_valids* moves = valid_walls(&self);
+      struct moves_valids* walls = valid_walls(&self);
 
       // === Chosed to move === 
-      if (random == 0 || self.num_walls <= 0 || moves->number <= 0 )
+      if (random == 0 || self.num_walls <= 0 || walls->number <= 0 )
       {
          move.t = MOVE; 
          move.e[0] = no_wall;
          move.e[1] = no_wall; 
 
-         moves = valid_positions(&self);
+         struct moves_valids* moves = valid_positions(&self);
          if (moves->number > 0)
          {
             move.m = moves->valid[rand() % moves->number].m; 
             self.pos = move.m;
+            free_moves_valids(moves);
+            free_moves_valids(walls);
          }
          else
          {
@@ -114,13 +116,14 @@ struct move_t play(struct move_t previous_move)
       else
       {
          move.t = WALL; 
-         struct move_t chosen_wall = moves->valid[rand() % moves->number]; 
+         struct move_t chosen_wall = walls->valid[rand() % walls->number]; 
          move.e[0] = chosen_wall.e[0]; 
          move.e[1] = chosen_wall.e[1];
          move.m = chosen_wall.m; 
          
          int wall_destroyed = put_wall(&self, chosen_wall); 
          self.num_walls -= 1; 
+         free_moves_valids(walls);
 
          if (wall_destroyed == -1) 
          {
@@ -129,11 +132,6 @@ struct move_t play(struct move_t previous_move)
          }
          //printf("Côté Client : Joueur %d pose mur entre %ld et %ld\n", self.id, move.e[0].fr, move.e[0].to);
       }
-
-      // ===== Free tables
-      free(moves->valid);
-      free(moves);
-      // =====
    }
 
    //printf("Côté Client : Joueur %d (position = %ld, position ennemie = %ld) \n", self.id, self.pos, self.ennemy_pos);
@@ -149,7 +147,7 @@ struct move_t play(struct move_t previous_move)
  */
 void finalize()
 {
-   printf("Libération %s ...\n", self.get_name());
+   printf("Libération de Random...\n");
    finalization_player(self);
    printf("OK !\n");
 }

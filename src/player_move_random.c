@@ -115,7 +115,7 @@ struct move_t play(struct move_t previous_move)
  */
 void finalize()
 {
-   printf("Libération %s ...\n", self.get_name());
+   printf("Libération de move random...\n");
    finalization_player(self);
    printf("OK !\n");
 }

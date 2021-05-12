@@ -100,8 +100,12 @@ int main(int argc, char* argv[])
 
 
    printf("\033[1m----- Graph_modif | Shape tests -----\033[0m\n");
+   printf("\033[1mgraph__create_torus :\033[0m\n");
    TESTCASE("- graph__torus | torus graph has the right shape (size 3)", test__torus_3());
    TESTCASE("- graph__torus | torus graph has the right shape (size 6)", test__torus_6());
+   printf("\033[1mgraph__create_chopped :\033[0m\n");
+   TESTCASE("- graph__chopped | chopped graph has the right shape (size 3)", test__chopped_3());
+   TESTCASE("- graph__chopped | chopped graph has the right shape (size 6)", test__chopped_6());
 
 
    printf("\033[1m----- Utils | Functionnal tests -----\033[0m\n");

@@ -7,7 +7,11 @@
 #define TESTCASE(msg, test) printf("%-100s : %s\n", msg, test ? "\033[1;92mPassed\033[0m" : "\033[1;91mFailed\033[0m")
 
 
-/*
+/* Tests made for function rushing_path()
+*
+*  Without walls - rushing straight down
+*  With wall in front of player - going on sides
+*  Jump on player to get faster
 *
 */
 void test__rushing_path(int v)
@@ -97,7 +101,12 @@ void test__rushing_path(int v)
    // ===
 }
 
-/*
+/* Tests made for function dijkstra
+*  All tests are used on both players
+*
+* Normal Dijkstra 
+* Dijkstra with wall in front
+* Dijkstra with jump on player
 *
 */
 void test__dijkstra(int v)
@@ -235,8 +244,11 @@ void test__dijkstra(int v)
 
 }
 
-/*
+/* Tests made for function cutting_path()
 *
+* Put wall (from base), not disturbing own path
+* Put wall on side, not disturbing own path
+* Put wall (square), not cutting path
 */
 void test__cut_ennemy_path(int v)
 {
@@ -342,7 +354,13 @@ void test__cut_ennemy_path(int v)
    
 }
 
-/*
+/* Tests made for function double_dijkstra()
+*
+* Same distance - Checking movement
+* Greater distance - Putting correct wall
+* Next move is movement (because wall => 2 movements win)
+* Greater distance - Putting correct wall
+* If no choice: Moving
 *
 */
 void test__double_dijkstra(int v)

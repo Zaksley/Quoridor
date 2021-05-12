@@ -13,22 +13,7 @@ void test__graph_initialize();
  *   - graph with size 4 has 16 vertices
  *   - graph with size 4 has all of its edges
  */
-void test__graph_create_square();
-
-/* Tests : 
- *   - right-sized graph has right nb of vertices
- *   - right-sized graph has all of its edges 
- *   - right-sized graph has its hole
- */
-void test__graph_create_torus();
-
-/* Tests : (todo)
- */
-void test__graph_create_chopped();
-
-/* Tests : (todo)
- */
-void test__graph_create_snake();
+void test__graph_create_square(int v);
 
 /* Tests : 
  *   - same nb of vertices as the original

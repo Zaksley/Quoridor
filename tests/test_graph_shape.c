@@ -129,6 +129,16 @@ int test__torus_6()
    return test;
 }
 
+int test__torus_9() 
+{
+   struct graph_t* torus = graph__create_torus(9);
+   size_t empty_vertices[9] = {30, 31, 32, 39, 40, 41, 48, 49, 50};
+   int test = test__shape(torus, 9, empty_vertices, 9);
+   graph__free(torus);
+   
+   return test;
+}
+
 int test__chopped_3() 
 {
    struct graph_t* chopped = graph__create_chopped(3);
@@ -144,6 +154,17 @@ int test__chopped_6()
    struct graph_t* chopped = graph__create_chopped(6);
    size_t empty_vertices[8] = {2, 3, 8, 9, 26, 27, 32, 33};
    int test = test__shape(chopped, 6, empty_vertices, 8);
+   graph__free(chopped);
+   
+   return test;
+}
+
+int test__chopped_9() 
+{
+   struct graph_t* chopped = graph__create_chopped(9);
+   size_t empty_vertices[18] = {3, 4, 5, 12, 13, 14, 21, 22, 23,
+                              57, 58, 59, 66, 67, 68, 75, 76, 77};
+   int test = test__shape(chopped, 9, empty_vertices, 18);
    graph__free(chopped);
    
    return test;

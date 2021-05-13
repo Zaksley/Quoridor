@@ -162,13 +162,12 @@ int main(int argc, char* argv[])
    }
 
       // === Copy of graphs ===
-   struct graph_t* server_copy = graph__copy(server_Graph, size_graph);
    struct graph_t* Naked_graph = graph__copy(server_Graph, players[0]->n);
-   players[0]->graph = server_Graph;
-   players[1]->graph = server_copy; 
-
    for(int i=0; i<NUMB_PLAYER; i++)
+   {
+      players[i]->graph = server_Graph;
       players[i]->naked_graph = Naked_graph; 
+   }
 
       // === Copy of graphs ===
 
@@ -283,13 +282,13 @@ int main(int argc, char* argv[])
             if (wall_in_list(walls->number, walls->valid, update_move))
             {
                   // = Update both graphs =
-               int wall_destroyed_1 = put_wall(players[0], update_move); 
-               int wall_destroyed_2 = put_wall(players[1], update_move);
+               int wall_destroyed = put_wall(players[0], update_move); 
 
                //printf("Côté Serveur : Joueur %d pose mur {%ld-%ld, %ld-%ld \n", players[p]->id, update_move.e[0].fr, update_move.e[0].to, update_move.e[1].fr, update_move.e[1].to);
 
                players[p]->num_walls -= 1; 
-               if (wall_destroyed_1 == -1 || wall_destroyed_2 == -1)  
+
+               if (wall_destroyed == -1) 
                {
                   fprintf(stderr, "Erreur (Server) - Poser un mur n'a pas fonctionné"); 
                   exit(1);
@@ -352,7 +351,6 @@ int main(int argc, char* argv[])
    free(players[0]->wall_installed);
    free(players[1]->wall_installed);
    graph__free(players[0]->graph);
-   graph__free(players[1]->graph);
    graph__free(players[0]->naked_graph);
    // ====
 

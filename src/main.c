@@ -82,6 +82,8 @@ int main()
    players[1]->owned_nodes = winning_p0; 
    players[1]->numb_win = numb_win;
 
+   players[0]->pos = 0;
+   players[1]->pos = 0;
       // ======
 
       // ===== Initialize players (Server) =====
@@ -137,6 +139,8 @@ int main()
                fprintf(stderr, "VICTOIRE DU JOUEUR %s pour cause de tricherie ennemie\n", player_color(players, players[p]->id)->get_name());
                exit(0); 
             }
+            players[p]->pos = update_move.m;
+            players[p]->ennemy_pos = 0;
          }
 
             // === Update Server ===

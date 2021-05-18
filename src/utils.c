@@ -106,6 +106,7 @@ struct player initialization_player(struct player self, enum color_t id, struct 
    self.graph = graph__copy(graph, self.n);
    self.naked_graph = graph__copy(self.graph, self.n); 
 
+   self.pos = 0;
    self.first_move = 1; 
 
       // Walls placed

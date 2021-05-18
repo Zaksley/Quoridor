@@ -345,6 +345,23 @@ size_t graph__get_size(struct graph_t * graph)
 	return sqrt(graph->t->size1);
 }
 
+/* Checks if one or two walls are at the specified position
+ *
+ * @param graph a graph
+ * @param first a vertex next to the wall
+ * @param wall_dir the direction of the wall (NORTH means a vertical upward wall)
+ * @param other_side the direction crossing the wall
+ * @return 1 if there are walls here, 0 else
+ */
+int graph__wall_exists(struct graph_t * graph, size_t first, enum direction wall_dir, enum direction other_side);
+
+/* Finds the opposite direction
+ *
+ * @param d direction
+ * @return the opposite direction
+ */
+enum direction opposite_dir(enum direction d);
+
 /* Displays a graph for debug usage
  *
  * @param graph a graph

@@ -96,7 +96,7 @@ struct move_t play(struct move_t previous_move)
          if (wall_destroyed == -1) 
          {
             fprintf(stderr, "Erreur (Client) - Retirer un mur n'a pas fonctionné\n"); 
-            exit(2); 
+            //exit(2); 
          }
 
          self.num_walls -= 1;

@@ -45,7 +45,8 @@ _ENSEIRB-MATMECA Group n°128-30_
 		`-t`	char		board shape ('c':square, 't':torus, 'h':chopped, 's':snake)
 
 	Input players must paths to dynamic libraries (*.so* files)
-	Second player is optionnal (if not given, player1 will play against itself)
+	First player is optionnal (if not given, Usain Bolt (default player 1) will play against Rick (default player 2))
+	Second player is optionnal (if not given, player1 will play against Rick (default player 2))
 
 	Example : `./install/server -m 10 -t 'c' ./install/libplayer1.so ./install/libplayer2.so`
 

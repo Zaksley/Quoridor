@@ -15,13 +15,13 @@ all: clean build
 
 build: install test
 
-test: test_graph_fonc.o test_graph_struct.o test_utils_func.o test_strategy_func.o graph_modif.o utils.o strategy.o
-	${CC} --coverage ${CFLAGS} ${TEST_DIR}/alltests.c graph_modif.o utils.o strategy.o test_graph_fonc.o test_graph_struct.o test_utils_func.o test_strategy_func.o -o install/alltests  ${LDFLAGS} ${LIBS}
+test: test_graph_fonc.o test_graph_struct.o test_graph_shape.o test_utils_func.o test_strategy_func.o graph_modif.o utils.o strategy.o
+	${CC} --coverage ${CFLAGS} ${TEST_DIR}/alltests.c graph_modif.o utils.o strategy.o test_graph_fonc.o test_graph_struct.o test_graph_shape.o test_utils_func.o test_strategy_func.o -o install/alltests  ${LDFLAGS} ${LIBS}
 
 alltests: test
 	LD_LIBRARY_PATH=${GSL_PATH}/lib ./install/alltests
 
-install: player_move_random player_random player_usain_bolt #player_white_mage
+install: player_move_random player_random player_usain_bolt player_rick_scientist #player_white_mage
 	${CC} -rdynamic -o install/server ${DIR}/main.c graph_modif.o utils.o -ldl ${LIBS} ${CFLAGS} ${LDFLAGS};
 #./install/server [-m] [-t] ./install/alltests
 
@@ -42,6 +42,9 @@ test_graph_struct.o:
 test_graph_fonc.o:
 	${CC} ${CFLAGS} ${LDFLAGS} ${LIBS} ${TEST_DIR}/test_graph_fonc.c -c
 
+test_graph_shape.o:
+	${CC} ${CFLAGS} ${LDFLAGS} ${LIBS} ${TEST_DIR}/test_graph_shape.c -c
+
 test_utils_func.o: 
 	${CC} ${CFLAGS} ${LDFLAGS} ${LIBS} ${TEST_DIR}/test_utils_func.c -c
 
@@ -61,6 +64,10 @@ player_move_random: graph_modif.o utils.o strategy.o
 player_usain_bolt: graph_modif.o utils.o strategy.o
 	${CC} -fPIC -c ${CFLAGS} ${DIR}/player_usain_bolt.c;
 	${CC} -shared -nostartfiles -o install/libplayer_usain_bolt.so player_usain_bolt.o graph_modif.o utils.o strategy.o;
+
+player_rick_scientist: graph_modif.o utils.o strategy.o
+	${CC} -fPIC -c ${CFLAGS} ${DIR}/player_rick_scientist.c;
+	${CC} -shared -nostartfiles -o install/libplayer_rick_scientist.so player_rick_scientist.o graph_modif.o utils.o strategy.o;
 
 #player_white_mage: graph_modif.o utils.o strategy.o
 #	${CC} -fPIC -c ${CFLAGS} ${DIR}/player_white_mage.c;

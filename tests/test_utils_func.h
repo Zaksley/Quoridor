@@ -1,44 +1,59 @@
 #ifndef _TEST_UTILS_FUNC_H_
 #define _TEST_UTILS_FUNC_H_
 
-/*
- * Only 2 positions found in a corner
- * 4 positions found in the middle of the board
- * Found positions are neighboors
- * Position with enemy on it is not found
- * Positions accessible with leaps are found
- */
-void test__valid_positions();
+/* Tests made for function valid_positions()
+*
+* Player in a corner
+* Player in the center
+* Player in the center in front of the ennemy player
+* Player in the center in front of the ennemy player and wall in front
+* Player in the center in front of the ennemy player and wall in front + wall on right side
+* Player in the center in front of the ennemy player and wall in front + walls on sides
+*/
+void test__valid_positions(int v);
 
-/*
- * Wall over an edge is not found
- * Wall exactly on another wall is not found
- * Wall overriding another wall is not found
- * Wall making a cross with another wall is not found
- * Wall blocking a player is not found
- * Valid walls are found
- */
-void test__valid_walls();
+/* Tests made for function valid_walls()
+* For every wall: Check number of legal walls + checking every wall illegal
+* 
+* Number of walls available with naked graph
+* Put special wall close to border
+* Put normal wall in center
+* Put intersection wall
+* Put normal wall to prepare cutting path
+* Put corner wall (-1 wall logic / -3 walls because of path)
+* Moving player, getting more walls available
+* Moving player back, getting less walls available
+* Put special wall (cutting 9 walls)
+*
+*/
+void test__valid_walls(int v);
 
-/*
- * Valid wall is added
- * Wall with missing first edge is not added
- * Wall with missing second edge is not added 
- * Can't add the same wall
- */
-void test__put_wall();
+/* Tests made for function put_wall()
+*
+* Add a wall
+* Checking edges are destroyed
+* Add a wall on same position => error 
+*/
+void test__put_wall(int v);
 
-void test__destroy_wall(); 
+/* Tests made for function destroy_wall()
+*  
+*  Destroy wall
+*  Check if edges exists now
+*  Put a wall on same place is ok
+*/
+void test__destroy_wall(int v); 
 
-/*
- * 
- */
-void test__exist_path_player();
-
-/*
- * 
- */
-void test__check_path();
+/* Tests made for function exist_path_player()
+*
+* Initial graph - checking both players have path
+* Putting non cutting wall - checking both players have path
+* Putting cutting path only for white
+* Putting cutting path for black
+* Destroying wall
+*
+*/
+void test__exist_path_player(int v);
 
 
 

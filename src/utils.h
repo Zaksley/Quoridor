@@ -45,7 +45,12 @@ struct moves_valids
 /*
  *   Contains every special function of a player
  */
-struct player* get_functions(char* lib);
+struct player* get_functions(void* handle);
+
+
+void free_functions(struct player* p);
+
+
 
 /* Create a fake player fast to test functions
 *
@@ -74,6 +79,18 @@ struct player initialization_player(struct player self, enum color_t id, struct 
 */
 void finalization_player(struct player self); 
 
+/* malloc struct moves_valids
+*
+*  @param size size of array move_t
+*  @return struct allocated
+*/
+struct moves_valids* init_moves_valids(int size); 
+
+/* free a struct moves_valids
+*
+*  @param struct to free
+*/
+void free_moves_valids(struct moves_valids* a); 
 
 /* Gets opposite color
 *
@@ -147,6 +164,14 @@ int generate_wall_move(struct move_t * move, struct player * player, struct move
 */
 int edge_equal(struct edge_t e1, struct edge_t e2); 
 
+/* Compare 2 walls
+*
+*  @param w1 wall one
+*  @param w2 wall two
+*  @return booleen : 1 (w1 = w2), 0 (w1 != w2)
+*/
+int compare_walls(struct move_t w1, struct move_t w2); 
+
 /* Check if a wall isn't already in a wall list
 *
 *  @param size size of array moves
@@ -173,6 +198,8 @@ int move_in_list(struct moves_valids* moves, struct move_t move);
 *  @return Booleen: 1 => V in list / 0 => V not in list
 */
 int in_vertexList(size_t* list, int size, size_t v);
+
+int vertex_in_movesValids(struct moves_valids* moves, size_t v); 
 
 // ======= Usefull functions to check in list =======
 

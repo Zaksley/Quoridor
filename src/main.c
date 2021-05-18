@@ -1,26 +1,130 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <getopt.h>
 #include <dlfcn.h>
 #include "utils.h"
 
 #define NUMB_PLAYER 2
 #define NUMB_WALLS 20
-#define SIZE_GRAPH 6
-int main()
+
+#define MAX_SIZE_GRAPH 15
+
+#define DEFAULT_SIZE_GRAPH 6
+#define DEFAULT_TYPE_GRAPH 'c'
+#define DEFAULT_PLAYER1 "./install/libplayer_usain_bolt.so"
+#define DEFAULT_PLAYER2 "./install/libplayer_rick_scientist.so"
+
+static int size_graph = DEFAULT_SIZE_GRAPH; 
+static char type_graph = DEFAULT_TYPE_GRAPH; 
+static char* player_one = DEFAULT_PLAYER1;
+static char* player_two = DEFAULT_PLAYER2; 
+
+////////////////////////////////////////////////////////////////
+// Function for parsing the options of the program
+// Currently available options are :
+// -m <graph size> : sets the size n of graph
+// -t <graph type> : sets the type of graph
+// player1 : Decide the lib for the first player
+// player2 : Decide the lib for the second player
+
+void parse_opts(int argc, char* argv[])
 {
+   int opt;
+   while ((opt = getopt(argc, argv, "m:t:")) != -1)
+   {
+      switch (opt)
+	   {
+         case 'm':
+            if (atoi(optarg) > 0 && atoi(optarg) < 15)
+            {
+               size_graph = atoi(optarg);
+            }
+            else  size_graph = DEFAULT_SIZE_GRAPH; 
+            break;
+
+         case 't':
+            if (optarg[0] == 'c' || optarg[0] == 't' || optarg[0] == 'h' || optarg[0] == 's')   
+            {
+               type_graph = optarg[0]; 
+            }
+            break; 
+         
+         default:
+            fprintf(stderr, "Usage: %s [-m graph size] \n", argv[0]);
+            fprintf(stderr, "Usage: %s [-t graph type] \n", argv[0]);
+            fprintf(stderr, "Usage: %s string: player_name", argv[0]); 
+            exit(EXIT_FAILURE);
+      }
+   }
+
+         // Player 1
+   if (optind < argc)
+   {
+      if(   !strcmp(argv[optind], "./install/libplayer_usain_bolt.so")
+         || !strcmp(argv[optind], "./install/libplayer_rick_scientist.so")
+         || !strcmp(argv[optind], "./install/libplayer_move_random.so")
+         || !strcmp(argv[optind], "./install/libplayer_random.so"))
+      {
+         player_one = argv[optind];
+      }
+   }
+            // Player 2
+   if (optind+1 < argc)
+   {
+      if(   !strcmp(argv[optind+1], "./install/libplayer_usain_bolt.so")
+         || !strcmp(argv[optind+1], "./install/libplayer_rick_scientist.so")
+         || !strcmp(argv[optind+1], "./install/libplayer_move_random.so")
+         || !strcmp(argv[optind+1], "./install/libplayer_random.so")
+         )
+      {
+         player_two = argv[optind+1];
+      }
+   }
+
+}
+
+////////////////////////////////////////////////////////////////
+
+
+int main(int argc, char* argv[])
+{
+
+   parse_opts(argc, argv); 
+
    // ================== Initializing game ==================
 
       // Get players 
-   struct player* player1 = get_functions("./install/libplayer_move_random.so");
-   struct player* player2 = get_functions("./install/libplayer_usain_bolt.so"); 
-   struct player* players[2] = {player1, player2}; 
+   void* handle_p1; 
+   void* handle_p2; 
+   handle_p1 = dlopen(player_one, RTLD_LAZY);
+   handle_p2 = dlopen(player_two, RTLD_LAZY);
+   struct player* player1 = get_functions(handle_p1);
+   struct player* player2 = get_functions(handle_p2); 
+   struct player* players[NUMB_PLAYER] = {player1, player2}; 
 
    int random = rand() % 2; 
 
       // Central Graph - Server 
-
-   int size_graph = SIZE_GRAPH; 
-   struct graph_t* server_Graph = graph__create_torus(size_graph);
+   struct graph_t* server_Graph;
+   switch(type_graph)
+   {
+      case 'c':
+         server_Graph = graph__create_square(size_graph);
+         break; 
+      case 't':
+         server_Graph = graph__create_torus(size_graph);
+         break; 
+      case 'h':
+         server_Graph = graph__create_chopped(size_graph);
+         break;
+      case 's':
+         server_Graph = graph__create_snake(size_graph);
+         break; 
+      default:
+         server_Graph = graph__create_square(size_graph);
+         break; 
+   }
    
 
       // ===== Initialize players (Server) =====
@@ -30,6 +134,8 @@ int main()
       players[p]->num_walls = NUMB_WALLS; 
       players[p]->n = size_graph; 
       players[p]->wall_installed = calloc( (players[p]->n-1)*(players[p]->n-1), sizeof(int)); 
+      players[p]->pos = size_graph*size_graph/2; 
+      players[p]->ennemy_pos = size_graph*size_graph/2;
 
       if (p == random)   
       {
@@ -56,13 +162,12 @@ int main()
    }
 
       // === Copy of graphs ===
-   struct graph_t* server_copy = graph__copy(server_Graph, size_graph);
    struct graph_t* Naked_graph = graph__copy(server_Graph, players[0]->n);
-   players[0]->graph = server_Graph;
-   players[1]->graph = server_copy; 
-
    for(int i=0; i<NUMB_PLAYER; i++)
+   {
+      players[i]->graph = server_Graph;
       players[i]->naked_graph = Naked_graph; 
+   }
 
       // === Copy of graphs ===
 
@@ -112,7 +217,7 @@ int main()
    struct move_t update_move; 
    while (isPlaying) 
    {
-      
+
       // ===== Players Playing =====
 
       for (int p=0; p<NUMB_PLAYER; p++)
@@ -181,13 +286,13 @@ int main()
             if (wall_in_list(walls->number, walls->valid, update_move))
             {
                   // = Update both graphs =
-               int wall_destroyed_1 = put_wall(players[0], update_move); 
-               int wall_destroyed_2 = put_wall(players[1], update_move);
+               int wall_destroyed = put_wall(players[0], update_move); 
 
                //printf("Côté Serveur : Joueur %d pose mur {%ld-%ld, %ld-%ld \n", players[p]->id, update_move.e[0].fr, update_move.e[0].to, update_move.e[1].fr, update_move.e[1].to);
 
                players[p]->num_walls -= 1; 
-               if (wall_destroyed_1 == -1 || wall_destroyed_2 == -1)  
+
+               if (wall_destroyed == -1) 
                {
                   fprintf(stderr, "Erreur (Server) - Poser un mur n'a pas fonctionné"); 
                   exit(1);
@@ -220,7 +325,7 @@ int main()
             // === Debug ===
          if (isPlaying)
          {
-            printf("Côté Serveur: Joueur %d (position = %ld / position ennemie = %ld) \n", players[p]->id, players[p]->pos, players[p]->ennemy_pos);
+            //printf("Côté Serveur: Joueur %d (position = %ld / position ennemie = %ld) \n", players[p]->id, players[p]->pos, players[p]->ennemy_pos);
             graph__display(server_Graph, size_graph, player_color(players, WHITE)->pos, player_color(players, BLACK)->pos );
          }
 
@@ -230,27 +335,40 @@ int main()
 
    // ================== Free elements ==================
    
-      // ===== Free Winning lists
-   free(players[0]->winning_nodes);
-   free(players[0]->owned_nodes);
-      // =====
 
-      // ===== Free Graphs
-      
-   // Free server
-   graph__free(players[0]->graph);
-   graph__free(players[1]->graph);
-
-   // Free clients
+      // ======= Free Clients ======= 
    for(int p=0; p<NUMB_PLAYER; p++)
    {
-      //players[p]->finalize();
+      players[p]->finalize();
    }  
-      // =====
+      // ======= Free Clients ======= 
 
 
+      // ======= Free Server ======= 
+
+   // ==== Free Winning lists
+   free(players[0]->winning_nodes);
+   free(players[0]->owned_nodes);
+   // ====
+
+   // ==== Free Graphs
+   free(players[0]->wall_installed);
+   free(players[1]->wall_installed);
+   graph__free(players[0]->graph);
+   graph__free(players[0]->naked_graph);
+   // ====
+
+   free(players[0]);
+   free(players[1]); 
+
+   // ==== Close libs
+   dlclose(handle_p1);
+   dlclose(handle_p2);
+   // ====
+
+      // ======= Free Server ======= 
 
    // ============================================
 
-   return 1; 
+   return EXIT_SUCCESS; 
 }

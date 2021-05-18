@@ -657,7 +657,6 @@ int existPath_Player(struct player* p, enum color_t color, size_t pos)
    
    while ((size_t) to_treat < numb_nodes && waitingList[to_treat] != (size_t) -1)
    {  
-      //fprintf(stderr, "current:%ld\n", waitingList[to_treat]);
       current = waitingList[to_treat]; 
       marked[current] = 1; 
       
@@ -730,7 +729,6 @@ int checkPath(struct player* p, struct move_t wall, int dir)
       return 1;
    }
    return 0; 
-
 }
 
 // =================== WALL =================== 

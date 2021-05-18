@@ -91,7 +91,7 @@ struct move_t play(struct move_t previous_move)
    // ===== Other moves =====
    else
    {
-      int random = rand() % 2; 
+      int random = 0; 
       struct moves_valids* walls = valid_walls(&self);
 
       // === Chosed to move === 

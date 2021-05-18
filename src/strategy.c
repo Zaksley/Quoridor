@@ -315,31 +315,26 @@ struct move_t cut_ennemy_path(struct player* p, struct moves_valids* path, struc
 
       wall.e[0] = e1;
       wall_side.e[0] = e1; 
+
       dir = graph__get_dir(p->graph, e1.fr, e1.to);
       second_dir = get_second_dir(dir);
 
       // Sides
       e_side1 = get_edge_by_dir(p, e1, second_dir); 
       e_side2 = get_edge_by_dir(p, e1, second_dir+1);
+
       wall.e[1] = e_side1; 
       wall_side.e[1] = e_side2; 
 
       test_side1 = study_wall(p, path, walls, wall, dir);
       test_side2 = study_wall(p, path, walls, wall_side, dir);
 
-      if (test_side1 != -1)
-      {
-         if (test_side1 > test_side2)
-         {
-            free_moves_valids(walls);
-            return wall;
-         }
-         else
-         {
-            free_moves_valids(walls);
-            return wall_side; 
-         }
-      }
+      if (test_side1 == -1 && test_side2 == -1) continue; 
+
+      free_moves_valids(walls); 
+
+      if (test_side1 > test_side2) return wall; 
+      else if (test_side1 <= test_side2) return wall_side; 
    }
 
    free_moves_valids(walls);

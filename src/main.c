@@ -2,11 +2,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <getopt.h>
+#include <time.h>
 #include <dlfcn.h>
 #include "utils.h"
 
 #define NUMB_PLAYER 2
-#define NUMB_WALLS 20
+#define NUMB_WALLS 10
 
 #define MAX_SIZE_GRAPH 15
 
@@ -89,21 +90,33 @@ void parse_opts(int argc, char* argv[])
 
 int main(int argc, char* argv[])
 {
-
+   srand(time(0));
    parse_opts(argc, argv); 
-
+   
    // ================== Initializing game ==================
 
       // Get players 
    void* handle_p1; 
    void* handle_p2; 
+   
    handle_p1 = dlopen(player_one, RTLD_LAZY);
    handle_p2 = dlopen(player_two, RTLD_LAZY);
    struct player* player1 = get_functions(handle_p1);
    struct player* player2 = get_functions(handle_p2); 
-   struct player* players[NUMB_PLAYER] = {player1, player2}; 
+   struct player* players[NUMB_PLAYER]; 
 
    int random = rand() % 2; 
+      // Random selection of who is playing first
+   if (random == 0)
+   {
+      players[0] = player1;
+      players[1] = player2;
+   }
+   else
+   {
+      players[0] = player2;
+      players[1] = player1; 
+   }
 
       // Central Graph - Server 
    struct graph_t* server_Graph;
@@ -129,6 +142,8 @@ int main(int argc, char* argv[])
 
       // ===== Initialize players (Server) =====
 
+   players[0]->id = BLACK;
+   players[1]->id = WHITE;
    for(int p = 0; p < NUMB_PLAYER; p++)
    {
       players[p]->num_walls = NUMB_WALLS; 
@@ -136,29 +151,15 @@ int main(int argc, char* argv[])
       players[p]->wall_installed = calloc( (players[p]->n-1)*(players[p]->n-1), sizeof(int)); 
       players[p]->pos = size_graph*size_graph/2; 
       players[p]->ennemy_pos = size_graph*size_graph/2;
+      players[p]->first_move = 1; 
+   }
 
-      if (p == random)   
-      {
-         players[p]->id = WHITE;
-         players[p]->first_move = 1; 
 
-         // add Owner position
-         for(int i=0; i<size_graph; i++)
-         {
-            graph__add_ownership(server_Graph, size_graph*size_graph - size_graph + i, WHITE);
-         }
-      }
-      else 
-      {
-         players[p]->id = BLACK; 
-         players[p]->first_move = 1; 
-
-         // add Owner position
-         for(int i=0; i<size_graph; i++)
-         {
-            graph__add_ownership(server_Graph, i, BLACK);
-         }
-      }    
+      // Add Owner position
+   for(int i=0; i<size_graph; i++)
+   {
+      graph__add_ownership(server_Graph, size_graph*size_graph - size_graph + i, WHITE);
+      graph__add_ownership(server_Graph, i, BLACK);
    }
 
       // === Copy of graphs ===
@@ -168,7 +169,6 @@ int main(int argc, char* argv[])
       players[i]->graph = server_Graph;
       players[i]->naked_graph = Naked_graph; 
    }
-
       // === Copy of graphs ===
 
 
@@ -208,8 +208,6 @@ int main(int argc, char* argv[])
    // ==================
 
 
-   
-
    // ================== Loop Game ==================
    int isPlaying = 1; 
    int loop=0; 
@@ -239,9 +237,10 @@ int main(int argc, char* argv[])
          {
             if (!(in_vertexList(players[p]->owned_nodes, players[p]->numb_win, update_move.m)))
             {
-               
+               fprintf(stderr, "Couleur joueur : %d, position : %ld, valeur p: %d\n", players[p]->id, update_move.m, p);
+               fprintf(stderr, "Couleur joueur ennemi : %d\n", get_other_player(players, p)->id);
                fprintf(stderr, "Erreur : Joueur %s a tenté d'apparaître sur une case non disponible au premier tour \n", players[p]->get_name()); 
-               fprintf(stderr, "VICTOIRE DU JOUEUR %s pour cause de tricherie ennemie\n", player_color(players, players[p]->id)->get_name());
+               fprintf(stderr, "VICTOIRE DU JOUEUR %s pour cause de tricherie ennemie\n", get_other_player(players, p)->get_name());
                exit(0); 
             }
             players[p]->pos = update_move.m;
@@ -313,7 +312,7 @@ int main(int argc, char* argv[])
             // === Victory ===
          for(int i=0; i<players[p]->numb_win; i++)
          {
-            if (loop != 0 && players[p]->pos == players[p]->winning_nodes[i])
+            if (loop != 0 && players[p]->pos == players[p]->winning_nodes[i] && isPlaying)
             {
                printf("VICTOIRE DU JOUEUR %s - Nombre de tours : %d & Position gagnante : %ld\n", players[p]->get_name(), loop, players[p]->pos); 
                graph__display(server_Graph, size_graph, player_color(players, WHITE)->pos, player_color(players, BLACK)->pos );

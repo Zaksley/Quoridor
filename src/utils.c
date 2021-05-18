@@ -170,6 +170,8 @@ enum color_t other_player(enum color_t player)
    else return WHITE; 
 }
 
+
+
 /* Gets opposite structure player
 *
 *  @param p array of players (Server)

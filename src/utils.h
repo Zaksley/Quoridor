@@ -48,10 +48,6 @@ struct moves_valids
 struct player* get_functions(void* handle);
 
 
-void free_functions(struct player* p);
-
-
-
 /* Create a fake player fast to test functions
 *
 *  @param graph Graph created that we link to our player

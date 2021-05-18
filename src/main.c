@@ -90,10 +90,15 @@ void parse_opts(int argc, char* argv[])
 
 int main(int argc, char* argv[])
 {
-   srand(time(0));
+   int seed = time(0); 
+   srand(seed);
    parse_opts(argc, argv); 
-   
-   // ================== Initializing game ==================
+   printf("Taille du graphe : %d\n", size_graph);
+   printf("Type de graphe : %c\n", type_graph);
+   printf("Seed du jeu : %d\n", seed);
+
+
+   // ================== Initializing Server ==================
 
       // Get players 
    void* handle_p1; 
@@ -209,6 +214,7 @@ int main(int argc, char* argv[])
 
 
    // ================== Loop Game ==================
+   printf("Début de la partie opposant %s et %s!\n\n", players[0]->get_name(), players[1]->get_name()); 
    int isPlaying = 1; 
    int loop=0; 
 
@@ -237,10 +243,8 @@ int main(int argc, char* argv[])
          {
             if (!(in_vertexList(players[p]->owned_nodes, players[p]->numb_win, update_move.m)))
             {
-               fprintf(stderr, "Couleur joueur : %d, position : %ld, valeur p: %d\n", players[p]->id, update_move.m, p);
-               fprintf(stderr, "Couleur joueur ennemi : %d\n", get_other_player(players, p)->id);
                fprintf(stderr, "Erreur : Joueur %s a tenté d'apparaître sur une case non disponible au premier tour \n", players[p]->get_name()); 
-               fprintf(stderr, "VICTOIRE DU JOUEUR %s pour cause de tricherie ennemie\n", get_other_player(players, p)->get_name());
+               fprintf(stderr, "VICTOIRE DU JOUEUR %s pour cause de tricherie ennemie\n", player_color(players, players[p]->id)->get_name());
                exit(0); 
             }
             players[p]->pos = update_move.m;
@@ -325,7 +329,7 @@ int main(int argc, char* argv[])
          if (isPlaying)
          {
             //printf("Côté Serveur: Joueur %d (position = %ld / position ennemie = %ld) \n", players[p]->id, players[p]->pos, players[p]->ennemy_pos);
-            graph__display(server_Graph, size_graph, player_color(players, WHITE)->pos, player_color(players, BLACK)->pos );
+            //graph__display(server_Graph, size_graph, player_color(players, WHITE)->pos, player_color(players, BLACK)->pos );
          }
 
       }

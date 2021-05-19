@@ -11,7 +11,7 @@
 
 #define MAX_SIZE_GRAPH 15
 
-#define DEFAULT_SIZE_GRAPH 10
+#define DEFAULT_SIZE_GRAPH 6
 #define DEFAULT_TYPE_GRAPH 'c'
 #define DEFAULT_PLAYER1 "./install/Rick_C137.so"
 #define DEFAULT_PLAYER2 "./install/libplayer_rick_scientist.so"

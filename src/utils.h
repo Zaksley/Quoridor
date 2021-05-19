@@ -103,6 +103,9 @@ enum color_t other_player(enum color_t player);
 */
 struct player* player_color(struct player** p, enum color_t c); 
 
+int opposite_value(int p); 
+
+
 /* Gets opposite dir
 *
 *

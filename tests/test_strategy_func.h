@@ -41,4 +41,18 @@ void test__cut_ennemy_path(int v);
 */
 void test__double_dijkstra(int v); 
 
+/* Tests made for function fill_wall_array()
+*
+* Testing if a wall legit is in there
+* Checking number
+* Adding a wall - Decrease of the number (by 2)
+*/
+void test__fill_wall_array(int v);
+
+/* Tests made for super_study_gap()
+*
+*
+*/
+void test__super_study_gap(int v); 
+
 #endif 

@@ -338,8 +338,8 @@ void test__cut_ennemy_path(int v)
    player_path = dijkstra(p->graph, p->n, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
    ennemy_path = dijkstra(p->graph, p->n, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win);
    wall = cut_ennemy_path(p, player_path, ennemy_path);  
-   wall_test.e[0] = (struct edge_t) {7, 8};
-   wall_test.e[1] = (struct edge_t) {12, 13};
+   wall_test.e[0] = (struct edge_t) {11, 6};
+   wall_test.e[1] = (struct edge_t) {12, 7};
 
       // Tests
    printf("\033[2mAdd wall to cut path \033[0m\n"); 
@@ -467,5 +467,184 @@ void test__double_dijkstra(int v)
 	finalization_player(*p);
    free(p);
    // ===
+
+}
+
+/* Tests made for function fill_wall_array()
+*
+* Testing if a wall legit is in there
+* Checking number
+* Adding a wall - Decrease of the number (by 2)
+*/
+void test__fill_wall_array(int v)
+{
+      //	=== Initialize graph test ===
+	size_t size = 5; 
+	size_t pos_white = 23;
+	size_t pos_black = 2; 
+   struct graph_t* graph = graph__create_square(size);
+
+      // Wall test
+   struct move_t wall_test = {.c = BLACK, .t = WALL, .m = -1}; 
+
+	for(size_t i=0; i<size; i++)
+	{
+		graph__add_ownership(graph, i, BLACK);
+		graph__add_ownership(graph, graph->num_vertices - size + i, WHITE);
+	}	
+   struct player* p = initialize_test_player(graph, size, pos_black, pos_white, BLACK);
+
+   struct moves_valids* ennemy_path = dijkstra(p->graph, p->n, p->ennemy_pos, p->pos, other_player(BLACK), p->owned_nodes, p->numb_win);
+   struct moves_valids* walls = valid_walls(p);
+   struct moves_valids* filled_array = init_moves_valids(ennemy_path->number * 2); 
+
+   // === Test 1
+   filled_array = fill_wall_array(p, ennemy_path, walls, filled_array);
+   wall_test.e[0] = (struct edge_t) {3, 8}; 
+   wall_test.e[1] = (struct edge_t) {2, 7}; 
+
+   if (v) TESTCASE("- filled_array | wall {3-8, 2-7} in filled_array", wall_in_list(filled_array->number, filled_array->valid, wall_test));
+   if (v) TESTCASE("- filled_array | number of walls in array = 8", filled_array->number == 8); 
+
+   free_moves_valids(filled_array);
+   free_moves_valids(walls);
+   // ===
+
+
+   // === Test 2
+   filled_array = init_moves_valids(ennemy_path->number * 2); 
+
+   put_wall(p, wall_test); 
+   walls = valid_walls(p); 
+   filled_array = fill_wall_array(p, ennemy_path, walls, filled_array);
+   printf("\033[2mAdd wall\033[0m\n"); 
+   if (v) TESTCASE("- filled_array | number of walls in array = 6", filled_array->number == 6); 
+   // ===
+
+
+   free_moves_valids(walls);
+   free_moves_valids(filled_array);
+   free_moves_valids(ennemy_path);
+   finalization_player(*p);
+   free(p); 
+}
+
+/* Tests made for super_study_gap()
+*
+*
+*/
+void test__super_study_gap(int v)
+{
+    //	=== Initialize graph test ===
+	size_t size = 5; 
+	size_t pos_white = 23;
+	size_t pos_black = 2; 
+   struct graph_t* graph = graph__create_square(size);
+
+      // Wall test
+   struct move_t wall_test = {.c = BLACK, .t = WALL, .m = -1}; 
+
+	for(size_t i=0; i<size; i++)
+	{
+		graph__add_ownership(graph, i, BLACK);
+		graph__add_ownership(graph, graph->num_vertices - size + i, WHITE);
+	}	
+
+   struct player* p = initialize_test_player(graph, size, pos_black, pos_white, BLACK);
+
+
+   // === Test 1
+   struct moves_valids* ennemy_path = dijkstra(p->graph, p->n, p->ennemy_pos, p->pos, other_player(BLACK), p->owned_nodes, p->numb_win);
+   struct moves_valids* walls = valid_walls(p);
+   struct moves_valids* filled_array = init_moves_valids(ennemy_path->number * 2); 
+   filled_array = fill_wall_array(p, ennemy_path, walls, filled_array);
+   struct move_t wall = super_study_gap(p, filled_array); 
+   
+      // == Checking special test
+   struct moves_valids* player_path = dijkstra(p->graph, p->n, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win); 
+   int old_length_path = player_path->number; 
+   free_moves_valids(player_path);
+   put_wall(p, wall); 
+   player_path = dijkstra(p->graph, p->n, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
+   int new_length_path = player_path->number; 
+   free_moves_valids(player_path);
+   
+      // ==
+
+   free_moves_valids(ennemy_path);
+   free_moves_valids(walls);
+   free_moves_valids(filled_array);
+
+   if (v)
+   {
+      TESTCASE("- super_study_gap | best gap return a wall", wall.t == WALL); 
+      TESTCASE("- super_study_gap | chosed a wall not cutting our path", old_length_path == new_length_path); 
+   }
+   // ===
+
+   // === Test 2
+   //graph__display(p->graph, p->n, pos_white, pos_black); 
+   ennemy_path = dijkstra(p->graph, p->n, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win);
+   walls = valid_walls(p);
+   filled_array = init_moves_valids(ennemy_path->number * 2);
+   filled_array = fill_wall_array(p, ennemy_path, walls, filled_array);
+   wall = super_study_gap(p, filled_array); 
+
+   free_moves_valids(ennemy_path);
+   free_moves_valids(walls);
+   free_moves_valids(filled_array);
+   
+
+   if (v) TESTCASE("- super_study_gap | chosed a move because no good gap", wall.t == MOVE); 
+   // === 
+
+   printf("\033[2mMoving player to the chosen move\033[0m\n"); 
+   pos_black = wall.m;
+   p->pos = wall.m; 
+   graph__display(p->graph, p->n, p->pos, p->ennemy_pos);   
+
+   
+   // === Test 3
+   ennemy_path = dijkstra(p->graph, p->n, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win);
+   walls = valid_walls(p);
+   filled_array = init_moves_valids(ennemy_path->number * 2);
+   filled_array = fill_wall_array(p, ennemy_path, walls, filled_array);
+   wall = super_study_gap(p, filled_array); 
+
+
+   for(int i=0; i<filled_array->number; i++)
+   {
+      printf("walls dispo: {%ld-%ld, %ld-%ld}\n", filled_array->valid[i].e[0].fr, 
+      filled_array->valid[i].e[0].to, filled_array->valid[i].e[1].fr, filled_array->valid[i].e[1].to); 
+   }
+
+   free_moves_valids(ennemy_path);
+   free_moves_valids(walls);
+   free_moves_valids(filled_array);
+
+      // == Checking special test
+   player_path = dijkstra(p->graph, p->n, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win); 
+   old_length_path = player_path->number; 
+   free_moves_valids(player_path);
+   put_wall(p, wall); 
+   graph__display(p->graph, p->n, pos_white, pos_black); 
+   player_path = dijkstra(p->graph, p->n, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
+   new_length_path = player_path->number; 
+   free_moves_valids(player_path);
+      // ==
+
+   wall_test.e[0] = (struct edge_t) {1, 6};
+   wall_test.e[1] = (struct edge_t) {2, 7}; 
+   if (v)
+   {
+      TESTCASE("- super_study_gap | best gap return a wall", wall.t == WALL); 
+      TESTCASE("- super_study_gap | chosed a wall not cutting our path", old_length_path == new_length_path); 
+      TESTCASE("- super_study_gap | chosed wall {1-6, 2-7}", compare_walls(wall, wall_test)); 
+   }
+   // === 
+
+   finalization_player(*p);
+   free(p); 
+
 
 }

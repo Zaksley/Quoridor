@@ -11,9 +11,9 @@
 
 #define MAX_SIZE_GRAPH 15
 
-#define DEFAULT_SIZE_GRAPH 6
+#define DEFAULT_SIZE_GRAPH 10
 #define DEFAULT_TYPE_GRAPH 'c'
-#define DEFAULT_PLAYER1 "./install/libplayer_usain_bolt.so"
+#define DEFAULT_PLAYER1 "./install/Rick_C137.so"
 #define DEFAULT_PLAYER2 "./install/libplayer_rick_scientist.so"
 
 static int size_graph = DEFAULT_SIZE_GRAPH; 
@@ -91,6 +91,7 @@ void parse_opts(int argc, char* argv[])
 int main(int argc, char* argv[])
 {
    int seed = time(0); 
+   //int seed = 1621430369; 
    srand(seed);
    parse_opts(argc, argv); 
    printf("Taille du graphe : %d\n", size_graph);
@@ -244,7 +245,7 @@ int main(int argc, char* argv[])
             if (!(in_vertexList(players[p]->owned_nodes, players[p]->numb_win, update_move.m)))
             {
                fprintf(stderr, "Erreur : Joueur %s a tenté d'apparaître sur une case non disponible au premier tour \n", players[p]->get_name()); 
-               fprintf(stderr, "VICTOIRE DU JOUEUR %s pour cause de tricherie ennemie\n", player_color(players, players[p]->id)->get_name());
+               fprintf(stderr, "VICTOIRE DU JOUEUR %s pour cause de tricherie ennemie\n", players[opposite_value(p)]->get_name());
                exit(0); 
             }
             players[p]->pos = update_move.m;
@@ -265,8 +266,9 @@ int main(int argc, char* argv[])
             }
             else
             {
+               //fprintf(stderr, "Erreur: move %ld pas autorisé \n", update_move.m);
                fprintf(stderr, "Erreur : Joueur %s a tenté de se déplacer sur une case non disponible \n", players[p]->get_name()); 
-               fprintf(stderr, "VICTOIRE DU JOUEUR %s pour cause de tricherie ennemie \n", player_color(players, players[p]->id)->get_name());
+               fprintf(stderr, "VICTOIRE DU JOUEUR %s pour cause de tricherie ennemie \n", players[opposite_value(p)]->get_name());
                exit(0); 
             }
 

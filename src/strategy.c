@@ -251,6 +251,13 @@ struct edge_t get_edge_by_dir(struct player* p, struct edge_t e1, int dir)
    return e2; 
 }
 
+/* Tells if cutting an edge is going to cut also my own path
+*
+*  @param path my path
+*  @param v1 first node
+*  @param v2 second node
+*  @return Booleen 1:Yes / 0:False
+*/
 int is_cutting_path(struct moves_valids* path, size_t v1, size_t v2)
 {
     for(int i=0; i<path->number-1; i++)
@@ -262,6 +269,15 @@ int is_cutting_path(struct moves_valids* path, size_t v1, size_t v2)
     return 0; 
 }
 
+/* Study a specific wall - Putting it and checking the length of the ennemy path
+*
+*  @param p player
+*  @param path player's path
+*  @param walls valid walls
+*  @param w wall checked
+*  @param dir direction of the wall
+*  @return length of the final ennemy path
+*/
 int study_wall(struct player* p, struct moves_valids* path, struct moves_valids* walls, struct move_t w, int dir)
 { 
       // Wall not available
@@ -367,6 +383,209 @@ struct move_t double_dijkstra_strategy(struct player* p)
    {
       struct move_t wall = {.t = WALL, .c = p->id, .m = -1, .e = {(struct edge_t) {-1, -1}, (struct edge_t) {-1, -1}}}; 
       wall = cut_ennemy_path(p, player_path, ennemy_path); 
+      free_moves_valids(player_path);
+      free_moves_valids(ennemy_path);
+      return wall; 
+   }
+}
+
+// ============ SUPER Rick  =============
+void add_wall_by_vertex(struct player* p, struct moves_valids* walls, struct moves_valids* w, struct move_t wall)
+{
+   struct edge_t e = wall.e[0]; 
+   int wall_dir = graph__get_dir(p->graph, e.fr, e.to);
+   int wall_second_dir = get_second_dir(wall_dir);
+
+   // Sides
+   struct edge_t e_side1 = get_edge_by_dir(p, e, wall_second_dir); 
+   struct edge_t e_side2 = get_edge_by_dir(p, e, wall_second_dir+1);
+
+   wall.e[1] = e_side1;
+   if (wall_in_list(walls->number, walls->valid, wall) && !wall_in_list(w->number, w->valid, wall))
+   {
+      w->valid[w->number] = wall;  
+      w->number++; 
+   }
+
+   wall.e[1] = e_side2;
+   if (wall_in_list(walls->number, walls->valid, wall) && !wall_in_list(w->number, w->valid, wall))
+   {
+      w->valid[w->number] = wall; 
+      w->number++; 
+   }
+}
+
+struct moves_valids* fill_wall_array(struct player* p, struct moves_valids* ennemy_path, struct moves_valids* walls, struct moves_valids* w)
+{
+      // Initialization
+   struct move_t wall = {.c = p->id, .t = WALL, .m = (size_t) -1}; 
+   w->number = 0; 
+
+      // Getting all walls
+   struct edge_t e_path = {-1, -1};
+   size_t vertex;
+
+   for(int i = ennemy_path->number - 1; i > 0; i--)
+   {
+      e_path.fr = ennemy_path->valid[i].m;
+      e_path.to = ennemy_path->valid[i-1].m;
+      wall.e[0] = e_path; 
+
+      // Handle Double_Jump or Side_Jump
+      if (!graph__edge_exists(p->graph, e_path.fr, e_path.to))
+      {
+         for(int dir=1; dir<5; dir++)
+         {
+            vertex = graph__get_neighboor(p->graph, p->n, e_path.to, dir); 
+            if (vertex == (size_t) -1) continue;
+
+            else if (vertex == p->pos)
+            {
+               // Node i to player pos
+               e_path.to = vertex; 
+               wall.e[0] = e_path; 
+               add_wall_by_vertex(p, walls, w, wall);
+
+               // player pos to Node (i-1)
+               e_path.fr = vertex;
+               e_path.to = ennemy_path->valid[i-1].m;
+               wall.e[0] = e_path; 
+               add_wall_by_vertex(p, walls, w, wall);
+
+               break;
+            }
+         }
+      }
+         
+      add_wall_by_vertex(p, walls, w, wall); 
+   }
+
+   return w; 
+
+
+   /*
+      wall_dir = graph__get_dir(p->graph, e_path.fr, e_path.to);
+      wall_second_dir = get_second_dir(wall_dir);
+
+      // Sides
+      e_side1 = get_edge_by_dir(p, e_path, wall_second_dir); 
+      e_side2 = get_edge_by_dir(p, e_path, wall_second_dir+1);
+
+      wall.e[1] = e_side1;
+      if (wall_in_list(walls->number, walls->valid, wall))
+      {
+         w->valid[number_of_walls] = wall;  
+         number_of_walls++; 
+      }
+
+      wall.e[1] = e_side2;
+      if (wall_in_list(walls->number, walls->valid, wall))
+      {
+         w->valid[number_of_walls] = wall; 
+         number_of_walls++; 
+      }
+   }
+   */
+}
+
+struct move_t super_study_gap(struct player* p, struct moves_valids* w)
+{
+      // Initial gap
+   struct moves_valids* ennemy_path = dijkstra(p->graph, p->n, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win);
+   struct moves_valids* player_path = dijkstra(p->graph, p->n, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
+
+   int initial_gap = ennemy_path->number - player_path->number; 
+   int calculate_gap = -1000;
+   int gap = -1000; 
+
+   struct move_t best_wall; 
+   struct move_t tested;
+
+   free_moves_valids(ennemy_path);
+   free_moves_valids(player_path); 
+   for(int wall_studied=0; wall_studied < w->number; wall_studied++)
+   {
+      tested = w->valid[wall_studied];
+
+         // Length of double dijkstra
+      put_wall(p, tested);
+      ennemy_path = dijkstra(p->graph, p->n, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win);
+      player_path = dijkstra(p->graph, p->n, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
+      destroy_wall(p, tested, graph__get_dir(p->naked_graph,tested.e[0].fr, tested.e[0].to));
+
+      calculate_gap = ennemy_path->number - player_path->number; 
+      free_moves_valids(ennemy_path);
+      free_moves_valids(player_path); 
+      if (gap < calculate_gap)
+      {
+         gap = calculate_gap; 
+         best_wall = tested; 
+      }
+   }
+
+
+   if (gap <= initial_gap)
+   {
+      player_path = dijkstra(p->graph, p->n, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
+      // === NO WALL FOUND 
+      struct move_t move = {.c = p->id, .t = MOVE, .m = player_path->valid[1].m,.e = { (struct edge_t) {-1, -1}, (struct edge_t) {-1, -1} }}; 
+      free_moves_valids(player_path); 
+      return move;
+   }
+
+   return best_wall; 
+}
+
+struct move_t find_best_wall(struct player* p, struct moves_valids* ennemy_path)
+{
+         // Get all viable walls
+   struct moves_valids* walls = valid_walls(p);
+
+      // Initialiaze arrays
+   int size = 2*ennemy_path->number; 
+   struct moves_valids* w = init_moves_valids(size); 
+
+   w = fill_wall_array(p, ennemy_path, walls, w); 
+   struct move_t best = super_study_gap(p, w);
+
+   free_moves_valids(walls);
+   free_moves_valids(w);
+
+   return best; 
+}
+
+/* Strategy of a player 
+*
+*  @param p player
+*  @return move_t to play
+*/
+struct move_t super_double_dijkstra_strategy(struct player* p)
+{
+   struct moves_valids* player_path = dijkstra(p->graph, p->n, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
+   struct moves_valids* ennemy_path = dijkstra(p->graph, p->n, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win);
+
+   /*
+   printf("size joueur: %d, size ennemy joueur: %d\n", player_path->number, ennemy_path->number);
+
+   for(int i=0; i<player_path->number; i++)
+   {
+      printf("Move joueur: %ld\n", player_path->valid[i].m);
+   }
+   */
+
+      // Choose to move to the win
+   if (p->num_walls <= 0 || player_path->number <= ennemy_path->number) 
+   {
+      struct move_t move = player_path->valid[1]; 
+      free_moves_valids(player_path);
+      free_moves_valids(ennemy_path);
+      return move;
+   }
+      // Put a wall to disturb ennemy 
+   else
+   {
+      struct move_t wall = {.t = WALL, .c = p->id, .m = -1, .e = {(struct edge_t) {-1, -1}, (struct edge_t) {-1, -1}}}; 
+      wall = find_best_wall(p, ennemy_path);
       free_moves_valids(player_path);
       free_moves_valids(ennemy_path);
       return wall; 

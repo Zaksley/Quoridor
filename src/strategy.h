@@ -55,6 +55,26 @@ struct moves_valids* get_predecessor(struct node* nodes, struct node end, enum c
 */
 struct moves_valids* dijkstra(struct graph_t* graph, size_t n, size_t pos, size_t ennemy_pos, enum color_t c, size_t* winning_nodes, size_t numb_win);
 
+/* Tells if cutting an edge is going to cut also my own path
+*
+*  @param path my path
+*  @param v1 first node
+*  @param v2 second node
+*  @return Booleen 1:Yes / 0:False
+*/
+int is_cutting_path(struct moves_valids* path, size_t v1, size_t v2);
+
+/* Study a specific wall - Putting it and checking the length of the ennemy path
+*
+*  @param p player
+*  @param path player's path
+*  @param walls valid walls
+*  @param w wall checked
+*  @param dir direction of the wall
+*  @return length of the final ennemy path
+*/
+int study_wall(struct player* p, struct moves_valids* path, struct moves_valids* walls, struct move_t w, int dir); 
+
 /* Return a wall that cut the ennemy path without cutting the own path of the player
 *
 *  @param p player
@@ -64,13 +84,6 @@ struct moves_valids* dijkstra(struct graph_t* graph, size_t n, size_t pos, size_
 */
 struct move_t cut_ennemy_path(struct player* p, struct moves_valids* path, struct moves_valids* ennemy_path); 
 
-/*
-*   
-*
-*
-*/
-int is_cutting_path(struct moves_valids* path, size_t v1, size_t v2);
-
 
 /* Strategy of a player 
 *
@@ -78,6 +91,28 @@ int is_cutting_path(struct moves_valids* path, size_t v1, size_t v2);
 *  @return move_t to play
 */
 struct move_t double_dijkstra_strategy(struct player* p); 
+
+
+// ============ SUPER Rick  =============
+
+
+//struct move_t find_best_wall(struct player* p, struct moves_valids* path, struct moves_valids* ennemy_path); 
+
+void add_wall_by_vertex(struct player* p, struct moves_valids* walls, struct moves_valids* w, struct move_t wall); 
+
+struct move_t find_best_wall(struct player* p, struct moves_valids* ennemy_path);
+
+struct move_t super_study_gap(struct player* p, struct moves_valids* w);
+
+struct moves_valids* fill_wall_array(struct player* p, struct moves_valids* ennemy_path, struct moves_valids* walls, 
+struct moves_valids* w); 
+
+struct move_t super_double_dijkstra_strategy(struct player* p); 
+
+
+
+
+
 
 
 // ============ White Mage =============
@@ -182,9 +217,5 @@ int is_trap_still_valid(struct graph_t* graph, size_t n, size_t pos, size_t exit
  * @return the hallway width at that position
  */
 int hallway_width(struct graph_t* graph, size_t n, size_t pos);
-
-/*
-size_t path_dijkstra(struct player* p);
-*/
 
 #endif

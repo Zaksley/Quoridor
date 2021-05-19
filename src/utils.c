@@ -40,8 +40,6 @@ struct player* get_functions(void* handle)
    player->initialize = initialize;
    player->finalize = finalize;
 
-   // dlclose(handle); - To close at the end ?
-
    return player; 
 }
 
@@ -63,9 +61,6 @@ void free_functions(struct player* p)
 */
 struct player* initialize_test_player(struct graph_t* graph, size_t n, size_t pos, size_t ennemy_pos, enum color_t id)
 {
-      //Functions 
-	//struct player* test_player = get_functions("./install/libplayer_move_random.so");
-
    struct player* test_player = malloc(sizeof(struct player));
       // Basic initialization
    test_player->id = id;
@@ -77,7 +72,6 @@ struct player* initialize_test_player(struct graph_t* graph, size_t n, size_t po
    test_player->graph = graph;
    test_player->naked_graph = graph__copy(test_player->graph, test_player->n);
 
-      // No need
    test_player->first_move = -1; 
 	
       // Walls placed
@@ -170,16 +164,22 @@ enum color_t other_player(enum color_t player)
    else return WHITE; 
 }
 
-/* Gets opposite structure player
+/* Gets a structure player by his color
 *
 *  @param p array of players (Server)
 *  @param c color of a player
-*  @return opposite player
+*  @return The good player
 */
 struct player* player_color(struct player** p, enum color_t c)
 {
    if (p[0]->id == c) return p[0];
    else return p[1]; 
+}
+
+int opposite_value(int p)
+{
+   if (p==0)   return 1;
+   else        return 0; 
 }
 
 /* Gets opposite dir

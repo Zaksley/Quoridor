@@ -21,7 +21,7 @@ test: test_graph_fonc.o test_graph_struct.o test_graph_shape.o test_utils_func.o
 alltests: test
 	LD_LIBRARY_PATH=${GSL_PATH}/lib ./install/alltests
 
-install: player_move_random player_random player_usain_bolt player_rick_scientist #player_white_mage
+install: player_move_random player_random player_usain_bolt player_rick_scientist player_rick_C137 #player_white_mage
 	${CC} -rdynamic -o install/server ${DIR}/main.c graph_modif.o utils.o -ldl ${LIBS} ${CFLAGS} ${LDFLAGS};
 #./install/server [-m] [-t] ./install/alltests
 
@@ -68,6 +68,10 @@ player_usain_bolt: graph_modif.o utils.o strategy.o
 player_rick_scientist: graph_modif.o utils.o strategy.o
 	${CC} -fPIC -c ${CFLAGS} ${DIR}/player_rick_scientist.c;
 	${CC} -shared -nostartfiles -o install/libplayer_rick_scientist.so player_rick_scientist.o graph_modif.o utils.o strategy.o;
+
+player_rick_C137: graph_modif.o utils.o strategy.o
+	${CC} -fPIC -c ${CFLAGS} ${DIR}/player_rick_C137.c;
+	${CC} -shared -nostartfiles -o install/Rick_C137.so player_rick_C137.o graph_modif.o utils.o strategy.o;
 
 #player_white_mage: graph_modif.o utils.o strategy.o
 #	${CC} -fPIC -c ${CFLAGS} ${DIR}/player_white_mage.c;

@@ -51,7 +51,11 @@ void test__fill_wall_array(int v);
 
 /* Tests made for super_study_gap()
 *
-*
+* Putting wall in front of path + at the end
+* Moving because no interesting gap
+* Putting wall in front of path + at the end + behind player
+* Putting wall cutting the shortest path because of double jump
+* Moving because no interesting gap (too much paths with same length)
 */
 void test__super_study_gap(int v); 
 

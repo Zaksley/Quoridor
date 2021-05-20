@@ -95,18 +95,49 @@ struct move_t double_dijkstra_strategy(struct player* p);
 
 // ============ SUPER Rick  =============
 
-
-//struct move_t find_best_wall(struct player* p, struct moves_valids* path, struct moves_valids* ennemy_path); 
-
+/* Find two edges on side of one, create the walls and add them to the struct if they are legal
+*
+*   @param p player 
+*   @param walls list of all valid walls
+*   @param w the struct where we add the wall
+*   @param wall initial wall with only 1 interesting edge (e[0])
+*   @return no return
+*/
 void add_wall_by_vertex(struct player* p, struct moves_valids* walls, struct moves_valids* w, struct move_t wall); 
 
-struct move_t find_best_wall(struct player* p, struct moves_valids* ennemy_path);
-
-struct move_t super_study_gap(struct player* p, struct moves_valids* w);
-
+/* Fill a moves_valids struct with all interesting walls by the state of ennemy path
+*
+*   @param p the player
+*   @param ennemy_path path of the ennemy
+*   @param walls list of all valid walls
+*   @param w the struct that we fill
+*   @return the struct w filled
+*/
 struct moves_valids* fill_wall_array(struct player* p, struct moves_valids* ennemy_path, struct moves_valids* walls, 
 struct moves_valids* w); 
 
+/* Calculates for all interesting walls the "best" one (ennemy_length - player_length) + chosing the closest from our player base
+*
+*   @param p player
+*   @param w struct of interesting walls
+*   @return best move from our definition, return a wall if no interesting walls
+*/
+struct move_t super_study_gap(struct player* p, struct moves_valids* w);
+
+/* Calls function fill_wall_array + super_study_gap
+*
+*  @param p player
+*  @param ennemy_path ennemy path
+*  @return best wall or a move if no interesting wall
+*/
+struct move_t find_best_wall(struct player* p, struct moves_valids* ennemy_path);
+
+
+/* Strategy of a player 
+*
+*  @param p player
+*  @return move_t to play
+*/
 struct move_t super_double_dijkstra_strategy(struct player* p); 
 
 

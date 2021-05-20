@@ -72,20 +72,22 @@ void parse_opts(int argc, char* argv[])
       {
          optind += get_player;
 
-         if (!strcmp(argv[optind], "./projetss6-quor/install/client.1.so")) continue;
-
-         if(   !strcmp(argv[optind], "./install/libplayer_usain_bolt.so")
+      if(   !strcmp(argv[optind], "./install/libplayer_usain_bolt.so")
          || !strcmp(argv[optind], "./install/libplayer_rick_scientist.so")
          || !strcmp(argv[optind], "./install/libplayer_move_random.so")
          || !strcmp(argv[optind], "./install/libplayer_random.so")
-         || !strcmp(argv[optind], "./install/Rick_C137.so"))
+         || !strcmp(argv[optind], "./install/Rick_C137.so")
+         || !strcmp(argv[optind], "./projetss6-quor/install/client.1.so"))
          {
                // Pick first player
             if (get_player == 0) 
             {
-               player_one = argv[optind];
+               if (strcmp(argv[optind], "./projetss6-quor/install/client.1.so"))
+               {
+                  player_one = argv[optind];
                   // Same players => swap default
-               if (!strcmp(player_one, player_two)) player_two = DEFAULT_PLAYER1; 
+                  if (!strcmp(player_one, player_two)) player_two = DEFAULT_PLAYER1; 
+               }
                get_player++; 
             }
                // Pick second player
@@ -93,7 +95,7 @@ void parse_opts(int argc, char* argv[])
             {
                player_two = argv[optind];
                   // Same players => wrong arguments
-               if (!strcmp(player_one, player_two)) exit_usage(argc, argv);
+               if (!strcmp(player_one, player_two)) player_two = "./install/libplayer_usain_bolt.so"; 
                get_player++; 
             }
                // Cancel - too many players
@@ -102,10 +104,7 @@ void parse_opts(int argc, char* argv[])
                exit_usage(argc, argv);
             }
          }
-         else
-         {
-            exit_usage(argc, argv);
-         }
+
          optind++; 
       }
    }

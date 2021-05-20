@@ -44,8 +44,7 @@ struct moves_valids* get_predecessor(struct node* nodes, struct node end, enum c
 
 /* Calculates path by Dijkstra algorithm
 *
-*   @param graph a graph
-*   @param n size of graph
+*   @param p player
 *   @param pos position 0 
 *   @param ennemy_pos position of the ennemy
 *   @param c color of player studied
@@ -53,7 +52,7 @@ struct moves_valids* get_predecessor(struct node* nodes, struct node end, enum c
 *   @param numb_win length of winning nodes array
 *   @return dijsktra path (move[0] = actual pos, move[numb_nodes-1] = winning pos)
 */
-struct moves_valids* dijkstra(struct graph_t* graph, size_t n, size_t pos, size_t ennemy_pos, enum color_t c, size_t* winning_nodes, size_t numb_win);
+struct moves_valids* dijkstra(struct player* p, size_t pos, size_t ennemy_pos, enum color_t c, size_t* winning_nodes, size_t numb_win);
 
 /* Tells if cutting an edge is going to cut also my own path
 *

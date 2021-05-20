@@ -124,7 +124,7 @@ void test__dijkstra(int v)
 	}
    struct player* p = initialize_test_player(graph, size, pos_black, pos_white, BLACK);
 
-   struct moves_valids* path = dijkstra(p->graph, p->n, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
+   struct moves_valids* path = dijkstra(p, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
    if (v)
    {
       TESTCASE("- dijkstra | length path for black player = 3", path->number == 4);
@@ -135,7 +135,7 @@ void test__dijkstra(int v)
    }
 
    free_moves_valids(path);
-   path = dijkstra(p->graph, p->n, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win);
+   path = dijkstra(p, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win);
    if (v)
    {
       TESTCASE("- dijkstra | length path = 3", path->number == 4);
@@ -157,7 +157,7 @@ void test__dijkstra(int v)
 
    printf("\033[2mAdding Wall {%ld-%ld, %ld-%ld} \033[0m\n", wall.e[0].fr, wall.e[0].to, wall.e[1].fr, wall.e[1].to);
    free_moves_valids(path);
-	path = dijkstra(p->graph, p->n, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
+	path = dijkstra(p, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
    if (v)
    {
       TESTCASE("- dijkstra | length path for black player = 5", path->number == 6);
@@ -178,7 +178,7 @@ void test__dijkstra(int v)
 
    printf("\033[2mAdding Wall {%ld-%ld, %ld-%ld} \033[0m\n", wall.e[0].fr, wall.e[0].to, wall.e[1].fr, wall.e[1].to);
    free_moves_valids(path);
-	path = dijkstra(p->graph, p->n, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
+	path = dijkstra(p, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
    if (v)
    {
       TESTCASE("- dijkstra | length path for black player = 6", path->number == 7);
@@ -192,7 +192,7 @@ void test__dijkstra(int v)
    }
 
    free_moves_valids(path);
-   path = dijkstra(p->graph, p->n, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win);
+   path = dijkstra(p, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win);
    if (v)
    {
       TESTCASE("- dijkstra | length path for white player = 6", path->number == 7);
@@ -210,7 +210,7 @@ void test__dijkstra(int v)
    p->ennemy_pos = 12;
 
    free_moves_valids(path);
-   path = dijkstra(p->graph, p->n, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win);
+   path = dijkstra(p, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win);
    if (v)
    {
       TESTCASE("- dijkstra | length path for white player = 4", path->number == 5);
@@ -225,7 +225,7 @@ void test__dijkstra(int v)
    p->ennemy_pos = 8;
 
    free_moves_valids(path);
-   path = dijkstra(p->graph, p->n, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win);
+   path = dijkstra(p, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win);
    if (v)
    {
       TESTCASE("- dijkstra | length path for white player = 3", path->number == 4);
@@ -271,8 +271,8 @@ void test__cut_ennemy_path(int v)
 
    // Wall {3-8, 4-9}
       // Calculs
-   struct moves_valids* player_path = dijkstra(p->graph, p->n, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
-   struct moves_valids* ennemy_path = dijkstra(p->graph, p->n, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win);
+   struct moves_valids* player_path = dijkstra(p, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
+   struct moves_valids* ennemy_path = dijkstra(p, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win);
    struct move_t wall = cut_ennemy_path(p, player_path, ennemy_path);
    wall_test.e[0] = (struct edge_t) {3, 8};
    wall_test.e[1] = (struct edge_t) {4, 9};
@@ -287,8 +287,8 @@ void test__cut_ennemy_path(int v)
       // Calculs
    free_moves_valids(player_path);
    free_moves_valids(ennemy_path);
-   player_path = dijkstra(p->graph, p->n, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
-   ennemy_path = dijkstra(p->graph, p->n, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win);
+   player_path = dijkstra(p, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
+   ennemy_path = dijkstra(p, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win);
    wall = cut_ennemy_path(p, player_path, ennemy_path);
    wall_test.e[0] = (struct edge_t) {1, 6};
    wall_test.e[1] = (struct edge_t) {2, 7};
@@ -303,8 +303,8 @@ void test__cut_ennemy_path(int v)
       // Calculs
    free_moves_valids(player_path);
    free_moves_valids(ennemy_path);
-   player_path = dijkstra(p->graph, p->n, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
-   ennemy_path = dijkstra(p->graph, p->n, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win);
+   player_path = dijkstra(p, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
+   ennemy_path = dijkstra(p, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win);
    wall = cut_ennemy_path(p, player_path, ennemy_path);
    wall_test.e[0] = (struct edge_t) {5, 6};
    wall_test.e[1] = (struct edge_t) {10, 11};
@@ -319,8 +319,8 @@ void test__cut_ennemy_path(int v)
       // Calculs
    free_moves_valids(player_path);
    free_moves_valids(ennemy_path);
-   player_path = dijkstra(p->graph, p->n, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
-   ennemy_path = dijkstra(p->graph, p->n, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win);
+   player_path = dijkstra(p, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
+   ennemy_path = dijkstra(p, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win);
    wall = cut_ennemy_path(p, player_path, ennemy_path);
    wall_test.e[0] = (struct edge_t) {11, 12};
    wall_test.e[1] = (struct edge_t) {16, 17};
@@ -335,8 +335,8 @@ void test__cut_ennemy_path(int v)
       // Calculs
    free_moves_valids(player_path);
    free_moves_valids(ennemy_path);
-   player_path = dijkstra(p->graph, p->n, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
-   ennemy_path = dijkstra(p->graph, p->n, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win);
+   player_path = dijkstra(p, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
+   ennemy_path = dijkstra(p, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win);
    wall = cut_ennemy_path(p, player_path, ennemy_path);
    wall_test.e[0] = (struct edge_t) {11, 6};
    wall_test.e[1] = (struct edge_t) {12, 7};
@@ -382,8 +382,8 @@ void test__double_dijkstra(int v)
    struct player* p = initialize_test_player(graph, size, pos_black, pos_white, BLACK);
 
    // === Test 1
-   struct moves_valids* player_path = dijkstra(p->graph, p->n, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
-   struct moves_valids* ennemy_path = dijkstra(p->graph, p->n, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win);
+   struct moves_valids* player_path = dijkstra(p, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
+   struct moves_valids* ennemy_path = dijkstra(p, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win);
    struct move_t chosed = double_dijkstra_strategy(p);
 
    if (v) TESTCASE("- double_dijkstra | same distance => chosed to move", chosed.t == MOVE);
@@ -399,8 +399,8 @@ void test__double_dijkstra(int v)
 
    free_moves_valids(player_path);
    free_moves_valids(ennemy_path);
-   player_path = dijkstra(p->graph, p->n, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
-   ennemy_path = dijkstra(p->graph, p->n, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win);
+   player_path = dijkstra(p, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
+   ennemy_path = dijkstra(p, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win);
    chosed = double_dijkstra_strategy(p);
    wall_test.e[0] = (struct edge_t) {3, 8};
    wall_test.e[1] = (struct edge_t) {4, 9};
@@ -414,8 +414,8 @@ void test__double_dijkstra(int v)
    // === Test 3
    free_moves_valids(player_path);
    free_moves_valids(ennemy_path);
-   player_path = dijkstra(p->graph, p->n, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
-   ennemy_path = dijkstra(p->graph, p->n, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win);
+   player_path = dijkstra(p, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
+   ennemy_path = dijkstra(p, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win);
    chosed = double_dijkstra_strategy(p);
 
    if (v) TESTCASE("- double_dijkstra | same distance => chosed to move", chosed.t == MOVE);
@@ -431,8 +431,8 @@ void test__double_dijkstra(int v)
 
    free_moves_valids(player_path);
    free_moves_valids(ennemy_path);
-   player_path = dijkstra(p->graph, p->n, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
-   ennemy_path = dijkstra(p->graph, p->n, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win);
+   player_path = dijkstra(p, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
+   ennemy_path = dijkstra(p, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win);
    chosed = double_dijkstra_strategy(p);
 
    wall_test.e[0] = (struct edge_t) {1, 6};
@@ -449,8 +449,8 @@ void test__double_dijkstra(int v)
 
    free_moves_valids(player_path);
    free_moves_valids(ennemy_path);
-   player_path = dijkstra(p->graph, p->n, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
-   ennemy_path = dijkstra(p->graph, p->n, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win);
+   player_path = dijkstra(p, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
+   ennemy_path = dijkstra(p, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win);
    chosed = double_dijkstra_strategy(p);
 
    if (v) TESTCASE("- double_dijkstra | desesperate situation => chosed to still move", chosed.t == MOVE);
@@ -494,7 +494,7 @@ void test__fill_wall_array(int v)
 	}
    struct player* p = initialize_test_player(graph, size, pos_black, pos_white, BLACK);
 
-   struct moves_valids* ennemy_path = dijkstra(p->graph, p->n, p->ennemy_pos, p->pos, other_player(BLACK), p->owned_nodes, p->numb_win);
+   struct moves_valids* ennemy_path = dijkstra(p, p->ennemy_pos, p->pos, other_player(BLACK), p->owned_nodes, p->numb_win);
    struct moves_valids* walls = valid_walls(p);
    struct moves_valids* filled_array = init_moves_valids(ennemy_path->number * 2);
 
@@ -531,11 +531,19 @@ void test__fill_wall_array(int v)
 
 /* Tests made for super_study_gap()
 *
+*     General test 1
 * Putting wall in front of path + at the end
 * Moving because no interesting gap
 * Putting wall in front of path + at the end + behind player
 * Putting wall cutting the shortest path because of double jump
 * Moving because no interesting gap (too much paths with same length)
+*
+*     General test 2
+* Specific problem : no move for Dijkstra => still send legal move
+*
+*     General test 3
+* Specific dumb wall
+*
 */
 void test__super_study_gap(int v)
 {
@@ -556,20 +564,20 @@ void test__super_study_gap(int v)
 
    struct player* p = initialize_test_player(graph, size, pos_black, pos_white, BLACK);
 
-
+   // ============================ General Test 1 ============================
    // === Test 1
-   struct moves_valids* ennemy_path = dijkstra(p->graph, p->n, p->ennemy_pos, p->pos, other_player(BLACK), p->owned_nodes, p->numb_win);
+   struct moves_valids* ennemy_path = dijkstra(p, p->ennemy_pos, p->pos, other_player(BLACK), p->owned_nodes, p->numb_win);
    struct moves_valids* walls = valid_walls(p);
    struct moves_valids* filled_array = init_moves_valids(ennemy_path->number * 2);
    filled_array = fill_wall_array(p, ennemy_path, walls, filled_array);
    struct move_t wall = super_study_gap(p, filled_array);
 
       // == Checking special test
-   struct moves_valids* player_path = dijkstra(p->graph, p->n, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
+   struct moves_valids* player_path = dijkstra(p, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
    int old_length_path = player_path->number;
    free_moves_valids(player_path);
    put_wall(p, wall);
-   player_path = dijkstra(p->graph, p->n, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
+   player_path = dijkstra(p, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
    int new_length_path = player_path->number;
    free_moves_valids(player_path);
       // ==
@@ -586,7 +594,7 @@ void test__super_study_gap(int v)
    // ===
 
    // === Test 2
-   ennemy_path = dijkstra(p->graph, p->n, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win);
+   ennemy_path = dijkstra(p, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win);
    walls = valid_walls(p);
    filled_array = init_moves_valids(ennemy_path->number * 2);
    filled_array = fill_wall_array(p, ennemy_path, walls, filled_array);
@@ -606,7 +614,7 @@ void test__super_study_gap(int v)
 
 
    // === Test 3
-   ennemy_path = dijkstra(p->graph, p->n, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win);
+   ennemy_path = dijkstra(p, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win);
    walls = valid_walls(p);
    filled_array = init_moves_valids(ennemy_path->number * 2);
    filled_array = fill_wall_array(p, ennemy_path, walls, filled_array);
@@ -617,11 +625,11 @@ void test__super_study_gap(int v)
    free_moves_valids(filled_array);
 
       // == Checking special test
-   player_path = dijkstra(p->graph, p->n, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
+   player_path = dijkstra(p, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
    old_length_path = player_path->number;
    free_moves_valids(player_path);
    put_wall(p, wall);
-   player_path = dijkstra(p->graph, p->n, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
+   player_path = dijkstra(p, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
    new_length_path = player_path->number;
    free_moves_valids(player_path);
       // ==
@@ -638,7 +646,7 @@ void test__super_study_gap(int v)
 
 
    // === Test 4
-   ennemy_path = dijkstra(p->graph, p->n, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win);
+   ennemy_path = dijkstra(p, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win);
    walls = valid_walls(p);
    filled_array = init_moves_valids(ennemy_path->number * 2);
    filled_array = fill_wall_array(p, ennemy_path, walls, filled_array);
@@ -649,11 +657,11 @@ void test__super_study_gap(int v)
    free_moves_valids(filled_array);
 
       // == Checking special test
-   player_path = dijkstra(p->graph, p->n, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
+   player_path = dijkstra(p, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
    old_length_path = player_path->number;
    free_moves_valids(player_path);
    put_wall(p, wall);
-   player_path = dijkstra(p->graph, p->n, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
+   player_path = dijkstra(p, p->pos, p->ennemy_pos, p->id, p->winning_nodes, p->numb_win);
    new_length_path = player_path->number;
    free_moves_valids(player_path);
       // ==
@@ -671,7 +679,7 @@ void test__super_study_gap(int v)
 
 
    // === Test 5
-   ennemy_path = dijkstra(p->graph, p->n, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win);
+   ennemy_path = dijkstra(p, p->ennemy_pos, p->pos, other_player(p->id), p->owned_nodes, p->numb_win);
    walls = valid_walls(p);
    filled_array = init_moves_valids(ennemy_path->number * 2);
    filled_array = fill_wall_array(p, ennemy_path, walls, filled_array);
@@ -683,10 +691,111 @@ void test__super_study_gap(int v)
 
    if (v) TESTCASE("- super_study_gap | chosed a move because no good gap", wall.t == MOVE);
    if (v) TESTCASE("- super_study_gap | move chosed is next path of dijkstra", wall.m == (size_t) 12);
-   // ===
-
-   //graph__display(p->graph, p->n, pos_white, pos_black);
 
    finalization_player(*p);
    free(p);
+   // ===
+   // ========================================================================
+
+
+   // ============================ General Test 2 ============================
+
+       //	=== Initialize graph test ===
+	size = 5;
+	pos_white = 16;
+	pos_black = 17;
+   struct graph_t* graph_2 = graph__create_square(size);
+
+	for(size_t i=0; i<size; i++)
+	{
+		graph__add_ownership(graph_2, i, BLACK);
+		graph__add_ownership(graph_2, graph_2->num_vertices - size + i, WHITE);
+	}
+
+   struct player* p2 = initialize_test_player(graph_2, size, pos_black, pos_white, WHITE);
+   p2->pos = pos_white;
+   p2->ennemy_pos = pos_black; 
+   struct move_t special_wall = {.c = p2->id, .t = WALL, .m = -1}; 
+
+   // === Put special walls for a particular situation 
+   special_wall.e[0] = (struct edge_t) {15, 20};
+   special_wall.e[1] = (struct edge_t) {16, 21}; 
+   put_wall(p2, special_wall); 
+   special_wall.e[0] = (struct edge_t) {17, 22};
+   special_wall.e[1] = (struct edge_t) {18, 23}; 
+   put_wall(p2, special_wall);
+   special_wall.e[0] = (struct edge_t) {10, 15};
+   special_wall.e[1] = (struct edge_t) {11, 16}; 
+   put_wall(p2, special_wall); 
+   special_wall.e[0] = (struct edge_t) {13, 18};
+   special_wall.e[1] = (struct edge_t) {14, 19}; 
+   put_wall(p2, special_wall); 
+   // ===
+   
+   ennemy_path = dijkstra(p2, p2->ennemy_pos, p2->pos, other_player(p2->id), p2->owned_nodes, p2->numb_win);
+   walls = valid_walls(p2);
+   filled_array = init_moves_valids(ennemy_path->number * 2);
+   filled_array = fill_wall_array(p2, ennemy_path, walls, filled_array);
+   wall = super_study_gap(p2, filled_array);
+
+
+   if (v)
+   {
+      //graph__display(p2->graph, p2->n, pos_white, pos_black);
+      TESTCASE("- super_study_gap | no interesting walls", filled_array->number == 0);
+      TESTCASE("- super_study_gap | chose a move", wall.t == MOVE);
+      TESTCASE("- super_study_gap | chosed move is legal", wall.m == (size_t) 15 || wall.m == (size_t) 18);
+   }
+
+   free_moves_valids(ennemy_path);
+   free_moves_valids(walls);
+   free_moves_valids(filled_array);
+
+   finalization_player(*p2);
+   free(p2);
+   // ========================================================================
+
+
+   // ============================ General Test 3 ============================
+
+       //	=== Initialize graph test ===
+      /*
+	size = 10;
+	pos_white = 85;
+	pos_black = 25;
+   struct graph_t* graph_3 = graph__create_square(size);
+
+	for(size_t i=0; i<size; i++)
+	{
+		graph__add_ownership(graph_3, i, BLACK);
+		graph__add_ownership(graph_3, graph_3->num_vertices - size + i, WHITE);
+	}
+
+   struct player* p3 = initialize_test_player(graph_3, size, pos_black, pos_white, WHITE);
+   p3->pos = pos_white;
+   p3->ennemy_pos = pos_black; 
+   struct move_t special_wall = {.c = p3->id, .t = WALL, .m = -1}; 
+
+   ennemy_path = dijkstra(p2->graph, p2->n, p2->ennemy_pos, p2->pos, other_player(p2->id), p2->owned_nodes, p2->numb_win);
+   walls = valid_walls(p2);
+   filled_array = init_moves_valids(ennemy_path->number * 2);
+   filled_array = fill_wall_array(p2, ennemy_path, walls, filled_array);
+   wall = super_study_gap(p2, filled_array);
+
+   if (v)
+   {
+      graph__display(p2->graph, p2->n, pos_white, pos_black);
+      TESTCASE("- super_study_gap | no interesting walls", filled_array->number == 0);
+      TESTCASE("- super_study_gap | chose a move", wall.t == MOVE);
+      TESTCASE("- super_study_gap | chosed move is legal", wall.m == (size_t) 15 || wall.m == (size_t) 18);
+   }
+
+   free_moves_valids(ennemy_path);
+   free_moves_valids(walls);
+   free_moves_valids(filled_array);
+
+   finalization_player(*p2);
+   free(p2);
+   // ========================================================================
+      */
 }

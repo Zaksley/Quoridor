@@ -185,7 +185,7 @@ int wall_in_list(int size, struct move_t* moves, struct move_t wall);
 *  @param size size of array moves
 *  @param moves array stocking the moves
 *  @param move checking a specific move
-*  @return booleen 1 if wall is in the list, 0 otherwise 
+*  @return booleen 1 if move is in the list, 0 otherwise 
 */
 int move_in_list(struct moves_valids* moves, struct move_t move);
 

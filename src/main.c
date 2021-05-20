@@ -18,7 +18,7 @@
 
 static int size_graph = DEFAULT_SIZE_GRAPH; 
 static char type_graph = DEFAULT_TYPE_GRAPH; 
-static char* player_one = DEFAULT_PLAYER1;
+static char* player_one = DEFAULT_PLAYER1; 
 static char* player_two = DEFAULT_PLAYER2; 
 
 ////////////////////////////////////////////////////////////////
@@ -29,57 +29,81 @@ static char* player_two = DEFAULT_PLAYER2;
 // player1 : Decide the lib for the first player
 // player2 : Decide the lib for the second player
 
+void exit_usage(int argc, char* argv[])
+{
+   (void) argc; 
+   fprintf(stderr, "Usage: %s [-m graph size] \n", argv[0]);
+   fprintf(stderr, "Usage: %s [-t graph type] \n", argv[0]);
+   fprintf(stderr, "Usage: %s string: player_name / Max 2 differents players\n", argv[0]); 
+   exit(EXIT_FAILURE);
+}
+
 void parse_opts(int argc, char* argv[])
 {
    int opt;
-   while ((opt = getopt(argc, argv, "m:t:")) != -1)
+   int get_player = 0; 
+   while (optind < argc)
    {
-      switch (opt)
-	   {
-         case 'm':
-            if (atoi(optarg) > 0 && atoi(optarg) < 15)
-            {
-               size_graph = atoi(optarg);
-            }
-            else  size_graph = DEFAULT_SIZE_GRAPH; 
-            break;
+      if((opt = getopt(argc, argv, "m:t:")) != -1)
+      {
+         switch (opt)
+         {
+            case 'm':
+               if (atoi(optarg) > 0 && atoi(optarg) < 15)
+               {
+                  size_graph = atoi(optarg);
+               }
+               else  size_graph = DEFAULT_SIZE_GRAPH; 
+               break;
 
-         case 't':
-            if (optarg[0] == 'c' || optarg[0] == 't' || optarg[0] == 'h' || optarg[0] == 's')   
-            {
-               type_graph = optarg[0]; 
-            }
-            break; 
-         
-         default:
-            fprintf(stderr, "Usage: %s [-m graph size] \n", argv[0]);
-            fprintf(stderr, "Usage: %s [-t graph type] \n", argv[0]);
-            fprintf(stderr, "Usage: %s string: player_name", argv[0]); 
-            exit(EXIT_FAILURE);
+            case 't':
+               if (optarg[0] == 'c' || optarg[0] == 't' || optarg[0] == 'h' || optarg[0] == 's')   
+               {
+                  type_graph = optarg[0]; 
+               }
+               break;
+
+            default:
+               exit_usage(argc, argv);
+               break;
+         }
       }
-   }
-
-         // Player 1
-   if (optind < argc)
-   {
-      if(   !strcmp(argv[optind], "./install/libplayer_usain_bolt.so")
+      else
+      {
+         optind += get_player;
+         if(   !strcmp(argv[optind], "./install/libplayer_usain_bolt.so")
          || !strcmp(argv[optind], "./install/libplayer_rick_scientist.so")
          || !strcmp(argv[optind], "./install/libplayer_move_random.so")
-         || !strcmp(argv[optind], "./install/libplayer_random.so"))
-      {
-         player_one = argv[optind];
-      }
-   }
-            // Player 2
-   if (optind+1 < argc)
-   {
-      if(   !strcmp(argv[optind+1], "./install/libplayer_usain_bolt.so")
-         || !strcmp(argv[optind+1], "./install/libplayer_rick_scientist.so")
-         || !strcmp(argv[optind+1], "./install/libplayer_move_random.so")
-         || !strcmp(argv[optind+1], "./install/libplayer_random.so")
-         )
-      {
-         player_two = argv[optind+1];
+         || !strcmp(argv[optind], "./install/libplayer_random.so")
+         || !strcmp(argv[optind], "./install/Rick_C137.so"))
+         {
+               // Pick first player
+            if (get_player == 0) 
+            {
+               player_one = argv[optind];
+                  // Same players => swap default
+               if (!strcmp(player_one, player_two)) player_two = DEFAULT_PLAYER1; 
+               get_player++; 
+            }
+               // Pick second player
+            else if (get_player == 1)
+            {
+               player_two = argv[optind];
+                  // Same players => wrong arguments
+               if (!strcmp(player_one, player_two)) exit_usage(argc, argv);
+               get_player++; 
+            }
+               // Cancel - too many players
+            else
+            {
+               exit_usage(argc, argv);
+            }
+         }
+         else
+         {
+            exit_usage(argc, argv);
+         }
+         optind++; 
       }
    }
 
@@ -91,7 +115,6 @@ void parse_opts(int argc, char* argv[])
 int main(int argc, char* argv[])
 {
    int seed = time(0); 
-   //int seed = 1621430369; 
    srand(seed);
    parse_opts(argc, argv); 
    printf("Taille du graphe : %d\n", size_graph);

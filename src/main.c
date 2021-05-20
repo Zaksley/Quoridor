@@ -75,7 +75,8 @@ void parse_opts(int argc, char* argv[])
          || !strcmp(argv[optind], "./install/libplayer_rick_scientist.so")
          || !strcmp(argv[optind], "./install/libplayer_move_random.so")
          || !strcmp(argv[optind], "./install/libplayer_random.so")
-         || !strcmp(argv[optind], "./install/Rick_C137.so"))
+         || !strcmp(argv[optind], "./install/Rick_C137.so")
+         || !strcmp(argv[optind], "./projetss6-quor/install/client.1.so"))
          {
                // Pick first player
             if (get_player == 0) 

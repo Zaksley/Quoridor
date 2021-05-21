@@ -585,10 +585,12 @@ struct move_t super_study_gap(struct player* p, struct moves_valids* w)
       }
 
          // Get best wall if in same line
+         /*
       else if (gap == calculate_gap)
       {
          if (edge_equal(best_wall.e[0], tested.e[0]))  best_wall = best_wall_from_line(p, best_wall, tested); 
       }
+         */
    }
 
    if (gap <= initial_gap)

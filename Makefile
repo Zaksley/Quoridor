@@ -80,4 +80,4 @@ player_rick_C137: graph_modif.o utils.o strategy.o
 ###################### Tests #######################
 
 clean:
-	rm -f *.o ${BIN_DIR}/* *~
+	rm -f *.o ${BIN_DIR}/* *~ *.gcda *.gcno

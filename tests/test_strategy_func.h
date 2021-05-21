@@ -59,4 +59,11 @@ void test__fill_wall_array(int v);
 */
 void test__super_study_gap(int v); 
 
+/* Tests made for best_wall_from_line()
+*
+* Ennemy player in front on even node
+* Ennemy player in front on odd node
+*/
+void test__best_wall_from_line(int v); 
+
 #endif 

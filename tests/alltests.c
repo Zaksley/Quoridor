@@ -129,12 +129,11 @@ int main(int argc, char* argv[])
    test__cut_ennemy_path(v);   
    printf("\033[1mdouble_dijkstra_strategy :\033[0m\n");
    test__double_dijkstra(v);  
-   
-   
    printf("\033[1mfilled_array :\033[0m\n");
    test__fill_wall_array(v);
-   
    printf("\033[1msuper_study_gap :\033[0m\n");
    test__super_study_gap(v);
+   printf("\033[1mbest_wall_from_line :\033[0m\n");
+   test__best_wall_from_line(v);
    
 }

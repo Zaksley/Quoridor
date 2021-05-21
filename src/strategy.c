@@ -500,6 +500,49 @@ struct moves_valids* fill_wall_array(struct player* p, struct moves_valids* enne
    return w; 
 }
 
+/* Select a wall from 2 LEGAL walls with an edge in commun based on odd/even edges
+*
+*  @param p player
+*  @param wall1 first wall studied
+*  @param wall2 second wall studied
+*  @return wall 1 (odd edges by side or no difference between both) or wall 2 (odd edges by side)
+*
+*/
+struct move_t best_wall_from_line(struct player* p, struct move_t wall1, struct move_t wall2)
+{
+   int counts[2] = {0}; 
+
+   size_t base_node1 = wall1.e[0].fr;
+   size_t base_node2 = wall1.e[0].to;
+
+   size_t check = -1; 
+   size_t n1 = base_node1;
+   size_t n2 = base_node2;
+
+   int first_dir = graph__get_dir(p->graph, n1, n2);
+   int second_dir = get_second_dir(first_dir);
+   int find = 1; 
+
+   for(int i=second_dir; i<second_dir+2; i++)
+   {
+      n1 = base_node1;
+      n2 = base_node2;
+      while(find)
+      {
+         n1 = graph__get_neighboor(p->naked_graph, p->n, n1, i); 
+         n2 = graph__get_neighboor(p->naked_graph, p->n, n2, i);
+         if (n1 == check || n2 == check) break;
+
+         if(graph__edge_exists(p->graph, n1, n2))  counts[i-second_dir]++; 
+         else break; 
+      }
+   }
+
+   if (counts[0] % 2 == 1 && counts[1] % 2 == 0)      return wall1;
+   else if (counts[0] % 2 == 0 && counts[1] % 2 == 1) return wall2;
+   else return wall1; 
+}
+
 /* Calculates for all interesting walls the "best" one (ennemy_length - player_length) + chosing the closest from our player base
 *
 *   @param p player
@@ -534,10 +577,17 @@ struct move_t super_study_gap(struct player* p, struct moves_valids* w)
       calculate_gap = ennemy_path->number - player_path->number; 
       free_moves_valids(ennemy_path);
       free_moves_valids(player_path); 
+
       if (gap < calculate_gap)
       {
          gap = calculate_gap; 
          best_wall = tested; 
+      }
+
+         // Get best wall if in same line
+      else if (gap == calculate_gap)
+      {
+         if (edge_equal(best_wall.e[0], tested.e[0]))  best_wall = best_wall_from_line(p, best_wall, tested); 
       }
    }
 

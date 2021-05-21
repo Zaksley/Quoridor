@@ -566,6 +566,7 @@ void test__super_study_gap(int v)
 
    // ============================ General Test 1 ============================
    // === Test 1
+   printf("\033[2mTEST 1 - super_study_gap()\033[0m\n");
    struct moves_valids* ennemy_path = dijkstra(p, p->ennemy_pos, p->pos, other_player(BLACK), p->owned_nodes, p->numb_win);
    struct moves_valids* walls = valid_walls(p);
    struct moves_valids* filled_array = init_moves_valids(ennemy_path->number * 2);
@@ -699,7 +700,7 @@ void test__super_study_gap(int v)
 
 
    // ============================ General Test 2 ============================
-
+   printf("\033[2mTEST 2 - super_study_gap()\033[0m\n");
        //	=== Initialize graph test ===
 	size = 5;
 	pos_white = 16;
@@ -712,9 +713,7 @@ void test__super_study_gap(int v)
 		graph__add_ownership(graph_2, graph_2->num_vertices - size + i, WHITE);
 	}
 
-   struct player* p2 = initialize_test_player(graph_2, size, pos_black, pos_white, WHITE);
-   p2->pos = pos_white;
-   p2->ennemy_pos = pos_black; 
+   struct player* p2 = initialize_test_player(graph_2, size, pos_white, pos_black, WHITE);
    struct move_t special_wall = {.c = p2->id, .t = WALL, .m = -1}; 
 
    // === Put special walls for a particular situation 
@@ -757,9 +756,9 @@ void test__super_study_gap(int v)
 
 
    // ============================ General Test 3 ============================
-
+   printf("\033[2mTEST 3 - super_study_gap()\033[0m\n");
        //	=== Initialize graph test ===
-      /*
+      
 	size = 10;
 	pos_white = 85;
 	pos_black = 25;
@@ -771,31 +770,84 @@ void test__super_study_gap(int v)
 		graph__add_ownership(graph_3, graph_3->num_vertices - size + i, WHITE);
 	}
 
-   struct player* p3 = initialize_test_player(graph_3, size, pos_black, pos_white, WHITE);
-   p3->pos = pos_white;
-   p3->ennemy_pos = pos_black; 
-   struct move_t special_wall = {.c = p3->id, .t = WALL, .m = -1}; 
+   struct player* p3 = initialize_test_player(graph_3, size, pos_white, pos_black, WHITE);
 
-   ennemy_path = dijkstra(p2->graph, p2->n, p2->ennemy_pos, p2->pos, other_player(p2->id), p2->owned_nodes, p2->numb_win);
-   walls = valid_walls(p2);
+   ennemy_path = dijkstra(p3, p3->ennemy_pos, p3->pos, other_player(p3->id), p3->owned_nodes, p3->numb_win);
+   walls = valid_walls(p3);
    filled_array = init_moves_valids(ennemy_path->number * 2);
-   filled_array = fill_wall_array(p2, ennemy_path, walls, filled_array);
-   wall = super_study_gap(p2, filled_array);
+   filled_array = fill_wall_array(p3, ennemy_path, walls, filled_array);
+   wall = super_study_gap(p3, filled_array);
+
+   special_wall.e[0] = wall.e[0]; 
+   special_wall.e[1] = (struct edge_t) {84, 94};
 
    if (v)
    {
-      graph__display(p2->graph, p2->n, pos_white, pos_black);
-      TESTCASE("- super_study_gap | no interesting walls", filled_array->number == 0);
-      TESTCASE("- super_study_gap | chose a move", wall.t == MOVE);
-      TESTCASE("- super_study_gap | chosed move is legal", wall.m == (size_t) 15 || wall.m == (size_t) 18);
+      TESTCASE("- super_study_gap | chose a wall", wall.t == WALL);
+      TESTCASE("- super_study_gap | wall chosed is {84-94, 85-95}", compare_walls(wall, special_wall));
    }
 
    free_moves_valids(ennemy_path);
    free_moves_valids(walls);
    free_moves_valids(filled_array);
 
-   finalization_player(*p2);
-   free(p2);
+   finalization_player(*p3);
+   free(p3);
    // ========================================================================
-      */
+      
 }
+
+/* Tests made for best_wall_from_line()
+*
+* Ennemy player in front on even node
+* Ennemy player in front on odd node
+*/
+void test__best_wall_from_line(int v)
+{
+       //	=== Initialize graph test ===
+	size_t size = 6;
+	size_t pos_white = 26;
+	size_t pos_black = 2;
+   struct graph_t* graph = graph__create_square(size);
+
+      // Walls
+   struct move_t wall = {.c = BLACK, .t = WALL, .m = -1};
+   struct move_t wall1 = {.c = BLACK, .t = WALL, .m = -1};
+   struct move_t wall2 = {.c = BLACK, .t = WALL, .m = -1};
+
+	for(size_t i=0; i<size; i++)
+	{
+		graph__add_ownership(graph, i, BLACK);
+		graph__add_ownership(graph, graph->num_vertices - size + i, WHITE);
+	}
+
+   struct player* p = initialize_test_player(graph, size, pos_white, pos_black, WHITE);
+
+   // === Test 1
+   wall1.e[0] = (struct edge_t) {26, 32};
+   wall2.e[0] = (struct edge_t) {26, 32}; 
+   wall1.e[1] = (struct edge_t) {25, 31};
+   wall2.e[1] = (struct edge_t) {27, 33};
+   wall = best_wall_from_line(p, wall1, wall2);
+   //put_wall(p, wall);
+   //graph__display(p->graph, p->n, pos_white, pos_black);
+
+   if (v) TESTCASE("- best_wall_from_line | Edge cut from {26-32} is {27-33}", compare_walls(wall, wall2));
+   // ===
+
+   // === Test 2
+   pos_black = 3; 
+   p->ennemy_pos = pos_black; 
+   wall1.e[0] = (struct edge_t) {27, 33};
+   wall2.e[0] = (struct edge_t) {27, 33}; 
+   wall1.e[1] = (struct edge_t) {26, 32};
+   wall2.e[1] = (struct edge_t) {28, 34};
+   wall = best_wall_from_line(p, wall1, wall2);
+   // ===
+
+   if (v) TESTCASE("- best_wall_from_line | Edge cut from {18-23} is {19-24}", compare_walls(wall, wall1));
+
+   finalization_player(*p);
+   free(p);
+}
+

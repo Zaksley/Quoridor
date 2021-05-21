@@ -123,6 +123,8 @@ int main(int argc, char* argv[])
    printf("Type de graphe : %c\n", type_graph);
    printf("Seed du jeu : %d\n", seed);
 
+      // Check if the combinaison size/type is legal
+   legal_graph(size_graph, type_graph);
 
    // ================== Initializing Server ==================
 

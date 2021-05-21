@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <assert.h>
 #include <dlfcn.h>
 #include "utils.h"
 
@@ -151,6 +152,31 @@ void free_moves_valids(struct moves_valids* a)
 {
    free(a->valid);
    free(a);
+}
+
+/* Check if the graph is legal
+*
+*  @param size_graph size of the graph
+*  @param type_graph type of graph
+*  @return Exit program if illegal combinaison of size/type
+*/
+void legal_graph(int size_graph, char type_graph)
+{
+      switch(type_graph)
+      {
+         case 'c':
+            break;
+         case 'h':
+         case 't': 
+            assert(size_graph%3 == 0);
+            break;
+         case 's':
+            assert(size_graph%5==0);
+            break;
+
+         default:
+            break;
+      }
 }
 
 /* Gets opposite color

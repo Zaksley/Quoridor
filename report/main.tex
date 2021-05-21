@@ -11,7 +11,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage[french]{babel}
 \usepackage{graphicx}
-\graphicspath{{./images/}}
+\graphicspath{{./graphic/}}
 \usepackage{subcaption}
 \usepackage{amsmath, amssymb}
 \usepackage[left=3cm,right=3cm,top=2cm,bottom=2cm]{geometry}
@@ -114,7 +114,7 @@
     { \huge \bfseries Quoridor \\[0.4cm] }
      \hrulefill \\[2cm]
      
-     \includegraphics[scale=0.6]{enseirb_matmeca.jpg} \\[1cm]
+     \includegraphics[scale=0.6]{rapport/enseirb_matmeca.jpg} \\[1cm]
      
     % Authors
     \begin{minipage}{0.4\textwidth}
@@ -171,7 +171,7 @@ Un joueur peut décider de placer un mur sur le plateau afin de limiter le nombr
 
 \subsection{Gestion du plateau}
 \paragraph{}
-L'implémentation des graphes de jeu se fait par la bibliothèque \texttt{GSL} d'après les caractéristiques imposées par le sujet, en utilisant des matrices creuses en guise de matrices d'adjacence d'un graphe. Pour chaque coordonnées \texttt{(i,j)} sur le graphe, l'entier associé correspond au type de liaison entre le sommet \texttt{i} et le sommet \texttt{j}.
+L'implémentation des graphes de jeu se fait par la bibliothèque \texttt{GSL} d'après les caractéristiques imposées par le sujet, en utilisant des matrices creuses en guise de matrices d'adjacence d'un graphe. Pour chaque coordonnées \texttt{(i,j)} sur le graphe, l'entier associé correspond au type de liaison entre le sommet~\texttt{i} et le sommet~\texttt{j}. La valeur $0$ signifie que le sommet~\texttt{i} n'est pas voisin avec le sommet~\texttt{j}. Une valeur comprise entre $1$ et $4$ signifie que le sommet~\texttt{j} est respectivement au nord, au sud, à l'ouest ou à l'est du sommet~\texttt{i}.
 
 \paragraph{}
 Un tel choix de représentation rend possibles des incohérences sur le graphe, car l'ajout d'un entier au mauvais endroit peut donner des situations impossibles physiquement (deux sommets voisins dans le graphe alors qu'à plusieurs cases d'écart dans la réalité). De plus, il apparaît nécessaire de coder une interface pour l'utilisation de cette matrice afin de ne pas se reposer sur la numérotation des sommets - qui pourrait être différente sur d'autres serveurs. Par l'implémentation de notre fichier \texttt{graph\_modif.h}, nous gagnons ainsi en généralisation dans le code. Ainsi donc, on obtient en partant d'une matrice d'adjacence (Figure~\ref{fig:matrice}) un graphe lisible (Figure~\ref{fig:graphe}). \\
@@ -180,23 +180,30 @@ Un tel choix de représentation rend possibles des incohérences sur le graphe, 
     \centering
     \begin{subfigure}{.5\textwidth}
         \centering
-        \includegraphics[scale=0.65]{matrice_adjacence.png}
+        \includegraphics[scale=0.65]{rapport/matrice_adjacence.png}
         \caption{Matrice d'adjacence d'un graphe 3x3}
         \label{fig:matrice}
     \end{subfigure}%
     \begin{subfigure}{.5\textwidth}
         \centering
-        \includegraphics[scale=0.86]{graphe.png}
+        \includegraphics[scale=0.86]{rapport/graphe.png}
         \caption{Graphe d'un graphe 3x3}
         \label{fig:graphe}
     \end{subfigure}
     
-    \caption{Différentes représentations d'un même plateau de jeu}
+    \caption{Différentes représentations d'un même plateau de jeu. La ligne $0$ en figure~\ref{fig:matrice} définit le noeud~$1$ à l'est et le noeud~$3$ au sud du noeud~$0$.}
     \label{fig:representations}
 \end{figure}
 
 \paragraph{}
-Un ensemble de fonctions de \textbf{manipulation de graphe} ont ainsi été implémentées, pour que jamais nos autres fichiers n'aient à manipuler les matrices directement. Ainsi, nous avons développé des fonctions pour initialiser des graphes vides, les remplir selon les formes voulues dans le sujet, ainsi que faire la copie d'un graphe ou retrouver leur taille d'origine à partir de leur nombre de sommets. Cette dernière fonction sera particulièrement utile lors de l'initialisation, car seul le graphe peut être envoyé aux joueurs, et ceux-ci doivent alors se débrouiller pour retrouver sa taille.
+Un ensemble de fonctions de \textbf{manipulation de graphe} ont ainsi été implémentées, pour que jamais nos autres fichiers n'aient à manipuler les matrices directement. Ainsi, nous avons développé des fonctions pour initialiser des graphes vides, les remplir selon les formes voulues dans le sujet (voir Figure~\ref{fig:graphshape}), ainsi que faire la copie d'un graphe ou retrouver leur taille d'origine à partir de leur nombre de sommets. Cette dernière fonction sera particulièrement utile lors de l'initialisation, car seul le graphe peut être envoyé aux joueurs, et ceux-ci doivent alors se débrouiller pour retrouver sa taille.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.9\columnwidth]{rapport/graphshape.png}
+    \caption{Les différentes formes de graphes: carré, torique, haché et serpent.}
+    \label{fig:graphshape}
+\end{figure}
 
 \paragraph{}
 Les fonctions orientées \textbf{manipulation de joueur} contiennent elles de quoi connaître l'existence d'une case voisine dans une direction (\texttt{graph\_\_get\_neighboor}), connaître l'existence d'une arête entre deux sommets (\texttt{graph\_\_edge\_exists}), ajouter et enlever des arêtes, ainsi que gérer les positions gagnantes.
@@ -209,7 +216,14 @@ La plupart de ces algorithmes sont de simples parcours de listes, et les méthod
 Nous avons choisi de représenter les murs par des "arêtes manquantes" au niveau du graphe principal. Un tel choix permet des manipulations plus légères, puisqu'aucun objet "mur" n'existe, mais certaines règles spéciales du jeu nécessiteront plus tard (voir section~\ref{subsect:valid_walls}) de garder une liste des murs placés sous forme d'indices de sommets. 
 
 \paragraph{}
-Un \textbf{affichage de graphe} a de plus été ajouté, pour permettre de suivre l'avancement des parties, le retrait progressif des arêtes quand les murs sont ajoutés, et les mouvements des deux joueurs. Puisque cette fonction est implémentée avant la création de la structure \texttt{player}, les positions des joueurs doivent être données comme deux entiers représentant leur sommet. Mettre ces valeurs à -1 permet de ne pas les afficher, et d'avoir simplement un affichage du graphe.
+Un \textbf{affichage de graphe} (voir figure~\ref{fig:graphdisplay}) a de plus été ajouté, pour permettre de suivre l'avancement des parties, le retrait progressif des arêtes quand les murs sont ajoutés, et les mouvements des deux joueurs. Puisque cette fonction est implémentée avant la création de la structure \texttt{player}, les positions des joueurs doivent être données comme deux entiers représentant leur sommet. Mettre ces valeurs à -1 permet de ne pas les afficher, et d'avoir simplement un affichage du graphe.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.6\columnwidth]{rapport/graphdisplay.png}
+    \caption{Affichage de fin de partie avec victoire du joueur noir (positions gagnantes rouges) sur le joueur blanc (positions gagnantes bleues)}
+    \label{fig:graphdisplay}
+\end{figure}
 
 \clearpage
 \section{Communication Serveur/Client}
@@ -296,12 +310,12 @@ Pour implémenter les clients, on charge des bibliothèques dynamiques via la bi
 
 \subsection{Communication serveur - clients}
 
-Pour pouvoir tester et commencer de vraies parties, nous avons créé deux premiers joueurs aléatoires : \fbox{move\_random}, un joueur qui se déplace aléatoirement, et \fbox{random}, un joueur qui se déplace et pose des murs de manière aléatoire. On rappelle que chaque coup joué par un joueur est défini en prenant en argument le mouvement du joueur adverse (voir Algorithme~\ref{algo:play}). \\
-\begin{lstlisting}[caption = {Spécification de la fonction \texttt{play}}, label = {algo:play}, float = h]
+Pour pouvoir tester et commencer de vraies parties, nous avons créé deux premiers joueurs aléatoires : \fbox{Jerry}, un joueur qui se déplace aléatoirement, et \fbox{Morty}, un joueur qui se déplace et pose des murs de manière aléatoire. Le fait de poser un mur aléatoire (et donc de modifier le graphe de façon permanente) permet d'obtenir une grande diversité de comportement et un début de partie réelle. Chaque coup joué par un joueur est défini en prenant en argument le mouvement du joueur adverse (voir Algorithme~\ref{algo:play}) pour pouvoir mettre à jour la partie. \\
+\begin{lstlisting}[caption = {Prototype de la fonction \texttt{play}}, label = {algo:play}, float = h]
 struct move_t play(struct move_t previous_move); 
 \end{lstlisting}
 
-Il tient donc de mettre à jour les clients ainsi que le serveur. Du côté client, chaque joueur se met à jour et c'est en recevant par le serveur le coup joué qu'on met à jour le graphe. Le serveur lui met à jour les 2 joueurs à chaque coup joué en modifiant les valeurs de position et de position ennemie ou en coupant des arêtes sur le graphe central. \\
+Les clients et le serveur sont mis à jour de façon différentes. Du côté client, chaque joueur se met à jour et c'est en recevant par le serveur le coup joué qu'on met à jour le graphe. Le serveur lui met à jour les 2 joueurs à chaque coup joué en modifiant les valeurs de position et de position ennemie ou en coupant des arêtes uniquement sur le graphe central. \\
 
 On spécifie les messages d'erreurs pour qu'ils indiquent si l'erreur provient du serveur ou du client ce qui permet une meilleure visualisation du problème et simplifie le débogage. Cela permet également de vérifier les cas de triches :
 Le serveur vérifie systématiquement que les mouvements décidés par les joueurs sont légaux, c'est-à-dire, s'ils appartiennent aux listes de mouvements possibles définis par les fonctions \texttt{valid\_positions} et \texttt{valid\_walls}.
@@ -352,7 +366,7 @@ Ainsi, par exemple, dans la figure~\ref{fig:valid_pos1}, la liste des mouvements
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[scale=0.65]{valid_position1.png}
+    \includegraphics[scale=0.65]{rapport/valid_position1.png}
     \caption{Positions accessibles dans un cas particulier}
     \label{fig:valid_pos1}
 \end{figure}
@@ -363,13 +377,13 @@ Dans le cas des figures~\ref{fig:valid_pos_e1} et \ref{fig:valid_pos_e2}, nous p
     \centering
     \begin{subfigure}{.5\textwidth}
         \centering
-        \includegraphics[width=0.75\linewidth]{valid_position_e1.png}
+        \includegraphics[width=0.75\linewidth]{rapport/valid_position_e1.png}
         \caption{Double saut possible}
         \label{fig:valid_pos_e1}
     \end{subfigure}%
     \begin{subfigure}{.5\textwidth}
         \centering
-        \includegraphics[width=0.75\linewidth]{valid_position_e2.png}
+        \includegraphics[width=0.75\linewidth]{rapport/valid_position_e2.png}
         \caption{Double saut impossible}
         \label{fig:valid_pos_e2}
     \end{subfigure}
@@ -379,9 +393,7 @@ Dans le cas des figures~\ref{fig:valid_pos_e1} et \ref{fig:valid_pos_e2}, nous p
 \end{figure}
 
 
-Ainsi, nous avons pu voir par l'exemple précédent qu'il y a au maximum 5 mouvements autorisés disponibles. Les joueurs aléatoires \fbox{move\_random} et \fbox{random} récupèrent ces mouvements et choisissent aléatoirement l'un de ces coups.
-
-
+Ainsi, nous avons pu voir par l'exemple précédent qu'il y a au maximum 5 mouvements autorisés disponibles. Les joueurs aléatoires \fbox{Jerry} et \fbox{Morty} récupèrent ces mouvements et choisissent aléatoirement l'un de ces coups.
 
 \subsection{Murs légaux}
 
@@ -419,7 +431,7 @@ Pour chaque arête joignant deux noeuds, nous cherchons à tester si un mur est 
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[scale=0.65]{valid_walls1.png}
+    \includegraphics[scale=0.65]{rapport/valid_walls1.png}
     \caption{Représentation des noeuds pour la détermination des murs}
     \label{fig:valid_walls1}
 \end{figure}
@@ -436,13 +448,13 @@ Ensuite, nous récupérons les noeuds \texttt{n1} et \texttt{n2} à partir des a
     \centering
     \begin{subfigure}{.5\textwidth}
         \centering
-        \includegraphics[width=0.6\linewidth]{valid_walls_get1.png}
+        \includegraphics[width=0.6\linewidth]{rapport/valid_walls_get1.png}
         \caption{Situation 1 pour récupérer le noeud \texttt{n1}}
         \label{fig:valid_walls_get1}
     \end{subfigure}%
     \begin{subfigure}{.5\textwidth}
         \centering
-        \includegraphics[width=0.75\linewidth]{valid_walls_get2.png}
+        \includegraphics[width=0.75\linewidth]{rapport/valid_walls_get2.png}
         \caption{Situation 2 pour récupérer le noeud \texttt{n1}}
         \label{fig:valid_walls_get2}
     \end{subfigure}
@@ -456,7 +468,7 @@ Si, en revanche, les arêtes \texttt{(n~-~n1)} et \texttt{(n\_neighboor~-~n2)} s
 \clearpage
 \begin{figure}[ht]
     \centering
-    \includegraphics[scale=0.75]{valid_walls_problem.png}
+    \includegraphics[scale=0.75]{rapport/valid_walls_problem.png}
     \caption{Cas problématique des arêtes \texttt{(n - n1)} et \texttt{(n\_neighboor - n2)} coupées}
     \label{fig:valid_walls_prob}
 \end{figure}
@@ -467,13 +479,13 @@ Dans la figure~\ref{fig:valid_walls_trouble}, nous cherchons à déterminer si n
     \centering
     \begin{subfigure}{.5\textwidth}
         \centering
-        \includegraphics[width=1\linewidth]{valid_walls2.png}
+        \includegraphics[width=1\linewidth]{rapport/valid_walls2.png}
         \caption{Intercalation de mur}
         \label{fig:valid_walls2}
     \end{subfigure}%
     \begin{subfigure}{.5\textwidth}
         \centering
-        \includegraphics[width=1\linewidth]{valid_walls3.png}
+        \includegraphics[width=1\linewidth]{rapport/valid_walls3.png}
         \caption{Mur impossible}
         \label{fig:valid_walls3}
     \end{subfigure}
@@ -487,7 +499,7 @@ Pour différencier ces cas, nous attribuons à chaque case entre 4 noeuds un nom
 
 \begin{figure}[ht!]
     \centering
-    \includegraphics[scale=0.75]{valid_walls4.png}
+    \includegraphics[scale=0.75]{rapport/valid_walls4.png}
     \caption{Numérotation des cases}
     \label{fig:valid_walls4}
 \end{figure}
@@ -523,13 +535,13 @@ Dans cet exemple, les noeuds en attente sont représentés en bleu et les noeuds
     \centering
     \begin{subfigure}{.5\textwidth}
         \centering
-        \includegraphics[scale=0.7]{parcours_graphe1.png}
+        \includegraphics[scale=0.7]{rapport/parcours_graphe1.png}
         \caption{Etat initial}
         \label{fig:parcours_graphe1}
     \end{subfigure}%
     \begin{subfigure}{.5\textwidth}
         \centering
-        \includegraphics[scale=0.7]{parcours_graphe2.png}
+        \includegraphics[scale=0.7]{rapport/parcours_graphe2.png}
         \caption{Etat après 4 noeuds traités}
         \label{fig:parcours_graphe2}
     \end{subfigure}%
@@ -538,13 +550,13 @@ Dans cet exemple, les noeuds en attente sont représentés en bleu et les noeuds
     
     \begin{subfigure}[b]{.5\textwidth}
         \centering
-        \includegraphics[scale=0.7]{parcours_graphe3.png}
+        \includegraphics[scale=0.7]{rapport/parcours_graphe3.png}
         \caption{Etat après 8 noeuds traités}
         \label{fig:parcours_graphe3}
     \end{subfigure}%
     \begin{subfigure}[b]{.5\textwidth}
         \centering
-        \includegraphics[scale=0.7]{parcours_graphe4.png}
+        \includegraphics[scale=0.7]{rapport/parcours_graphe4.png}
         \caption{Etat après 12 noeuds traités}
         \label{fig:parcours_graphe4}
     \end{subfigure}%
@@ -571,14 +583,14 @@ La fonction \texttt{checkPath} s'occupe de ce processus. Sur l'exemple~\ref{fig:
 
 \begin{figure}[ht!]
     \centering
-    \includegraphics[scale=0.7]{check_path1.png}
+    \includegraphics[scale=0.7]{rapport/check_path1.png}
     \caption{Chemins disponibles pour chacun des joueurs}
     \label{fig:check_path1}
 \end{figure}
 
 \begin{figure}[ht!]
     \centering
-    \includegraphics[scale=0.7]{check_path2.png}
+    \includegraphics[scale=0.7]{rapport/check_path2.png}
     \caption{Murs légaux et illégaux}
     \label{fig:check_path2}
 \end{figure}
@@ -597,12 +609,12 @@ La première stratégie implémentée vise à diriger le joueur vers une positio
     \label{eq:gap}
 \end{equation}
 
-Le joueur \fbox{Usain Bolt} cherche alors à trouver le mouvement qui réduira au minimum cette valeur. Cette implémentation permet d'ordonner les mouvements de façon hiérarchique (voir figure~\ref{fig:rush1}).
+Le joueur \fbox{Rick J-19 Z7} cherche alors à trouver le mouvement qui réduira au minimum cette valeur. Cette implémentation permet d'ordonner les mouvements de façon hiérarchique (voir figure~\ref{fig:rush1}).
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[scale=0.65]{rush1.png}
-    \caption{Ordre de préférence des mouvements par le joueur \fbox{Usain Bolt}}
+    \includegraphics[scale=0.65]{rapport/rush1.png}
+    \caption{Ordre de préférence des mouvements par le joueur \fbox{Rick J-19 Z7}}
     \label{fig:rush1}
 \end{figure}
 
@@ -610,8 +622,8 @@ Cela reste une stratégie naïve. En effet, dans le cas d'une impasse, le joueur
 
 \begin{figure}[h!t]
     \centering
-    \includegraphics[scale=0.65]{rush2.png}
-    \caption{Joueur \fbox{Usain Bolt} bloqué indéfiniment}
+    \includegraphics[scale=0.65]{rapport/rush2.png}
+    \caption{Joueur \fbox{Rick J-19 Z7} bloqué indéfiniment}
     \label{fig:rush2}
 \end{figure}
 
@@ -628,7 +640,7 @@ Tout d'abord, nous avons définit une structure \texttt{node} qui contient l'\te
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[scale=0.7]{predecesseurs.png}
+    \includegraphics[scale=0.7]{rapport/predecesseurs.png}
     \caption{Schéma des prédécesseurs}
     \label{fig:predecessor}
 \end{figure}
@@ -652,13 +664,13 @@ Premièrement, nous avons implémenté la fonction qui vérifie que notre propre
     \centering
     \begin{subfigure}{.5\textwidth}
         \centering
-        \includegraphics[scale=0.7]{cut_path.png}
+        \includegraphics[scale=0.7]{rapport/cut_path.png}
         \caption{Mur qui coupe notre chemin}
         \label{fig:cut_path1}
     \end{subfigure}%
     \begin{subfigure}{.5\textwidth}
         \centering
-        \includegraphics[scale=0.7]{cut_path2.png}
+        \includegraphics[scale=0.7]{rapport/cut_path2.png}
         \caption{Mur qui ne coupe pas notre chemin}
         \label{fig:cut_path2}
     \end{subfigure}%
@@ -672,25 +684,25 @@ Premièrement, nous avons implémenté la fonction qui vérifie que notre propre
 
 Ensuite, puisque nous cherchons à poser des murs le plus proche de notre camp plutôt que en face du joueur adverse, nous étudions les noeuds traversés par le joueur adverse en partant de la fin. Dès que nous trouvons un mur posable qui rallonge le temps adverse et qui ne coupe pas notre chemin, nous savons que c'est le "meilleur mur". \\
 
-Finalement, nous appelons la fonction \texttt{double\_dijkstra\_strategy} qui calcule les deux chemins pour les joueurs et décide de renvoyer un mouvement ou un mur en fonction des cas. Elle appelle toutes les fonctions cités plus haut et résume la stratégie de notre joueur \fbox{Rick}. \\
+Finalement, nous appelons la fonction \texttt{double\_dijkstra\_strategy} qui calcule les deux chemins pour les joueurs et décide de renvoyer un mouvement ou un mur en fonction des cas. Elle appelle toutes les fonctions cités plus haut et résume la stratégie de notre joueur \fbox{Rick D. Sanchez III}. \\
 
 \textbf{Remarque :} Si nous sommes sûr de perdre la partie, par exemple s'il n'y a plus de mur posable qui coupe le joueur adverse, alors le programme renvoie le mouvement trouvé par l'algorithme Dijkstra afin de maintenir l'intégrité du jeu.
 
 \subsubsection{Amélioration par le calcul}
 
-Notre stratégie précédente reste \textit{hasardeuse}. En effet, elle part du principe que le meilleur mur correspond au premier mur intéressant, c'est à dire le mur le plus proche du bord qui rallonge le temps adverse sans rallonger notre propre temps. Sauf qu'il est tout à fait possible qu'il y ait un meilleur mur, qui soit certes plus éloigné de notre camp, mais qui allonge plus significativement le trajet adverse (exemple figure \ref{fig:cut_path_best_wall}). Cet exemple est apparu être une cause majeure de défaites dans nos parties contre les autres équipes sur le \texttt{ladder}. \\
+Notre stratégie précédente reste \textit{hasardeuse}. En effet, elle part du principe que le meilleur mur correspond au premier mur intéressant, c'est à dire le mur le plus proche du bord qui rallonge le temps adverse sans rallonger notre propre temps. Sauf qu'il est tout à fait possible qu'il y ait un meilleur mur, qui soit certes plus éloigné de notre camp, mais qui allonge plus significativement le trajet adverse (exemple figure \ref{fig:cut_path_best_wall}). Cet exemple est apparu être une cause majeure de défaites dans nos parties contre les autres équipes sur le \texttt{ladder}. Nous avons tout de même décidé de garder notre joueur \fbox{Rick D. Sanchez III} et avons donc implémenté un nouveau joueur, \fbox{Rick C-137}. \\
 
 \begin{figure}[ht!]
     \centering
     \begin{subfigure}{.5\textwidth}
         \centering
-        \includegraphics[scale=0.6]{cut_path3.png}
+        \includegraphics[scale=0.6]{rapport/cut_path3.png}
         \caption{Mur le plus proche du bord}
         \label{fig:cut_path3}
     \end{subfigure}%
     \begin{subfigure}{.5\textwidth}
         \centering
-        \includegraphics[scale=0.6]{cut_path4.png}
+        \includegraphics[scale=0.6]{rapport/cut_path4.png}
         \caption{Mur qui allonge le plus le chemin adverse}
         \label{fig:cut_path4}
     \end{subfigure}%
@@ -700,7 +712,7 @@ Notre stratégie précédente reste \textit{hasardeuse}. En effet, elle part du 
 \end{figure}
 
 
-Pour remédier à ce problème, nous avons donc décidé de véritablement calculer ce meilleur mur. La fonction \texttt{find\_best\_wall} correspond à ce calcul. Elle est découpée en 2 étapes majeures. \\
+Pour remédier à ce problème, nous avons décidé de véritablement calculer ce meilleur mur. La fonction \texttt{find\_best\_wall} correspond à ce calcul. Elle est découpée en 2 étapes majeures. \\
 
 \begin{enumerate}
     \item \textbf{Récupérer les murs intéressants} \\
@@ -712,7 +724,7 @@ La fonction est assez similaire à \texttt{cut\_ennemy\_path}, le programme itè
 
 \begin{figure}[h!]
     \centering
-    \includegraphics[scale=0.6]{cut_path5.png}
+    \includegraphics[scale=0.6]{rapport/cut_path5.png}
     \caption{Murs intéressants envisagés}
     \label{fig:cut_path5}
 \end{figure}
@@ -722,14 +734,14 @@ Un seul cas problématique apparaît avec cette implémentation. Lorsqu'il y a u
 \clearpage
 \begin{figure}[ht!]
     \centering
-    \includegraphics[scale=0.7]{cut_path6.png}
+    \includegraphics[scale=0.7]{rapport/cut_path6.png}
     \caption{Tous les murs intéressants non trouvés}
     \label{fig:cut_path6}
 \end{figure}
 
 \begin{figure}[ht!]
     \centering
-    \includegraphics[scale=0.7]{cut_path7.png}
+    \includegraphics[scale=0.7]{rapport/cut_path7.png}
     \caption{Tous les murs intéressants trouvés}
     \label{fig:cut_path7}
 \end{figure}
@@ -739,7 +751,7 @@ C'est la fonction \texttt{super\_\_study\_gap} qui se charge de récupérer le m
     
 \begin{figure}[ht!]
     \centering
-    \includegraphics[scale=0.6]{study_gap1.png}
+    \includegraphics[scale=0.6]{rapport/study_gap1.png}
     \caption{Exemple de pose de mur intelligente}
     \label{fig:study_gap1}
 \end{figure}
@@ -753,13 +765,13 @@ Pour donc ne négligez aucun cas, nous posons le mur étudié, et étudions la d
  
  \subsection{Une nouvelle approche stratégique}
  
- Dans l'optique de construire un joueur toujours plus performant, une autre approche a été envisagée en parallèle, moins calculatoire mais plus réfléchie. Notre but a été de prendre du recul sur le classement compétitif, et d'en tirer des conclusions pour bâtir une stratégie convainquante. Un tel joueur n'a cependant pas vu le jour du fait de la complexité algorithmique de certains composants de sa stratégie, ainsi nous avons préféré passer du temps sur sa conception et son algorithme, plutôt que sur l'implémentation de ces derniers (qui aurait pu être faite avec plus de temps). \\
+ Dans l'optique de construire un joueur toujours plus performant, une autre approche a été envisagée en parallèle, moins calculatoire mais plus réfléchie. Notre but a été de prendre du recul sur le classement compétitif, et d'en tirer des conclusions pour bâtir une stratégie convaincante. Un tel joueur n'a cependant pas vu le jour du fait de la complexité algorithmique de certains composants de sa stratégie, ainsi nous avons préféré passer du temps sur sa conception et son algorithme, plutôt que sur l'implémentation de ces derniers (qui aurait pu être faite avec plus de temps). \\
  
-Le pseudo-algorithme de ce joueur est trouvable dans le fichier \texttt{white\_mage}. et nous nous y référerons par la suite par le nom \fbox{Mage blanc}.
+Le pseudo-algorithme de ce joueur est trouvable dans le fichier \texttt{player\_rick\_evil}. et nous nous y référerons par la suite par le nom \fbox{Evil Rick}.
 
 \subsubsection{Processus de conception}
 
-Quitte à évoluer dans un environnement compétitif, il nous a semblé important d'observer nos adversaires. En étudiant les parties des autres joueurs sur le ladder, nous nous sommes rendus compte qu'une grande partie des joueurs hauts dans le classement utilisaient des algorithmes de plus court chemin pour décider de leur avance, et agir en faisant "confiance" à leur résultat. L'autre partie, quant à elle, optait pour une prise de possession du plateau en construisant un dédale de murs jusqu'à s'assurer le contrôle du terrain. \\
+Quitte à évoluer dans un environnement compétitif, il nous a semblé important d'observer nos adversaires. En étudiant les parties des autres joueurs sur le \texttt{ladder}, nous nous sommes rendus compte qu'une grande partie des joueurs hauts dans le classement utilisaient des algorithmes de plus court chemin pour décider de leur avance, et agir en faisant "confiance" à leur résultat. L'autre partie, quant à elle, optait pour une prise de possession du plateau en construisant un dédale de murs jusqu'à s'assurer le contrôle du terrain. \\
 
 Pour contrecarrer ces deux principales façons d'agir, il nous fallait donc une stratégie permettant de laisser la première catégorie agir comme si elle pouvait gagner (afin que les algorithmes de pose de murs ne soient pas trop sollicités) et de poser quelques murs au centre du plateau pour s'assurer un chemin rapide vers la sortie. Après un peu de réflexion, nous avons eu l'idée de se battre principalement contre le premier type de joueur, en espérant que les effets collatéraux contrecarreraient le second. \\
 
@@ -769,9 +781,24 @@ Nous avons alors effectué diverses recherches sur des ouvertures classiques\cit
 
 Cependant, sa forte simplicité venant de la séparation des chemins du joueur adverse en un virtuellement plus court mais piégé (voir figure~\ref{fig:quickbox}), et un autre plus long, en a fait le candidat idéal pour une implémentation suffisamment peu complexe. 
 
+\clearpage
+\begin{figure}[ht]
+    \centering
+    \includegraphics[scale=0.5]{rapport/white_mage2.png}
+    \caption{Exemple simulé d'une partie avec le joueur \fbox{Evil Rick}}
+    \label{fig:quickbox}
+\end{figure}
+
 \subsubsection{Écriture de l'algorithme}
 
-Ainsi (voir figure~\ref{trapsetup}), cette stratégie consiste à poser un mur, dès nos premiers tours de jeu, qui va diviser le plateau en deux parties : un "cul-de-sac", et une "sortie". Là où un joueur humain serait sorti du cul de sac rapidement, notre but va être de leurrer le programme adverse dans un couloir toujours plus long, en le persuadant à chaque étape qu'il est en avance. Un instant avant sa victoire, il sera alors temps de "refermer le piège", et alors son plus court chemin vers une position gagnante va se rallonger de dizaines de cases. Pour rendre le leurre plus performant encore, notre algorithme n'hésite pas à se bloquer lui-même en "gaspillant" un mur, pour appâter l'algorithme adverse en faisant pencher les calculs de distance en sa faveur dans le cas où nous serions à égalité.\\
+Ainsi (voir figure~\ref{fig:trapsetup}), cette stratégie consiste à poser un mur, dès nos premiers tours de jeu, qui va diviser le plateau en deux parties : un "cul-de-sac", et une "sortie". Là où un joueur humain serait sorti du cul de sac rapidement, notre but va être de leurrer le programme adverse dans un couloir toujours plus long, en le persuadant à chaque étape qu'il est en avance. Un instant avant sa victoire, il sera alors temps de "refermer le piège", et alors son plus court chemin vers une position gagnante va se rallonger de dizaines de cases. Pour rendre le leurre plus performant encore, notre algorithme n'hésite pas à se bloquer lui-même en "gaspillant" un mur, pour appâter l'algorithme adverse en faisant pencher les calculs de distance en sa faveur dans le cas où nous serions à égalité.\\
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[scale=0.7]{rapport/white_mage1.png}
+    \caption{Ouverture par le joueur \fbox{Evil Rick}}
+    \label{fig:trapsetup}
+\end{figure}
 
 Notre algorithme se repose sur la définition en interne de ces fameuses zones de cul de sac et de sortie, ce qui représente un défi en terme de programmation puisque ces zones sont "abstraites", et leur position dépend de beaucoup de facteurs (position de départ adverse, murs gênants entravant le piège, taille du plateau). Bien que nous n'ayons pas pu écrire les fonctions gérant ces zones par manque de temps, nous avons défini tout le protocole à suivre pour en reproduire le comportement. De ce fait, la plupart des éléments pouvant perturber la stratégie ont été pris en compte, et une réponse adaptée leur a été trouvée, ce qui résulte en un arbre de décision massif à multiples embranchements dans le pseudo-algorithme. \\
 
@@ -779,13 +806,13 @@ Le bon déroulement de l'opération repose donc sur quatre étapes :
 
 \begin{itemize}
     \item \textbf{Placer le mur diviseur} lorsque le joueur adverse avance pour la première fois.
-    \item Tant qu'il est dans la zone de la quick box, tenter d'\textbf{agrandir cette zone en largeur}.
+    \item Tant qu'il est dans la zone de la \texttt{quick box}, tenter d'\textbf{agrandir cette zone en largeur}.
     \item Une fois qu'il ne reste plus qu'un couloir de 1 ou 2 de large pour passer, \textbf{approfondir ce couloir} pour laisser le joueur adverse se rapprocher de l'arrivée.
     \item Lorsqu'il est suffisamment proche, \textbf{refermer le couloir} pour fermer le piège et le regarder faire tout le chemin inverse.
 \end{itemize}
 
 \paragraph{}
-Chacune de ces étapes nécessite de vérifier en permanence deux éléments essentiels : le premier est qu'aucune "autre" sortie n'existe que celle définie par la quick box, sans quoi le piège est caduc. On peut vérifier une telle assertion en appliquant un parcours en profondeur du graphe depuis le cul de sac en ayant bouché la sortie. Le second et plus important est qu'il n'existe pas de moyen de bloquer la sortie. Sinon, il suffirait à l'adversaire de bloquer cette sortie pour s'assurer que le piège ne puisse pas être fermé (car seul chemin possible) et obtenir la victoire sans soucis. \\
+Chacune de ces étapes nécessite de vérifier en permanence deux éléments essentiels : le premier est qu'aucune "autre" sortie n'existe que celle définie par la \texttt{quick box}, sans quoi le piège est caduc. On peut vérifier une telle assertion en appliquant un parcours en profondeur du graphe depuis le cul de sac en ayant bouché la sortie. Le second et plus important est qu'il n'existe pas de moyen de bloquer la sortie. Sinon, il suffirait à l'adversaire de bloquer cette sortie pour s'assurer que le piège ne puisse pas être fermé (car seul chemin possible) et obtenir la victoire sans soucis. \\
 
 L'avantage de notre stratégie est qu'elle nous laisse du temps pour agir et nous adapter : chaque mur placé pour rallonger le cul de sac nous laisse un "tour supplémentaire". Ce temps doit impérativement être mis à profit pour empêcher la fermeture de la sortie du piège (par des murs placés en travers, par exemple), et s'assurer un trajet vers les positions gagnantes. Ainsi, lorsque l'adversaire se retrouvera piégé, son nombre de possibilités de rallonger notre propre chemin aura été limité au maximum. Dans le cas où de telles précautions n'auraient pas été prises, nous nous retrouverions avec peu de murs disponibles, une rentabilisation des murs très faible, et un adversaire possédant la majorité de ses murs et tout l'espace qu'il désire pour les rentabiliser. La défaite serait inévitable. \\
 
@@ -799,7 +826,7 @@ Les tests sont segmentés de la même manière que les fichiers sources, c'est �
 
 \subsection{Tests de graphes}
 \subsubsection{Tests de manipulation de graphes}
-Les fonctions de manipulation de graphes sont testées de différentes manières, via des tests fonctionnels et des tests structurels. A chaque fonction est attribuée une batterie de tests, pour vérifier d'un coté le résultat renvoyé par la fonction, et d'un autre coté les modifications effectuées sur la matrice d'adjacence du graphe. L'ajout d'une arête entre deux sommets met à jour correctement la matrice d'adjacence, la bonne valeur est placée et l'arête est créée dans les deux sens, d'un sommet $i$ vers $j$ et inversement. \\
+Les fonctions de manipulation de graphes sont testées de différentes manières, via des tests fonctionnels et des tests structurels. À chaque fonction est attribuée une batterie de tests, pour vérifier d'un coté le résultat renvoyé par la fonction, et d'un autre coté les modifications effectuées sur la matrice d'adjacence du graphe. L'ajout d'une arête entre deux sommets met à jour correctement la matrice d'adjacence, la bonne valeur est placée et l'arête est créée dans les deux sens, d'un sommet $i$ vers $j$ et inversement. \\
 
 De même lors d'un enlèvement d'arête, les bonnes valeurs doivent être remises à zéro. D'un autre côté, nous testons le fait qu'une arête ne peut être enlevée ou créée deux fois, mais peut être à nouveau ajoutée ou retirée, respectivement. Des tests similaires sont effectués sur l'ensemble des autres fonctions de manipulation de graphe afin de vérifier la cohérence de nos fonctions. Ces tests ont été réalisés assez tôt dans l'avancement du projet, ce qui nous a permis d'avoir une base saine et fiable pour modifier les graphes à notre guise, notamment pour la création de graphes spécifiques. \\
 
@@ -835,33 +862,39 @@ Chaque fonction a une liste commentée des tests effectués (voir Algorithme~\re
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[scale=0.5]{tests_valid.png}
+    \includegraphics[scale=0.5]{rapport/tests_valid.png}
     \caption{Tests complets de \texttt{valid\_positions}}
     \label{fig:tests_verbose}
 \end{figure}
 
 Ces tests garantissent l'intégrité des fonctions avec des exemples non triviaux, surtout pour les fonctions les plus complexes (\texttt{valid\_positions}, \texttt{valid\_walls} et \texttt{dijkstra}).
 
-\clearpage
+\subsection{Gestion de la mémoire}
+
+Le client et les serveurs ont été codés en gardant en tête la notion de mémoire. Ainsi, \texttt{valgrind} a été utilisé tout au long du projet pour s'assurer qu'il n'y ait pas de fuites mémoires, et le projet rendu en est exempt (tous les blocs alloués sont bien rendus). \\
+
+A l'utilisation de \texttt{valgrind} sur notre serveur, le nombre de blocs alloués pourrait paraître important (25.000 allocations pour un plateau de taille 10), mais le programme ne prend pas autant de place à l'exécution. Nous nous sommes en effet appuyés sur la norme \textbf{ANSI~C} pour le code, et tous les éléments des tableaux sont initialisés dynamiquement (là où la norme C99 permettait une initialisation statique). Ainsi, chaque élément alloué est libéré très rapidement après, et presque aucun élément ne reste alloué l'entièreté de la partie.
+
 \section{Conclusion}
 
 \subsection{Apports techniques}
 \paragraph{}
-Pour conclure, notre implémentation du serveur ainsi que des différents clients est cohérente avec les demandes du sujet. L'utilisation des matrices creuses de la bibliothèque dynamique de \texttt{GSL} n'a pas été évidente au premiers abords, mais après le temps d'adaptation nécessaire à sa compréhension, nous avons réussi à nous en servir correctement. En ce qui concerne la création et l'utilisation de bibliothèques dynamiques, le manuel d'utilisation de la bibliothèque \texttt{dlfcn} est relativement facile à comprendre et nous avons su mettre en place cette solution pour nos clients.
+Pour conclure, notre implémentation du serveur ainsi que des différents clients est cohérente avec les demandes du sujet. L'utilisation des matrices creuses de la bibliothèque dynamique de \texttt{GSL} n'a pas été évidente aux premiers abords, mais après le temps d'adaptation nécessaire à sa compréhension, nous avons réussi à nous en servir correctement. En ce qui concerne la création et l'utilisation de bibliothèques dynamiques, le manuel d'utilisation de la bibliothèque \texttt{dlfcn} est relativement facile à comprendre et nous avons su mettre en place cette solution pour nos clients.
 
 \paragraph{}
 Comme notre implémentation des graphes mais aussi des méthodes de calcul nécessaires aux joueurs est conséquente, son équivalent en tests l'est aussi. Bien que notre couverture soit très convenable (99\% en tests unitaires, environ 85\% en tests d'intégration), il est nécessaire de souligner le temps non négligeable passé à écrire, tester et remodeler les tests unitaires et fonctionnels des graphes et des méthodes pour les joueurs. En effet, pour pouvoir déboguer plus facilement les graphes, nous avons mis en place une visualisation du plateau dans le terminal. Ce temps consacré à cette interface graphique nous a permis dans la suite de la réalisation des tests d'éviter de perdre du temps à ne pas comprendre un potentiel bug (d'indexage de noeuds ou de création d'arêtes par exemple).
 
 \paragraph{}
-Enfin, l'implémentation des clients est plutôt concluante, avec notre meilleur joueur \fbox{Rick C-137} dans le haut du classement. Parti depuis le bas du classement avec de nombreux bugs à corriger, nous avons réduit l'écart avec les meilleurs clients petit à petit tout au long du projet. L'affinement de nos algorithmes de calculs de choix de mouvements est plutôt satisfaisante, mais nécessite tout de même quelques améliorations. Par exemple, réussir à ne plus générer de mouvements interdits, même si cela reste tout de même rare, serait une première piste.  De plus, réussir à finaliser l'implémentation de \fbox{Mage blanc} pourrait être une autre piste pour commencer à avoir des stratégies bien plus complexes.
+Enfin, l'implémentation des clients est plutôt concluante, avec notre meilleur joueur \fbox{Rick C-137} dans le haut du classement. Parti depuis le bas du classement avec de nombreux bugs à corriger, nous avons réduit l'écart avec les meilleurs clients petit à petit tout au long du projet. L'affinement de nos algorithmes de calculs de choix de mouvements est plutôt satisfaisante, bien qu'il existe toujours de nombreuses améliorations. Par exemple, lui permettre d'avoir une vision plus globale du partie (Calculer les situations actuelles ainsi que les situations futures après 1 coup joué) serait une piste.  De plus, réussir à finalisé l'implémentation de \fbox{Evil Rick} pourrait être une autre piste pour commencer à avoir des stratégies bien plus complexes.
 
 \subsection{Recul sur le travail effectué}
 \paragraph{}
 Ce projet nous a apporté de nouvelles connaissances tant sur la gestion d'un projet en équipe de quatre personnes et la répartition des tâches que sur les notions de développement logiciel vues en cours de Programmation impérative 2. En effet, la mise en place de tests conséquents et pertinents, la création et l'utilisation de bibliothèque dynamique, la gestion de la couverture ainsi que l'approfondissement de la compilation séparée sont des notions importantes pour la suite de notre cursus, et les appliquer dans un projet semestriel est une étape importante à passer.
 
 \paragraph{}
-Nous sommes finalement relativement satisfaits du travail que nous avons réalisé sur l'ensemble du projet, de la stabilité et de la couverture de notre implémentation. De plus, nos différents clients, réalisés ou théoriques, ont eu leur intérêt dans l'avancement du projet, tant dans un premier temps dans l'assimilation de l'environnement de travail et des bibliothèques, que dans l'approfondissement de nos algorithmes et de la recherche de solutions face à la rude compétition. Évidemment, nous aurions souhaité pouvoir finaliser notre dernier client \fbox{Mage blanc}, mais aussi pouvoir imaginer de nouvelles stratégies à implémenter.
+Nous sommes finalement relativement satisfaits du travail que nous avons réalisé sur l'ensemble du projet, de la stabilité et de la couverture de notre implémentation. De plus, nos différents clients, réalisés ou théoriques, ont eu leur intérêt dans l'avancement du projet, tant dans un premier temps dans l'assimilation de l'environnement de travail et des bibliothèques, que dans l'approfondissement de nos algorithmes et de la recherche de solutions face à la rude compétition. Évidemment, nous aurions souhaité pouvoir finaliser notre dernier client \fbox{Evil Rick}, mais aussi pouvoir imaginer de nouvelles stratégies à implémenter.
 
+\clearpage
 \bibliographystyle{unsrt}
 \bibliography{bibliography}
 

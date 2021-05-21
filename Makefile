@@ -21,9 +21,8 @@ test: test_graph_fonc.o test_graph_struct.o test_graph_shape.o test_utils_func.o
 alltests: test
 	LD_LIBRARY_PATH=${GSL_PATH}/lib ./install/alltests
 
-install: player_move_random player_random player_usain_bolt player_rick_scientist player_rick_C137 #player_white_mage
+install: player_jerry player_morty player_rick_J19Z7 player_rick_DIII player_rick_C137 #player_rick_evil
 	${CC} -rdynamic -o install/server ${DIR}/main.c graph_modif.o utils.o -ldl ${LIBS} ${CFLAGS} ${LDFLAGS};
-#./install/server [-m] [-t] ./install/alltests
 
 ################## Binary objects ##################
 
@@ -53,29 +52,29 @@ test_strategy_func.o:
 
 ##################### Players ######################
 
-player_random: graph_modif.o utils.o strategy.o
-	${CC} -fPIC -c ${CFLAGS} ${DIR}/player_random.c;
-	${CC} -shared -nostartfiles -o install/libplayer_random.so player_random.o graph_modif.o utils.o strategy.o;
+player_morty: graph_modif.o utils.o strategy.o
+	${CC} -fPIC -c ${CFLAGS} ${DIR}/player_morty.c;
+	${CC} -shared -nostartfiles -o install/Morty.so player_morty.o graph_modif.o utils.o strategy.o;
 
-player_move_random: graph_modif.o utils.o strategy.o 
-	${CC} -fPIC -c ${CFLAGS} ${DIR}/player_move_random.c;
-	${CC} -shared -nostartfiles -o install/libplayer_move_random.so player_move_random.o graph_modif.o utils.o strategy.o;
+player_jerry: graph_modif.o utils.o strategy.o 
+	${CC} -fPIC -c ${CFLAGS} ${DIR}/player_jerry.c;
+	${CC} -shared -nostartfiles -o install/Jerry.so player_jerry.o graph_modif.o utils.o strategy.o;
 
-player_usain_bolt: graph_modif.o utils.o strategy.o
-	${CC} -fPIC -c ${CFLAGS} ${DIR}/player_usain_bolt.c;
-	${CC} -shared -nostartfiles -o install/libplayer_usain_bolt.so player_usain_bolt.o graph_modif.o utils.o strategy.o;
+player_rick_J19Z7: graph_modif.o utils.o strategy.o
+	${CC} -fPIC -c ${CFLAGS} ${DIR}/player_rick_J19Z7.c;
+	${CC} -shared -nostartfiles -o install/Rick_J19Z7.so player_rick_J19Z7.o graph_modif.o utils.o strategy.o;
 
-player_rick_scientist: graph_modif.o utils.o strategy.o
-	${CC} -fPIC -c ${CFLAGS} ${DIR}/player_rick_scientist.c;
-	${CC} -shared -nostartfiles -o install/libplayer_rick_scientist.so player_rick_scientist.o graph_modif.o utils.o strategy.o;
+player_rick_DIII: graph_modif.o utils.o strategy.o
+	${CC} -fPIC -c ${CFLAGS} ${DIR}/player_rick_DIII.c;
+	${CC} -shared -nostartfiles -o install/Rick_DIII.so player_rick_DIII.o graph_modif.o utils.o strategy.o;
 
 player_rick_C137: graph_modif.o utils.o strategy.o
 	${CC} -fPIC -c ${CFLAGS} ${DIR}/player_rick_C137.c;
 	${CC} -shared -nostartfiles -o install/Rick_C137.so player_rick_C137.o graph_modif.o utils.o strategy.o;
 
-#player_white_mage: graph_modif.o utils.o strategy.o
-#	${CC} -fPIC -c ${CFLAGS} ${DIR}/player_white_mage.c;
-#	${CC} -shared -nostartfiles -o install/libplayer_white_mage.so player_white_mage.o graph_modif.o utils.o strategy.o;
+#player_rick_evil: graph_modif.o utils.o strategy.o
+#	${CC} -fPIC -c ${CFLAGS} ${DIR}/player_rick_evil.c;
+#	${CC} -shared -nostartfiles -o install/Evil_Rick.so player_rick_evil.o graph_modif.o utils.o strategy.o;
 
 ###################### Tests #######################
 

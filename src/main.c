@@ -14,7 +14,7 @@
 #define DEFAULT_SIZE_GRAPH 6
 #define DEFAULT_TYPE_GRAPH 'c'
 #define DEFAULT_PLAYER1 "./install/Rick_C137.so"
-#define DEFAULT_PLAYER2 "./install/libplayer_rick_scientist.so"
+#define DEFAULT_PLAYER2 "./install/Rick_DIII.so"
 
 static int size_graph = DEFAULT_SIZE_GRAPH; 
 static char type_graph = DEFAULT_TYPE_GRAPH; 
@@ -72,10 +72,10 @@ void parse_opts(int argc, char* argv[])
       {
          optind += get_player;
 
-      if(   !strcmp(argv[optind], "./install/libplayer_usain_bolt.so")
-         || !strcmp(argv[optind], "./install/libplayer_rick_scientist.so")
-         || !strcmp(argv[optind], "./install/libplayer_move_random.so")
-         || !strcmp(argv[optind], "./install/libplayer_random.so")
+      if(   !strcmp(argv[optind], "./install/Jerry.so")
+         || !strcmp(argv[optind], "./install/Rick_DIII.so")
+         || !strcmp(argv[optind], "./install/Morty.so")
+         || !strcmp(argv[optind], "./install/Rick_J19Z7.so")
          || !strcmp(argv[optind], "./install/Rick_C137.so")
          || !strcmp(argv[optind], "./projetss6-quor/install/client.1.so"))
          {
@@ -95,7 +95,7 @@ void parse_opts(int argc, char* argv[])
             {
                player_two = argv[optind];
                   // Same players => wrong arguments
-               if (!strcmp(player_one, player_two)) player_two = "./install/libplayer_usain_bolt.so"; 
+               if (!strcmp(player_one, player_two)) player_two = "./install/Jerry.so"; 
                get_player++; 
             }
                // Cancel - too many players
